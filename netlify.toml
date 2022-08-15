@@ -1,0 +1,18 @@
+[[headers]]
+  for = "/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"
+
+
+[context.docs]
+  base = ""
+  publish = "old/build/"
+  command = "cd old && npm install && npm run build"
+  environment = { NODE_VERSION="16.16.0" }
+
+
+[context.main]
+  base = ""
+  publish = "old/build/"
+  command = "cd old && npm install && npm run build"
+    environment = { NODE_VERSION="16.16.0" }
