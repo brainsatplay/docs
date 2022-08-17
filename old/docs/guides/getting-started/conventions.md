@@ -32,7 +32,7 @@ When exposing the default export of each **module**, the exposed library functio
 
 To be editable by `brainsatplay.editable` classes, you must have your source code accessible from Github, NPM, or other locations.
 
-### Native vs. Remix
+### Native vs. Mashup
 **Native components** contain all of their logic internally.
 
 ``` javascript
@@ -40,7 +40,7 @@ To be editable by `brainsatplay.editable` classes, you must have your source cod
 export default (message="world") => console.log(`hello ${message}!`)
 ```
 
-**Remix components** adapt existing NPM libraries by wrapping their essential classes and function calls.
+**Mashup components** adapt existing NPM libraries by wrapping their essential classes and function calls.
 
 ``` javascript
 // external library usage
