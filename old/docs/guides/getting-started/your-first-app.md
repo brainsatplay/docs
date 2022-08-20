@@ -241,11 +241,11 @@ The following HTML document can be used to run your WASL app.
 </html>
 ```
 
-#### Import Loading
+#### Import Mode
 If your app components are served to the browser alongside the HTML document, you may use **import mode** to dynamically import these components using the relative path from the HTML file and the `import.meta.url` variable, which indicates the location of the current script in the browser filesystem.
 
-#### Direct Loading
-If you cannot use **import mode** (e.g. your application is housed in a sibling repository), you may also use **direct mode** to provide object references to all the files that compose it.
+#### Reference Mode
+If you cannot use **import mode** (e.g. your application is housed in a sibling repository), you may also use **reference mode** to provide object references to all the files that compose it.
 
 ```javascript
 import info from '../../phaser/index.wasl.json' assert {type: "json"}
@@ -321,3 +321,46 @@ If you have ESM files (e.g. with functions) that you'd like to import into a com
 ```
 
 To see this code in action, clone the https://github.com/brainsatplay/phaser repo.
+
+### A Note on Internal Imports (remote components only)
+Internal imports are defined as ESM imports that sit within a src file linked in a `.wasl.json` file. For example, `index.wasl.json` has a node with src=`https://example.com/index.js`. This file has an **internal import** of `variables.js`.
+
+``` javascript title="https://example.com/index.js"
+import { increment } from 'variables.js'
+import func from 'variables.js'
+
+export default () => {
+    const newIncrement = func()
+    console.log(increment === newIncrement)
+    return newIncrement
+}
+```
+
+`wasl` imports remote components as text before converting them to a datauri that can be imported using the `import()` function. While we can create a registry of imported modules (allowing for shared static references), **certain ways of importing variables are not supported** since they will break ESM [live bindings](https://stackoverflow.com/questions/52211309/what-does-it-mean-by-live-bindings).
+
+As such, **you might discover that your variables are not mutable.** If the `variables.js` file xontains:
+
+``` javascript title="variables.js"
+export const increment = 0
+
+export default const func = () => {
+    increment = increment + 1
+    return increment
+}
+```
+
+Then the equality of **increment** and **newIncrement** logged by `https://example.com/index.js` would always be **false**.
+
+#### How to Support Mutable States
+To remove this issue, make sure to export modules that will have shared *and* mutable states using [namespace import syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#namespace_import):
+
+``` javascript title="https://example.com/index.js"
+import * as variables from 'variables.js'
+import func from 'variables.js'
+
+export default () => {
+    const newIncrement = func()
+    console.log(variables.increment === newIncrement)
+    return newIncrement
+}
+```
