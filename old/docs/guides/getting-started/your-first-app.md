@@ -11,6 +11,8 @@ This tutorial will use the [Phaser](https://phaser.io/) library (v3) to introduc
 We have created a [mashup component](./conventions.md#native-vs-mashup) to simplify the process of working with Phaser.
 
 ### phaser
+This component is a **Factory** for the global `Phaser` variable loaded asynchronously with a `script` tag.
+
 #### Full Code
 ```javascript title="phaser/components/phaser/index.js"
 const script = document.createElement('script')
@@ -24,9 +26,9 @@ script.onload = function () {
     for (let tag in nodes)  nodes[tag].run()
 };
 
-export const oncreate = (node) => {
-    if (window.Phaser) node.run()
-    else nodes[node.tag] = node
+export function oncreate() {
+    if (window.Phaser) this.run()
+    else nodes[node.tag] = this
 }
 
 export default () => {
@@ -56,13 +58,16 @@ The `onResolve` function ensures that requests made before the availability of `
 
 ##### Node Registration
 ```javascript
-export const oncreate = (node) => {
-    if (window.Phaser) node.run()
-    else nodes[node.tag] = node
+export function oncreate() {
+    if (window.Phaser) this.run()
+    else nodes[this.tag] = this
 }
 ```
 
-This snippet collects graph nodes for later activation in the `script.onload` function—or simply runs the node if `window.Phaser` is available.
+This snippet collects graph nodes (using the `this` keyword) for later activation in the `script.onload` function—or simply runs the node if `window.Phaser` is available.
+
+> **Note:** The `this` keyword specifies the parent object of a function. In `graphscript`, the underlying library for `brainsatplay`, this is always the GraphNode that controls the component execution.
+
 
 ##### Simple Forwarding Function
 ```javascript

@@ -56,6 +56,28 @@ export default () => graph.run('world')
 ## Graphs
 A **graph** is a connected set of **components** that pass messages between each other. 
 
+As specified in `.wasl.json` files, each **graph** has **nodes** and **edges**. You may think of **nodes** as the component instances in the graph, whereas **edges** are the flow logic that happens *between* these components.
+
+```json title="index.wasl.json"
+{
+    "graph": {
+        "nodes": {
+            "input": {
+                "src": "input.js"
+            },
+            "output": {
+                "src": "output.js"
+            },
+        },
+        "edges": {
+            "input": {
+                "output": {},
+            }
+        }
+    }
+}
+```
+
 :::note 
 Nodes in the **graph** are individually visualized by the Properties tab (TBD) of the `@brainsatplay/studio`, while edges are visualized by the Graph tab.
 :::
