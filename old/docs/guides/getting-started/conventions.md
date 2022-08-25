@@ -3,13 +3,12 @@ sidebar_position: 2
 title: Conventions
 ---
 
-##  Modules
-A **module** is an ESM file that contains one default export and named exports that are used to provide additional metadata about the usage of the former.
+## Plugins
+As defined by [es-plugins](https://github.com/brainsatplay/es-plugins) **plugin** is an ESM file that contains one default export and named exports that are used to provide additional metadata about the usage of the former.
 
 :::info
-
 1. **Any default export should be a function**—ideally stateless.
-2. **Named exports should be modifiers** for this function, consistent with the [WASL](../libraries/wasl/index.md) standard.
+2. **Named exports should be modifiers** for this function, consistent with the [ES Plugins](../libraries/es-plugins/index.md) and [WASL](../libraries/wasl/index.md)standards.
 
 :::
 

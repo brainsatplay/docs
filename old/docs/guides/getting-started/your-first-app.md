@@ -28,7 +28,7 @@ script.onload = function () {
 
 export function oncreate() {
     if (window.Phaser) this.run()
-    else nodes[node.tag] = this
+    else nodes[this.tag] = this
 }
 
 export default () => {
@@ -66,7 +66,7 @@ export function oncreate() {
 
 This snippet collects graph nodes (using the `this` keyword) for later activation in the `script.onload` function—or simply runs the node if `window.Phaser` is available.
 
-> **Note:** The `this` keyword specifies the parent object of a function. In `graphscript`, the underlying library for `brainsatplay`, this is always the GraphNode that controls the component execution.
+> **Note:** The `this` keyword specifies the parent object of a function. In `wasm`, the underlying library for `brainsatplay`, `this` is always the class that controls the component execution.
 
 
 ##### Simple Forwarding Function
@@ -86,10 +86,12 @@ import merge from './merge.js';  // A module that merges two object
 import defaultConfig from './phaser.config.js' // A default configuration file for Phaser
 
 export const content = defaultConfig
-export default function (node) {
+export default function () {
     if (window.Phaser) {
-        config = merge(defaultConfig, this.content) // merge config with default config
-        config.parent =  node.graph.parentNode // set parent node
+        let cfg = (typeof this.content === 'function') ? this.content(window.Phaser) : this.content;
+        let defaultCfg = (typeof content === 'function') ? content(window.Phaser) : content;
+        let config = merge(defaultCfg, cfg)
+        config.parent =  this.parentNode
         return config
     }
 }
@@ -105,12 +107,12 @@ This snippet adds a custom key (**content**) to each component instance, which a
 
 ##### Using a Default Template
 ```javascript
-export default function (node) {
+export default function () {
     if (window.Phaser) {
          let cfg = (typeof this.content === 'function') ? this.content(window.Phaser) : this.content;
         let defaultCfg = (typeof content === 'function') ? content(window.Phaser) : content;
         let config = merge(defaultCfg, cfg)
-        config.parent =  node.graph.parentNode
+        config.parent =  this.parentNode
         return config
     }
 }
@@ -118,10 +120,7 @@ export default function (node) {
 
 This snippet uses a regular (as opposed to [arrow](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)) function and the `this` keyword to access a user-specified configuration and options object. These are then merged with the default objects.
 
-`config` can be a function to allow for proper linking of game assets using the `this.options.baseURL` value.
-
-##### Accessing a `graphscript` Node
-Importantly, this snippet also uses the `node` keyword to request the active `graphscript` node for use in the function. In this way, the `parentNode` of the current node's graph is assigned as the `parent` in the Phaser configuration object. This allows the game itself to be placed inside the instance's representation on the webpage.
+The `parent` of the Phaser configuration object is also set to the parentNode of the current instance. This allows the game to be placed inside the HTMLElement assigned to the instance on the webpage.
 
 ### game
 #### Full Code
@@ -326,46 +325,3 @@ If you have ESM files (e.g. with functions) that you'd like to import into a com
 ```
 
 To see this code in action, clone the https://github.com/brainsatplay/phaser repo.
-
-### A Note on Internal Imports (remote components only)
-Internal imports are defined as ESM imports that sit within a src file linked in a `.wasl.json` file. For example, `index.wasl.json` has a node with src=`https://example.com/index.js`. This file has an **internal import** of `variables.js`.
-
-``` javascript title="https://example.com/index.js"
-import { increment } from 'variables.js'
-import func from 'variables.js'
-
-export default () => {
-    const newIncrement = func()
-    console.log(increment === newIncrement)
-    return newIncrement
-}
-```
-
-`wasl` imports remote components as text before converting them to a datauri that can be imported using the `import()` function. While we can create a registry of imported modules (allowing for shared static references), **certain ways of importing variables are not supported** since they will break ESM [live bindings](https://stackoverflow.com/questions/52211309/what-does-it-mean-by-live-bindings).
-
-As such, **you might discover that your variables are not mutable.** If the `variables.js` file xontains:
-
-``` javascript title="variables.js"
-export const increment = 0
-
-export default const func = () => {
-    increment = increment + 1
-    return increment
-}
-```
-
-Then the equality of **increment** and **newIncrement** logged by `https://example.com/index.js` would always be **false**.
-
-#### How to Support Mutable States
-To remove this issue, make sure to export modules that will have shared *and* mutable states using [namespace import syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#namespace_import):
-
-``` javascript title="https://example.com/index.js"
-import * as variables from 'variables.js'
-import func from 'variables.js'
-
-export default () => {
-    const newIncrement = func()
-    console.log(variables.increment === newIncrement)
-    return newIncrement
-}
-```

@@ -8,6 +8,7 @@ The Brains@Play Framework is dependent on several interrelated libraries.
 <!-- Note: Make sure to transfer changes to ../../index.md -->
 | Library               | Status                                                       | Description                                             |
 | --------------------- | ------------------------------------------------------------ | ------------------------------------------------------- |
+| [es-plugins]         | [![es-plugins-status]][es-plugins] | A mediating syntax between ES Modules and Web Components.       |
 | [wasl]         | [![wasl-status]][wasl] | The Web Application Specification Language.       |
 | [brainsatplay]         | [![brainsatplay-status]][brainsatplay] | The Module Management System (MMS) for [wasl] applications.
 | [graphscript]         | [![graphscript-status]][graphscript] | Simple graph-based programming in the browser and Node.js.       |
@@ -20,6 +21,11 @@ The Brains@Play Framework is dependent on several interrelated libraries.
 
 [brainsatplay]: https://github.com/brainsatplay/brainsatplay
 [brainsatplay-status]: https://img.shields.io/npm/v/brainsatplay
+
+<!-- Plugin Specification -->
+[es-plugins]: https://github.com/brainsatplay/es-plugins
+[es-plugins-status]: https://img.shields.io/npm/v/es-plugins
+
 
 <!-- Specification Language -->
 [wasl]: https://github.com/brainsatplay/wasl
