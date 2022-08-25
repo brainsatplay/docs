@@ -7,14 +7,14 @@ This tutorial will use the [Phaser](https://phaser.io/) library (v3) to introduc
 
 > **Note:** The code for this tutorial can be found at https://github.com/garrettmflynn/phaser.
 
-## A Tour of the Components
+## A Tour of the Plugins
 We have created a [mashup component](./conventions.md#native-vs-mashup) to simplify the process of working with Phaser.
 
 ### phaser
-This component is a **Factory** for the global `Phaser` variable loaded asynchronously with a `script` tag.
+This plugin is a **Factory** for the global `Phaser` variable loaded asynchronously with a `script` tag.
 
 #### Full Code
-```javascript title="phaser/components/phaser/index.js"
+```javascript title="phaser/plugins/phaser/index.js"
 const script = document.createElement('script')
 script.src = 'https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser-arcade-physics.min.js'
 document.head.appendChild(script)
@@ -52,7 +52,7 @@ script.onload = function () {
 };
 ``` 
 
-This snippet asynchronously loads Phaser as a `window` variable into the page. Once loaded, the default export for this component will be forwarded to any children. 
+This snippet asynchronously loads Phaser as a `window` variable into the page. Once loaded, the default export for this plugin will be forwarded to any children. 
 
 The `onResolve` function ensures that requests made before the availability of `window.Phaser` will be passed properly.
 
@@ -66,7 +66,7 @@ export function oncreate() {
 
 This snippet collects graph nodes (using the `this` keyword) for later activation in the `script.onload` function—or simply runs the node if `window.Phaser` is available.
 
-> **Note:** The `this` keyword specifies the parent object of a function. In `wasm`, the underlying library for `brainsatplay`, `this` is always the class that controls the component execution.
+> **Note:** The `this` keyword specifies the parent object of a function. In `wasm`, the underlying library for `brainsatplay`, `this` is always the class that controls the plugin execution.
 
 
 ##### Simple Forwarding Function
@@ -81,7 +81,7 @@ This snippet forwards `window.Phaser` to all children.
 
 ### config
 #### Full Code
-```javascript title="phaser/components/config/index.js"
+```javascript title="phaser/plugins/config/index.js"
 import merge from './merge.js';  // A module that merges two object
 import defaultConfig from './phaser.config.js' // A default configuration file for Phaser
 
@@ -103,7 +103,7 @@ export default function () {
 export const content = defaultConfig
 ```
 
-This snippet adds a custom key (**content**) to each component instance, which allows users to specify a configuration object from inside WASL files.
+This snippet adds a custom key (**content**) to each plugin instance, which allows users to specify a configuration object from inside WASL files.
 
 ##### Using a Default Template
 ```javascript
@@ -124,15 +124,15 @@ The `parent` of the Phaser configuration object is also set to the parentNode of
 
 ### game
 #### Full Code
-```javascript title="phaser/components/game/index.js"
+```javascript title="phaser/plugins/game/index.js"
 export default (config) => new Phaser.Game(config);
 ```
 
 #### Detailed Explanation
-As the simplest component of this collection, this simply creates a `Phaser.Game` instance that is added to the webpage (based on the aforementioned `parent` key) and forwarded to any children.
+As the simplest plugin of this collection, this simply creates a `Phaser.Game` instance that is added to the webpage (based on the aforementioned `parent` key) and forwarded to any children.
 
-## Assembling the Component
-This component is a simple series of the aforementioned components.
+## Assembling the `phaser` Component
+This `phaser` component is a simple series of the aforementioned plugins.
 
 ```json title="phaser/index.wasl.json"
 {
@@ -140,13 +140,13 @@ This component is a simple series of the aforementioned components.
 
         "nodes": {
             "phaserObject": {
-                "src": "components/phaser/index.js"
+                "src": "plugins/phaser/index.js"
             },
             "config": {
-                "src": "components/config/index.js"
+                "src": "plugins/config/index.js"
             },
             "game": {
-                "src": "components/game/index.js"
+                "src": "plugins/game/index.js"
             }
         },
         "edges": {
@@ -180,7 +180,7 @@ To instantiate a Phaser game in your app, you may add this node to your `index.w
 ```
 
 ### Modifying the `phaser` Component
-To modify `phaser` for your app, add the `components` field under `graph.nodes.phaser`. This will allow you to merge your `content` information with the default.
+To modify `phaser` for your app, add the `plugins` field under `graph.nodes.phaser`. This will allow you to merge your `content` information with the default.
 
 ```json
 {
@@ -189,7 +189,7 @@ To modify `phaser` for your app, add the `components` field under `graph.nodes.p
         "nodes": {
             "phaser": {
                 "src": "phaser/index.wasl.json",
-                "components": {
+                "plugins": {
                     "config": {
                         "content": {
                             "physics": {
@@ -246,7 +246,7 @@ The following HTML document can be used to run your WASL app.
 ```
 
 #### Import Mode
-If your app components are served to the browser alongside the HTML document, you may use **import mode** to dynamically import these components using the relative path from the HTML file and the `import.meta.url` variable, which indicates the location of the current script in the browser filesystem.
+If your app's plugins are served to the browser alongside the HTML document, you may use **import mode** to dynamically import these plugins using the relative path from the HTML file and the `import.meta.url` variable, which indicates the location of the current script in the browser filesystem.
 
 #### Reference Mode
 If you cannot use **import mode** (e.g. your application is housed in a sibling repository), you may also use **reference mode** to provide object references to all the files that compose it.
@@ -257,9 +257,9 @@ import phaserInfo from '../../phaser/src/index.wasl.json' assert {type: "json"}
 
 import pkg from '../../phaser/package.json'  assert {type: "json"}
 import phaserPkg from '../../phaser/src/package.json'  assert {type: "json"}
-import * as phaser from  '../../phaser/src/components/phaser/index.js'
-import * as config from  '../../phaser/src/components/config/index.js'
-import * as game from  '../../phaser/src/components/game/index.js'
+import * as phaser from  '../../phaser/src/plugins/phaser/index.js'
+import * as config from  '../../phaser/src/plugins/config/index.js'
+import * as game from  '../../phaser/src/plugins/game/index.js'
 
 const path = '../../phaser/index.wasl.json'
 
@@ -268,9 +268,9 @@ const options = {
         'package.json': pkg,
         'src/package.json': phaserPkg,
         'src/index.wasl.json': phaserInfo,
-        'src/components/phaser/index.js': phaser,
-        'src/components/config/index.js': config,
-        'src/components/game/index.js': game
+        'src/plugins/phaser/index.js': phaser,
+        'src/plugins/config/index.js': config,
+        'src/plugins/game/index.js': game
     }
 }
 
@@ -282,9 +282,9 @@ After serving this HTML document, you should have an active version of the defau
 
 ## Programming with the `phaser` Component
 #### Linking to Code Files
-If you have ESM files (e.g. with functions) that you'd like to import into a component, you may simply provide URIs linking to those components:
+If you have ESM files (e.g. with functions) that you'd like to import into a plugin, you may simply provide URIs linking to them:
 
-> **Note:** This will provide the *default* export if available. Otherwise all named exports will be added to the object.
+> **Note:** If the *default* export is the only one available, it will replace the enclosing object. Otherwise all named exports will be added to the object.
 
 ```json
 {
@@ -293,7 +293,7 @@ If you have ESM files (e.g. with functions) that you'd like to import into a com
         "nodes": {
             "phaser": {
                 "src": "phaser/index.wasl.json",
-                "components": {
+                "plugins": {
                     "config": {
                         "content": {
                             "physics": {
@@ -305,7 +305,7 @@ If you have ESM files (e.g. with functions) that you'd like to import into a com
                                 "scene": {
                                     "key": "main",
                                     "preload": {
-                                        "src": "./scripts/update.js"
+                                        "src": "./scripts/preload.js"
                                     },
                                     "create": {
                                         "src": "./scripts/create.js"
@@ -325,3 +325,5 @@ If you have ESM files (e.g. with functions) that you'd like to import into a com
 ```
 
 To see this code in action, clone the https://github.com/brainsatplay/phaser repo.
+
+## Creating Plugins from Phaser Scripts
