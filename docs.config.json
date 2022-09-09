@@ -6,6 +6,7 @@
             {
                 "pattern": "github.com/brainsatplay",
                 "extension": ".md",
+                "update": true,
                 "map": {
                     "accessify": "libraries/wasl",
                     "brainsatplay": "libraries/freerange",
