@@ -1,0 +1,20 @@
+<h2 id="hardware">Hardware</h2>
+<h4 id="bitalinohttpsbitalinocom"><a href="https://bitalino.com/">Bitalino</a></h4>
+<ul>
+<li><a href="https://github.com/BITalinoWorld">Github</a></li>
+</ul>
+<h4 id="e3khttpswwwcrowdsupplycomwallyscie3k"><a href="https://www.crowdsupply.com/wallysci/e3k">E3K</a></h4>
+<h4 id="hackeeghttpswwwstarcatioproductshackeegshield"><a href="https://www.starcat.io/products/hackeeg-shield/">HackEEG</a></h4>
+<ul>
+<li><a href="https://github.com/adamfeuer/hackeeg-shield">Github</a></li>
+</ul>
+<h4 id="nrf52biosensingboardswiphttpsgithubcommoothyknightnrf52biosensingboards"><a href="https://github.com/moothyknight/nRF52-Biosensing-Boards">nRF52 Biosensing Boards (WIP)</a></h4>
+<h4 id="openbcicytonhttpsshopopenbcicomproductscytonbiosensingboard8channel"><a href="https://shop.openbci.com/products/cyton-biosensing-board-8-channel">OpenBCI Cyton</a></h4>
+<ul>
+<li><a href="https://github.com/OpenBCI">Github</a></li>
+</ul>
+<p>Any EEG is an EMG.</p>
+<h2 id="software">Software</h2>
+<h2 id="resources">Resources</h2>
+<p><a href="https://www.biopac.com/wp-content/uploads/EMG-Guide.pdf">Biopac EMG guide</a></p>
+<p><a href="https://www.theverge.com/2018/6/6/17433516/ctrl-labs-brain-computer-interface-armband-hands-on-preview">CTRL Labs' EMG is really cool (but proprietary AF 😦)</a></p>
