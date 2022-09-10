@@ -1,7 +1,9 @@
 import fs from 'fs'
-import path, { join } from 'path'
+import path, { join, resolve } from 'path'
 import process from 'process'
 import https from 'https'
+import { exec } from "child_process"
+
 
 import showdown from 'showdown'
 
@@ -21,7 +23,9 @@ class Docs {
     config = {}
     converter = new showdown.Converter();
     mappings = {}
-    results = {}
+    newFiles = {}
+    broken = {}
+    copyDir = '.copy'
 
     constructor(config = {}) {
         this.config = config
@@ -32,24 +36,59 @@ class Docs {
     generate = async (input = this.config.inDir, output = this.config.outDir) => {
 
         this.mappings = {} // clear mappings
-        this.results = {}
+        this.newFiles = {}
         const base = process.cwd()
         const inputBase = path.join(base, input)
         const results = await this.list(inputBase);
 
-
+    
         const config = {
             base,
             inputBase,
             output,
-            input
+            input,
         }
 
+        // Clear Input and Output Directory
+
+        console.log(`Clearing the ${this.copyDir} directory...`)
+        await this.check(`./${this.copyDir}`) // create copy dir
+        await this.clear(`./${this.copyDir}`) 
+
+        console.log(`Copying Files from ${input} to ${this.copyDir}...`)
+        await this.copy(`./${input}`, `./${this.copyDir}`)
+
+        console.log(`Clearing the ${output} directory...`)
+        await this.clear(`./${output}`)
+
+        config.input = this.copyDir
         const loaded = await this.preload(results, this.config.publications, config)
         const updatedResults = (loaded) ? await this.list(inputBase) : results
         for (let filePath in updatedResults) this.saveText(updatedResults[filePath], filePath, config)
     }
 
+    exec = (command) => {
+        return new Promise((resolve, reject) => {
+
+                exec(command, (error, stdout, stderr) => {
+                    if (error) {
+                        reject(`error: ${error.message}`)
+                        return;
+                    }
+                    if (stderr) {
+                        reject(`error: ${stderr}`)
+                        return;
+                    }
+
+                    resolve(stdout)
+                    console.log(`stdout: ${stdout}`);
+            });
+        })
+    }
+
+    copy = async (source, destination) => await this.exec(`cp -r ${source}/* ${destination}`).catch(console.error)
+
+    clear = async (dir) => await this.exec(`rm ${dir}*`).catch(console.error)
 
     preload = async (results, publications, config) => {
 
@@ -86,7 +125,7 @@ class Docs {
                             const line = n[0]
                             const link = n[1]
                             const relativeFile = link[0] === '.' && correctExtension(link, o.extension)
-
+                            const remoteFile = isRemote(link)
 
                              // New Link
                              let after = o.pattern ? link.split(o.pattern).slice(-1)[0] : link // no pattern
@@ -94,24 +133,37 @@ class Docs {
                              const correctExt = correctExtension(after, pubExt) // transfer files with the specified extension
  
                             // Allow Relative Links on Internal Loads
-                            if (correctExt && ((relativeTo && relativeFile) || (o.pattern && link.match(userRegex)))) {
+                            const pattern = (o.pattern && link.match(userRegex))
+                            if (
+                                correctExt && 
+                                (relativeFile || pattern)
+                            ) {
+
+                                const isMarkdown = link.includes('.md')
+                                if (relativeTo || pattern || isMarkdown) {
+                                    
 
                                 if (after[0] === pathSep) after = after.slice(1)
                                 let split = after.split(pathSep)
                                 const base = split[0]
 
                                 let linkPath, savePath;
+
+                                let mapping = (isString) ? o.map : o.map[base]
+                                let hasMapping = !!mapping // TODO: Check this with isString=true...
+
+                                
+                                let rel = filePath.split(config.input)[1]
+                                if (rel?.[0] === pathSep) rel = rel.slice(1)
+                                if (rel){
+                                    const thisPath = path.dirname(rel)
+
                                 if (relativeTo) {
-                                    let rel = filePath.split(config.input)[1]
-                                    if (rel[0] === pathSep) rel = rel.slice(1)
 
-                                    if (rel) {
-                                        if (!o.map[base]) {
-                                            console.error(`No mapping found`, relativeTo, config.input, link, filePath)
-                                        } else {
+                                        // Local Map (otherwise use default remote mapping)
+                                        if (hasMapping) {
 
-                                            const thisPath = path.dirname(rel)
-                                            const transferredSplit = o.map[base].split(pathSep)
+                                            const transferredSplit = mapping.split(pathSep)
                                             const thisSplit = thisPath.split(pathSep)
 
                                             let relative = []
@@ -125,33 +177,46 @@ class Docs {
                                             linkPath = path.join(...relative, ...filtered)
                                             if (!linkPath) linkPath = './' // this position
                                             linkPath = path.join(linkPath, name)
-
                                             savePath = path.join(config.input, thisPath, linkPath) // relative to this
+
+                                            // if (hasMD) linkPath = linkPath.replace('.md', '.html') // replace with html
+                                            // console.log('Link Path', linkPath)
                                         }
-                                    }
-                                    // else console.log('not rel', relativeTo, config.input, link, filePath)
+
+                                        // savePath = path.join(config.input, thisPath, linkPath) // relative to this
+                                } 
+                                
+                                
+                                // Transform Markdown to HTML Links
+                                if (!remoteFile && relativeFile && isMarkdown) {
+                                    savePath = path.join(config.input,thisPath, link) // relative to this
+                                    linkPath = link.slice(0,-2) + 'html'
                                 }
 
-                                // TODO: Maintain relative links. Flip to URLs if outside of downloaded sandbox.
-                                if (relativeFile) {
-                                    const container = (isString) ? o.map : o.map[base]
-                                    if (container) {
-                                        console.log('relative', link, base, relativeTo, filePath)
-                                    }
-                                }
+                            }
+
+                                // // TODO: Maintain relative links. Flip to URLs if outside of downloaded sandbox.
+                                // if (relativeFile) {
+                                //     const container = (isString) ? o.map : o.map[base]
+                                //     if (container) {
+                                //         console.log('relative', link, base, relativeTo, filePath)
+                                //     }
+                                // }
 
                                 links[line] = {
                                     link,
-                                    remote: isRemote(link),
+                                    remote: remoteFile,
                                     relative: relativeFile,
                                     name,
                                     base,
                                     split,
                                     after,
                                     linkPath,
-                                    savePath
+                                    savePath,
+                                    remap: (relativeTo && !hasMapping) ? false : true
                                 }
-                            }
+                        }
+                    }
                         })
 
                         // Iterate through Valid Links
@@ -162,6 +227,7 @@ class Docs {
                                 base,
                                 split,
                                 after,
+                                remap
                             } = links[line]
 
                             let linkPath = links[line].linkPath
@@ -176,7 +242,6 @@ class Docs {
                                 // transform raw link (github)
                                 if (rawLink.includes('github.com') && split[1] !== 'raw') {
                                     const end = rawLink.split('github.com/')[1]
-                                    console.log('Correting', [split[0], ...split.slice(2)])
                                     if (end) rawLink = `https://raw.githubusercontent.com/${end.replace(after, [split[0], ...split.slice(2)].join(pathSep))}`
                                 }
                                 
@@ -192,7 +257,7 @@ class Docs {
 
                                         // Update Raw Link
                                         try {
-                                            rawLink = new URL(rawLink, relToNoFile).href
+                                            rawLink = new URL(rawLink, relToNoFile + '/').href
                                         } catch (e) {
                                             rawLink = path.join(relToNoFile, rawLink)
                                         }
@@ -213,57 +278,103 @@ class Docs {
                                     if (linkPath[0] === pathSep) linkPath = linkPath.slice(1)
                                 }
 
-                                if (linkPath) {
+
+
+                                // Stop Broken Links (remote only...)
+                                if (linkPath && !this.broken[rawLink]) {
 
                                     // Correct Save Path
                                     if (!savePath) savePath = path.join(config.input, linkPath)
-                                    savePath = savePath.replace(readme, 'index.md') // Rename README.md
 
+                                    // Rename README.md Files
+                                    savePath = savePath.replace(readme, 'index.md')
 
+                                    const has = this.newFiles[savePath]
+                                    let exists =  fs.existsSync(savePath) 
+
+                                    // ------------ Download Files From Remote Source ------------
                                     if (
-                                        remote 
-                                        && !this.results[savePath]
-                                        && (!fs.existsSync(savePath) || o.update)
+                                        remote // is a remote file
+                                        && !has // do not current have updates
+                                        && (!exists || o.update) // does not exist in filesytem (or update is requested)
                                     ) {
 
+                                        const first = savePath.includes('docs/old/docs')
+                                        const second =  linkPath.includes('docs/README.md')
+                                        const third = savePath === path.join(config.input, 'index.md')
+
+                                        if (
+                                            relativeTo && (
+                                                // first ||
+                                                second ||
+                                                third
+                                            )
+                                            ) {
+                                            console.log('THIS IS NOT RIGHT', savePath, link, relativeTo)
+                                            console.log('From', filePath)
+                                            console.log('First', first)
+                                            console.log('Second', second)
+                                            console.log('Third', third)
+
+                                        } else {
                                             this.check(savePath)
                                             const file = fs.createWriteStream(savePath);
 
                                             requests.push(new Promise((resolve, reject) => {
+
                                                 https.get(rawLink, response => {
 
                                                     if (response.statusCode != 200) {
-                                                        console.error(`Could not get ${rawLink}`)
+                                                        if (response.statusCode === 404) this.broken[rawLink] = link // flag broken links
+                                                        else console.error('Error Downloading', response.statusCode, rawLink)
                                                         reject()
                                                     } else {
 
                                                         var stream = response.pipe(file);
                                                         stream.on("finish", async () => {
                                                             const text = fs.readFileSync(savePath).toString()
-                                                            this.results[savePath] = text
-                                                            internalResults[savePath] = {
-                                                                relativeTo:rawLink,
-                                                                text
-                                                            }
 
-                                                            resolve(true)
+                                                            if (text){
+                                                                this.newFiles[savePath] = text
+                                                                internalResults[savePath] = {
+                                                                    relativeTo:rawLink,
+                                                                    text
+                                                                }
+
+                                                                resolve(true)
+                                                            } else reject()
                                                         });
                                                     }
                                                 }).on('error',console.error);
                                             }))
                                         }
-
-                                    // Update Links
-                                    const newLine = line.replace(link, `${linkPath}`)
-
-                                    // Assign Mappings for Later HTML Generation
-                                    this.mappings[filePath] = text = text.replaceAll(line, newLine) // replace old line
-                                   
-                                   // Updating Original Text (only downloaded assets)
-                                    if (relativeTo) {
-                                        this.check(filePath) 
-                                        fs.writeFileSync(filePath, this.mappings[filePath]) // WRITE FILES DIRECTLY WITH NEW LINKS
                                     }
+
+                                        const gotten = this.newFiles[savePath]
+
+                                    // ------------ Update Links Appropriately ------------
+                                    if ((exists || gotten)){
+
+                                        // Update Links
+                                        linkPath = linkPath.replace(readme, '') 
+                                        linkPath = linkPath.replace('index.md', '')
+                                        if (linkPath == '') linkPath = './'
+
+                                        // console.log('Updateing the link', linkPath)
+                                        const newLine = (remap) ? line.replace(link, `${linkPath}`) : line 
+
+                                        console.log('Updating', filePath, 'with', newLine)
+                                        // Assign Mappings for Later HTML Generation
+                                        this.mappings[filePath] = text.replaceAll(line, newLine) //html transformation
+                                        text = this.mappings[filePath]
+                                    
+                                        // Updating Original Text (only downloaded assets)
+                                        if (relativeTo) {
+                                            this.check(filePath) 
+                                            fs.writeFileSync(filePath, this.mappings[filePath]) // WRITE FILES DIRECTLY WITH NEW LINKS
+                                        }
+                                    } 
+                                    else console.error(`No file was created or found at ${savePath}`)
                                 }
                             }
                     }
@@ -275,7 +386,7 @@ class Docs {
             if (loaded) await this.preload(internalResults, [{ ...o }], config)
         }
 
-        return Object.keys(this.results).length > 0
+        return Object.keys(this.newFiles).length > 0
 
     }
 
