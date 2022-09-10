@@ -100,30 +100,33 @@ class Docs {
                                 let split = after.split(pathSep)
                                 const base = split[0]
 
-                                let linkPath;
+                                let linkPath, savePath;
                                 if (relativeTo) {
                                     let rel = filePath.split(config.input)[1]
                                     if (rel[0] === pathSep) rel = rel.slice(1)
 
                                     if (rel) {
                                         if (!o.map[base]) {
-                                            // console.error(`No mapping found`, relativeTo, config.input, link, filePath)
+                                            console.error(`No mapping found`, relativeTo, config.input, link, filePath)
                                         } else {
-                                            const transferredPath = o.map[base].split(pathSep)
-                                            const thisPath = path.dirname(rel).split(pathSep)
+
+                                            const thisPath = path.dirname(rel)
+                                            const transferredSplit = o.map[base].split(pathSep)
+                                            const thisSplit = thisPath.split(pathSep)
 
                                             let relative = []
-                                            const filtered = transferredPath.filter((v, i) => {
-                                                if (thisPath[i] !== v) {
+                                            const filtered = transferredSplit.filter((v, i) => {
+                                                if (thisSplit[i] !== v) {
                                                     relative.push('..')
                                                     return true
                                                 } else return false
                                             })
 
-                                                linkPath = path.join(...relative, ...filtered)
-                                                if (!linkPath) linkPath = './' // this position
-                                                linkPath = path.join(linkPath, name)
-                                                // console.log('SETTING NEW PATH', linkPath, transferredPath)
+                                            linkPath = path.join(...relative, ...filtered)
+                                            if (!linkPath) linkPath = './' // this position
+                                            linkPath = path.join(linkPath, name)
+
+                                            savePath = path.join(config.input, thisPath, linkPath) // relative to this
                                         }
                                     }
                                     // else console.log('not rel', relativeTo, config.input, link, filePath)
@@ -145,7 +148,8 @@ class Docs {
                                     base,
                                     split,
                                     after,
-                                    linkPath
+                                    linkPath,
+                                    savePath
                                 }
                             }
                         })
@@ -161,6 +165,7 @@ class Docs {
                             } = links[line]
 
                             let linkPath = links[line].linkPath
+                            let savePath = links[line].savePath
 
                             // console.log('Line', line)
 
@@ -168,41 +173,35 @@ class Docs {
 
                                 let basePath, remote = links[line].remote;
 
+                                // transform raw link (github)
+                                if (rawLink.includes('github.com') && split[1] !== 'raw') {
+                                    const end = rawLink.split('github.com/')[1]
+                                    console.log('Correting', [split[0], ...split.slice(2)])
+                                    if (end) rawLink = `https://raw.githubusercontent.com/${end.replace(after, [split[0], ...split.slice(2)].join(pathSep))}`
+                                }
+                                
                                 if (!linkPath){
 
-                                    // transform to raw link (github)
-                                    if (link.includes('github.com') && split[1] !== 'raw') {
-                                        const end = link.split('github.com/')[1]
-                                        if (end) rawLink = `https://raw.githubusercontent.com/${end.replace(after, [split[0], ...split.slice(2)].join(pathSep))}`
-                                    }
-
-                                    // Taransform to New Directory
+                                    // Transform to New Directory
                                     if (relativeTo && !remote) {
 
                                         const relToNoFile = path.dirname(relativeTo)
-                                        // Update Raw Link
+                                        
+                                        // Get Base Path
                                         basePath = path.join(path.dirname(filePath), rawLink) // no url
 
-                                        console.log('CHECKING', basePath, filePath, rawLink, relToNoFile)
+                                        // Update Raw Link
                                         try {
-                                            // let relURL = new URL(relativeTo)
-                                            // var relDir = relURL.href.substring(0, relURL.href.lastIndexOf(pathSep))
                                             rawLink = new URL(rawLink, relToNoFile).href
-                                            console.log('YES URL', rawLink, basePath)
-
                                         } catch (e) {
                                             rawLink = path.join(relToNoFile, rawLink)
-                                            console.log('NOT URL', relativeTo)
-
                                         }
 
+                                        // Derive Link Path
                                         if (isString) basePath = path.join(o.map, basePath) // global
                                         else if (o.map && o.map[base]) basePath = path.join(o.map[base], basePath) // unique
                                         linkPath = basePath.replace(config.input, '')
-                                        console.log('linkPath', linkPath)
-
                                         remote = isRemote(rawLink) // reset remote
-
                                     }
                                     else {
                                         if (isString) linkPath = o.map
@@ -211,48 +210,56 @@ class Docs {
 
                                     if (path.basename(linkPath) !== name) linkPath = path.join(linkPath, name)
 
+                                    if (linkPath[0] === pathSep) linkPath = linkPath.slice(1)
                                 }
 
                                 if (linkPath) {
 
-                                    if (linkPath[0] === pathSep) linkPath = linkPath.slice(1)
+                                    // Correct Save Path
+                                    if (!savePath) savePath = path.join(config.input, linkPath)
+                                    savePath = savePath.replace(readme, 'index.md') // Rename README.md
 
-                                    // Download File to Location
-                                    const srcLoc = path.join(config.input, linkPath).replace(readme, 'index.md') // Rename README.md
 
-                                    if (remote && !this.results[srcLoc] && (!fs.existsSync(srcLoc) || o.update)) {
+                                    if (
+                                        remote 
+                                        && !this.results[savePath]
+                                        && (!fs.existsSync(savePath) || o.update)
+                                    ) {
 
-                                        this.check(srcLoc)
-                                        const file = fs.createWriteStream(srcLoc);
+                                            this.check(savePath)
+                                            const file = fs.createWriteStream(savePath);
 
-                                        requests.push(new Promise((resolve, reject) => {
-                                            https.get(rawLink, response => {
+                                            requests.push(new Promise((resolve, reject) => {
+                                                https.get(rawLink, response => {
 
-                                                if (response.statusCode != 200) {
-                                                    console.error(`Could not get ${rawLink}`)
-                                                    reject()
-                                                } else {
+                                                    if (response.statusCode != 200) {
+                                                        console.error(`Could not get ${rawLink}`)
+                                                        reject()
+                                                    } else {
 
-                                                    var stream = response.pipe(file);
-                                                    stream.on("finish", async () => {
-                                                        const text = fs.readFileSync(srcLoc).toString()
-                                                        this.results[srcLoc] = text
-                                                        internalResults[srcLoc] = {
-                                                            relativeTo:rawLink,
-                                                            text
-                                                        }
+                                                        var stream = response.pipe(file);
+                                                        stream.on("finish", async () => {
+                                                            const text = fs.readFileSync(savePath).toString()
+                                                            this.results[savePath] = text
+                                                            internalResults[savePath] = {
+                                                                relativeTo:rawLink,
+                                                                text
+                                                            }
 
-                                                        resolve(true)
-                                                    });
-                                                }
-                                            }).on('error',console.error);
-                                        }))
-                                    }
+                                                            resolve(true)
+                                                        });
+                                                    }
+                                                }).on('error',console.error);
+                                            }))
+                                        }
 
-                                    // Replace Link
+                                    // Update Links
                                     const newLine = line.replace(link, `${linkPath}`)
-                                    // console.log('New Line', newLine, linkPath)
+
+                                    // Assign Mappings for Later HTML Generation
                                     this.mappings[filePath] = text = text.replaceAll(line, newLine) // replace old line
+                                   
+                                   // Updating Original Text (only downloaded assets)
                                     if (relativeTo) {
                                         this.check(filePath) 
                                         fs.writeFileSync(filePath, this.mappings[filePath]) // WRITE FILES DIRECTLY WITH NEW LINKS

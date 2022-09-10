@@ -54,11 +54,11 @@ The old documentation site created in Docusaurus
 
 [brainsatplay]: https://github.com/brainsatplay/brainsatplay/blob/main/src/core/README.md
 [wasl]: https://github.com/brainsatplay/wasl/blob/main/README.md
-[graphscript]: https://github.com/brainsatplay/graphscript/blob/main/README.md
+[graphscript]: https://github.com/brainsatplay/graphscript/blob/master/README.md
 [studio]: https://github.com/brainsatplay/studio/blob/main/README.md
 [visualscript]: https://github.com/brainsatplay/visualscript/blob/main/README.md
 [datastreams-api]: https://github.com/brainsatplay/datastreams-api/blob/main/README.md
-[tinybuild]: https://github.com/brainsatplay/tinybuild/blob/main/README.md
+[tinybuild]: https://github.com/brainsatplay/tinybuild/blob/master/README.md
 [components]: https://github.com/brainsatplay/components/blob/main/README.md
 [accessify]: https://github.com/brainsatplay/accessify/blob/main/README.md
 [docs]: https://github.com/brainsatplay/docs/blob/main/README.md
