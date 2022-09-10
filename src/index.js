@@ -100,14 +100,15 @@ class Docs {
                                 let split = after.split(pathSep)
                                 const base = split[0]
 
-                                let newPath;
+                                let linkPath;
                                 if (relativeTo) {
                                     let rel = filePath.split(config.input)[1]
                                     if (rel[0] === pathSep) rel = rel.slice(1)
 
                                     if (rel) {
-                                        if (!o.map[base]) console.error(`No mapping found`, relativeTo, config.input, link, filePath)
-                                        else {
+                                        if (!o.map[base]) {
+                                            // console.error(`No mapping found`, relativeTo, config.input, link, filePath)
+                                        } else {
                                             const transferredPath = o.map[base].split(pathSep)
                                             const thisPath = path.dirname(rel).split(pathSep)
 
@@ -119,14 +120,13 @@ class Docs {
                                                 } else return false
                                             })
 
-                                            // if (relative.length <= thisPath.length){
-                                                newPath = path.join(...relative, ...filtered)
-                                                if (!newPath) newPath = './' // this position
-                                                newPath = path.join(newPath, name)
-                                            // }
+                                                linkPath = path.join(...relative, ...filtered)
+                                                if (!linkPath) linkPath = './' // this position
+                                                linkPath = path.join(linkPath, name)
+                                                // console.log('SETTING NEW PATH', linkPath, transferredPath)
                                         }
                                     }
-                                    else console.log('not rel', relativeTo, config.input, link, filePath)
+                                    // else console.log('not rel', relativeTo, config.input, link, filePath)
                                 }
 
                                 // TODO: Maintain relative links. Flip to URLs if outside of downloaded sandbox.
@@ -145,7 +145,7 @@ class Docs {
                                     base,
                                     split,
                                     after,
-                                    newPath
+                                    linkPath
                                 }
                             }
                         })
@@ -160,15 +160,15 @@ class Docs {
                                 after,
                             } = links[line]
 
-                            let newPath = links[line].newPath
+                            let linkPath = links[line].linkPath
 
-                            console.log('Line', line)
+                            // console.log('Line', line)
 
                                 let rawLink = link
 
                                 let basePath, remote = links[line].remote;
 
-                                if (!newPath){
+                                if (!linkPath){
 
                                     // transform to raw link (github)
                                     if (link.includes('github.com') && split[1] !== 'raw') {
@@ -179,37 +179,46 @@ class Docs {
                                     // Taransform to New Directory
                                     if (relativeTo && !remote) {
 
+                                        const relToNoFile = path.dirname(relativeTo)
                                         // Update Raw Link
                                         basePath = path.join(path.dirname(filePath), rawLink) // no url
 
+                                        console.log('CHECKING', basePath, filePath, rawLink, relToNoFile)
                                         try {
                                             // let relURL = new URL(relativeTo)
                                             // var relDir = relURL.href.substring(0, relURL.href.lastIndexOf(pathSep))
-                                            rawLink = new URL(rawLink, relativeTo).href
+                                            rawLink = new URL(rawLink, relToNoFile).href
+                                            console.log('YES URL', rawLink, basePath)
+
                                         } catch (e) {
-                                            rawLink = path.join(path.dirname(relativeTo), rawLink)
+                                            rawLink = path.join(relToNoFile, rawLink)
+                                            console.log('NOT URL', relativeTo)
+
                                         }
 
                                         if (isString) basePath = path.join(o.map, basePath) // global
                                         else if (o.map && o.map[base]) basePath = path.join(o.map[base], basePath) // unique
-                                        newPath = basePath.replace(config.input, '')
+                                        linkPath = basePath.replace(config.input, '')
+                                        console.log('linkPath', linkPath)
 
                                         remote = isRemote(rawLink) // reset remote
 
                                     }
                                     else {
-                                        if (isString) newPath = o.map
-                                        else if (o.map) newPath = o.map[base]
+                                        if (isString) linkPath = o.map
+                                        else if (o.map) linkPath = o.map[base]
                                     }
+
+                                    if (path.basename(linkPath) !== name) linkPath = path.join(linkPath, name)
 
                                 }
 
-                                if (newPath) {
+                                if (linkPath) {
+
+                                    if (linkPath[0] === pathSep) linkPath = linkPath.slice(1)
 
                                     // Download File to Location
-                                    const defaultPath = path.join(newPath, name)
-                                    const linkPath = name === readme ? newPath : defaultPath
-                                    const srcLoc = path.join(config.input, defaultPath).replace(readme, 'index.md') // Rename README.md
+                                    const srcLoc = path.join(config.input, linkPath).replace(readme, 'index.md') // Rename README.md
 
                                     if (remote && !this.results[srcLoc] && (!fs.existsSync(srcLoc) || o.update)) {
 
@@ -218,24 +227,31 @@ class Docs {
 
                                         requests.push(new Promise((resolve, reject) => {
                                             https.get(rawLink, response => {
-                                                var stream = response.pipe(file);
-                                                stream.on("finish", async () => {
-                                                    const text = fs.readFileSync(srcLoc).toString()
-                                                    this.results[srcLoc] = text
-                                                    internalResults[srcLoc] = {
-                                                        relativeTo:rawLink,
-                                                        text
-                                                    }
 
-                                                    resolve(true)
-                                                });
-                                            });
+                                                if (response.statusCode != 200) {
+                                                    console.error(`Could not get ${rawLink}`)
+                                                    reject()
+                                                } else {
+
+                                                    var stream = response.pipe(file);
+                                                    stream.on("finish", async () => {
+                                                        const text = fs.readFileSync(srcLoc).toString()
+                                                        this.results[srcLoc] = text
+                                                        internalResults[srcLoc] = {
+                                                            relativeTo:rawLink,
+                                                            text
+                                                        }
+
+                                                        resolve(true)
+                                                    });
+                                                }
+                                            }).on('error',console.error);
                                         }))
                                     }
 
                                     // Replace Link
                                     const newLine = line.replace(link, `${linkPath}`)
-                                    console.log('New Line', newLine, linkPath)
+                                    // console.log('New Line', newLine, linkPath)
                                     this.mappings[filePath] = text = text.replaceAll(line, newLine) // replace old line
                                     if (relativeTo) {
                                         this.check(filePath) 
