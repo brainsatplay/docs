@@ -1,0 +1,22 @@
+<h2 id="hardware">Hardware</h2>
+<p><a href="https://www.ebay.com/sch/i.html?_from=R40&_trksid=p2380057.m570.l1313&_nkw=max30102&_sacat=0">MAX30102 Breakout</a></p>
+<ul>
+<li><a href="https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library">Github</a></li>
+</ul>
+<p><a href="https://crowdsupply.com/alaskit/hegduino-v2">MAX86141 Breakout</a></p>
+<ul>
+<li><a href="https://github.com/moothyknight/MAX86141_Arduino">Github</a></li>
+</ul>
+<p><a href="https://www.emotibit.com/">Emotibit</a></p>
+<ul>
+<li><a href="https://github.com/EmotiBit">Github</a></li>
+</ul>
+<p><a href="https://www.adafruit.com/product/4582">Adafruit PPG</a></p>
+<ul>
+<li><a href="https://github.com/adafruit/Adafruit_CircuitPython_BLE_BerryMed_Pulse_Oximeter/blob/main/examples/ble_berrymed_pulse_oximeter_simpletest.py">Github</a></li>
+</ul>
+<p><a href="https://www.amperordirect.com/pc/berrymed-finger-oximeter-BM1000-GBT.html">BM1000</a></p>
+<ul>
+<li><a href="https://github.com/adafruit/Adafruit_CircuitPython_BLE_BerryMed_Pulse_Oximeter">Github</a></li>
+</ul>
+<h2 id="software">Software</h2>

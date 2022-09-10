@@ -26,7 +26,9 @@ Uses https://showdownjs.com/ to generate HTML from .md files.
 ##### Roadmap
 - Check out [ESDoc](https://esdoc.org/)
 - Aggregate documentation from across all of our repositories into one distribution. 
-    - Implement link crawling, so you download remote links based on a specific pattern (e.g. look for "github.com/brainsatplay")
+    - [x] Implement link crawling, so you download remote links based on a specific pattern (e.g. look for "github.com/brainsatplay")
+    - [ ] Make relative links to link between transferred content!
+    - [ ] Write files directly with new links...
 -  Editor with active plug-in + generated explanation from WASL file (see [htil](https://github.com/brainsatplay/htil)).
 
 #### [old](./old)

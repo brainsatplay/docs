@@ -1,29 +1,27 @@
 {
-    "inDir": "old/docs", 
+    "inDir": "old/docs",
     "outDir": "docs",
-    "publications": {
-        "remote": [
-            {
-                "pattern": "github.com/brainsatplay",
-                "extension": ".md",
-                "update": true,
-                "map": {
-                    "accessify": "libraries/wasl",
-                    "brainsatplay": "libraries/freerange",
-                    "components": "libraries/components",
-                    "datastreams-api": "libraries/datastreams-api",
-                    "docs": "libraries/docs",
-                    "es-plugins": "libraries/es-plugins",
-                    "freerange": "libraries/freerange",
-                    "graphscript": "libraries/graphscript",
-                    "HEG_ESP32_Delobotomizer": "libraries/hedguino",
-                    "nRF52-Biosensing-Boards": "libraries/nRF52",
-                    "studio": "libraries/studio",
-                    "tinybuild": "libraries/tinybuild",
-                    "wasl": "libraries/wasl",
-                    "visualscript": "libraries/visualscript"
-                }
+    "publications": [
+        {
+            "pattern": "github.com/brainsatplay",
+            "extension": ".md",
+            "update": true,
+            "map": {
+                "accessify": "libraries/wasl",
+                "brainsatplay": "libraries/freerange",
+                "components": "libraries/components",
+                "datastreams-api": "libraries/datastreams-api",
+                "docs": "libraries/docs",
+                "es-plugins": "libraries/es-plugins",
+                "freerange": "libraries/freerange",
+                "graphscript": "libraries/graphscript",
+                "HEG_ESP32_Delobotomizer": "libraries/hedguino",
+                "nRF52-Biosensing-Boards": "libraries/nRF52",
+                "studio": "libraries/studio",
+                "tinybuild": "libraries/tinybuild",
+                "wasl": "libraries/wasl",
+                "visualscript": "libraries/visualscript"
             }
-        ]
-    }
+        }
+    ]
 }
