@@ -1,6 +1,7 @@
 {
-    "inDir": "old/docs",
-    "outDir": "docs",
+    "mdIn": "source",
+    "htmlOut": "docs",
+    "mdOut": "compiled",
     "publications": [
         {
             "pattern": "github.com/brainsatplay",

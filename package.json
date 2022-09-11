@@ -9,7 +9,7 @@
   "scripts": {
     "start": "cd old && yarn && yarn run start",
     "build": "cd old && yarn && yarn build",
-    "generate": "node index.js"
+    "generate": "node tests/index.js"
   },
   "repository": {
     "type": "git",
