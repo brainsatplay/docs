@@ -1,8 +1,4 @@
----
-sidebar_position: 3
-title: Your First App
----
-
+# Your First App
 This tutorial will use the [Phaser](https://phaser.io/) library (v3) to introduce the core concepts of the Brains@Play Framework through a complete example.
 
 > **Note:** The code for this tutorial can be found at https://github.com/garrettmflynn/phaser.

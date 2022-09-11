@@ -1,4 +1,32 @@
-<h2 id="httpbackend">HTTPbackend</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+  padding: 0px 50px;
+}
+</style>
+    <link rel=stylesheet href="../../../../static/custom.css"/>
+    <link rel="icon" href="../../../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <nav></nav>
+    <h2 id="httpbackend">HTTPbackend</h2>
 <p>The HTTPbackend service puts the power of graphs and services into a full featured HTTP or HTTPS server. This lets you serve static assets or dynamic content straight from routes all through standard or customizable http fetch calls. This means you can implement your entire own http protocols and state machines willy nilly and feel like a backend master, it's a lot of fun! </p>
 <p>See <code>examples/httpserver</code> to get started with a simple implementation.</p>
 <p>The extended <code>RouteProp</code> when declaring routes/nodes in Service.ts was made for this:</p>
@@ -95,3 +123,6 @@ http.setupServer(
 <p>The page specification lets you quickly set up static and dynamic page behaviors, if you pass an object then the routes are interpreted as node definitions which you can make as complicated as you want to run graph trees.</p>
 <p>If a node's .get/.template returns a file path it will see if it can load the file on the server, just a nice way for dynamic file routing. </p>
 <p>From here we can apply websocket, sse, and other services to build efficient web servers. See <code>examples/httpserver</code> for a quick implementation</p>
+    <footer></footer>
+</body>
+</html>

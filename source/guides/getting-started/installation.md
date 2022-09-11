@@ -1,8 +1,3 @@
----
-sidebar_position: 1
-title: Installation
----
-
 # Installation
 To get started, import `brainsatplay` into your project:
 

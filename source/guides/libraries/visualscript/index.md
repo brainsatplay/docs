@@ -1,8 +1,3 @@
----
-sidebar_position: 3
-title: visualscript
----
-
 # visualscript
 `visualscript` is a great way to **enable interactivity** in your `brainsatplay` application.
 

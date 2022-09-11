@@ -1,8 +1,4 @@
----
-sidebar_position: 1
-title: Introduction
----
-
+# Introduction
 The Brains@Play Framework (Brains@Play) is a rapid application design system for composing interactive, high-performance web applications using **functional building blocks**. 
 
 > Visit our [documentation aggregation page](https://github.com/brainsatplay/docs/blob/nightly/README.md) that has been compiled here by [@brainsatplay/docs].

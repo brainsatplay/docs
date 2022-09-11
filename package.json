@@ -7,9 +7,7 @@
     "node": ">=16.15"
   },
   "scripts": {
-    "start": "cd old && yarn && yarn run start",
-    "build": "cd old && yarn && yarn build",
-    "generate": "node tests/index.js"
+    "start": "node tests/index.js"
   },
   "repository": {
     "type": "git",

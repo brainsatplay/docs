@@ -1,8 +1,3 @@
----
-sidebar_position: 5
-title: datastreams-api
----
-
 # datastreams-api
 `datastreams-api` is a great way to **standarize real-time data inputs** in your `brainsatplay` application.
 

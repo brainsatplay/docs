@@ -1,12 +1,4 @@
----
-sidebar_position: 1
-title: Graphs
-
----
-
 # Getting Started with Graphs
-
-
 To create a graph, simply use the `Graph` class.
 
 ``` javascript 

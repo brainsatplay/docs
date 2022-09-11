@@ -1,4 +1,32 @@
-<h2 id="domservice">DOMService</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+  padding: 0px 50px;
+}
+</style>
+    <link rel=stylesheet href="../../../../static/custom.css"/>
+    <link rel="icon" href="../../../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <nav></nav>
+    <h2 id="domservice">DOMService</h2>
 <p>DOMService is a dedicated browser html rendering solution which incorporates basic html elements or fully functioning customizable web components. Elements and web components can be loaded right in route trees on setup with page positions based on the tree hierarchies. </p>
 <p>You can also build web component classes directly when importing DOMElement, which includes a lot of quality of life features that are not in base HTMLElements like states, onrender, ondelete etc callbacks, rendering templates and props you can update on-the-fly, etc.</p>
 <pre><code class="ts language-ts">import {DOMService} from 'graphscript'
@@ -92,3 +120,6 @@ dom.load({
 }); //will by default load the top elements to document.body, or specify dom.parentNode, or parentNode per element
 </code></pre>
 <p>You can do quite a lot with this service, like creating pluggable web component/web app trees so it's all conditionally loaded. Deleting the associated GraphNodes will delete the elements as well so it is fully tied to the graph trees.</p>
+    <footer></footer>
+</body>
+</html>

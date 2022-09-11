@@ -1,95 +1,111 @@
-<h1 id="brainsatplay">brainsatplay</h1>
-<p><a href="https://npmjs.com/package/brainsatplay"><img src="https://badgen.net/npm/v/brainsatplay" alt="Npm package version" /></a>
-<a href="https://npmjs.ccom/package/brainsatplay"><img src="https://badgen.net/npm/dm/brainsatplay" alt="Npm package monthly downloads" /></a>
-<a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/license-AGPL_v3-blue.svg" alt="License: AGPL v3" /></a>
-<a href="https://discord.gg/CDxskSh9ZB"><img src="https://img.shields.io/badge/community-discord-7289da.svg?sanitize=true" alt="Discord" /></a></p>
-<p><strong>brainsatplay</strong> extends the <a href="https://github.com/brainsatplay/wasl">Web Application Specification Language</a> (WASL) to allow for editing high-performance web applications at runtime—as well as saving changes to the local filesystem using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API">File System Access API</a>.</p>
-<blockquote>
-  <p><strong>Note:</strong> <strong>brainsatplay</strong> is a core library of the <a href="../../README.md">Brains@Play Framework</a></p>
-</blockquote>
-<h2 id="gettingstarted">Getting Started</h2>
-<blockquote>
-  <p>See complete documentation for the Brains@Play Framework at <a href="https://docs.brainsatplay.com">docs.brainsatplay.com</a>.</p>
-</blockquote>
-<pre><code class="javascript language-javascript">import * as brainsatplay from 'https://cdn.jsdelivr.com/npm/brainsatplay/dist/index.esm.js'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <style>
+* {
+  box-sizing: border-box;
+}
 
- let app = new brainsatplay.App(
-         'https://raw.githubusercontent.com/brainsatplay/wasl/main/tests/0/0.0/0.0.0/external/index.wasl.json', // undefine to select from filesystem | object to load directly | string for url imports
-        {
-            edit: true
-        }
-    )
-        const wasl = await app.start(undefined, optionsToPass)
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+}
 
-        if (wasl){
-            console.log('App', app)
-            console.log('Errors', wasl.errors)
-            console.log('Warnings', wasl.warnings)
-        }
+body {
+  padding: 0px 50px;
+}
+</style>
+    <link rel=stylesheet href="../../static/custom.css"/>
+    <link rel="icon" href="../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <nav></nav>
+    <h1 id="freerange">freerange</h1>
+<p>File import and export utilities with <strong>free</strong> range-request support for remote files.</p>
+<h2 id="installation">Installation</h2>
+<h3 id="browser">Browser</h3>
+<pre><code class="javascript language-javascript">&lt;script src="https://cdn.jsdelivr.net/npm/freerange"&gt;&lt;/script&gt;
 </code></pre>
-<h2 id="acknowledgments">Acknowledgments</h2>
-<p>This library is maintained by <a href="https://github.com/garrettmflynn">Garrett Flynn</a> and <a href="https://github.com/joshbrew">Joshua Brewster</a>, who use contract work and community contributions through <a href="https://opencollective.com/brainsatplay">Open Collective</a> to support themselves.</p>
-<h3 id="backers">Backers</h3>
-<p><a href="https://opencollective.com/brainsatplay#backer">Support us with a monthly donation</a> and help us continue our activities!</p>
-<p><a href="https://opencollective.com/brainsatplay/backer/0/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/0/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/1/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/1/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/2/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/2/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/3/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/3/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/4/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/4/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/5/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/5/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/6/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/6/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/7/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/7/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/8/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/8/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/9/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/9/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/10/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/10/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/11/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/11/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/12/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/12/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/13/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/13/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/14/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/14/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/15/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/15/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/16/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/16/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/17/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/17/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/18/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/18/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/19/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/19/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/20/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/20/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/21/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/21/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/22/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/22/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/23/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/23/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/24/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/24/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/25/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/25/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/26/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/26/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/27/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/27/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/28/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/28/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/backer/29/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/29/avatar.svg"></a></p>
-<h3 id="sponsors">Sponsors</h3>
-<p><a href="https://opencollective.com/brainsatplay#sponsor">Become a sponsor</a> and get your logo here with a link to your site!</p>
-<p><a href="https://opencollective.com/brainsatplay/sponsor/0/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/1/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/2/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/3/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/4/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/5/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/6/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/7/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/8/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/9/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/9/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/10/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/10/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/11/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/11/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/12/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/12/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/13/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/13/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/14/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/14/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/15/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/15/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/16/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/16/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/17/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/17/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/18/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/18/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/19/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/19/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/20/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/20/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/21/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/21/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/22/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/22/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/23/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/23/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/24/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/24/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/25/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/25/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/26/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/26/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/27/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/27/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/28/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/28/avatar.svg"></a>
-<a href="https://opencollective.com/brainsatplay/sponsor/29/website" target="_blank"><img src="https://opencollective.com/brainsatplay/sponsor/29/avatar.svg"></a></p>
+<h3 id="esmodules">ES Modules</h3>
+<pre><code class="javascript language-javascript">import * as freerange from `https://cdn.jsdelivr.net/npm/freerange/index.esm.js`
+</code></pre>
+<h2 id="gettingstarted">Getting Started</h2>
+<h3 id="codecs">Codecs</h3>
+<p>The <code>Codecs</code> class allow for easily encoding and decoding files.</p>
+<pre><code class="javascript language-javascript">const codecs = new freerange.Codecs()
+
+const buffer = await codecs.encode('Hi there')
+const text = await codecs.decode(buffer)
+console.log('text', text)
+</code></pre>
+<p>For more than text encoding / decoding, you'll need to use our a codec from our library—or roll your own!</p>
+<pre><code class="javascript language-javascript">const jsonPlugin = freerange.codecs.json
+codecs.add(jsonPlugin)
+const buffer = await codecs.encode({key: 'value'}, jsonPlugin.type)
+const json = await codecs.decode(buffer, jsonPlugin.type)
+console.log('JSON', json)
+</code></pre>
+<h3 id="system">System</h3>
+<p>The freerange <code>System</code> class allows you to rapidly access local and remote filesysems. It contains a <code>Codecs</code> instance to allow for generic read / write capabilities.</p>
+<pre><code class="javascript language-javascript">document.querySelector('button').onclick = async () =&gt; {
+
+    // ----------------- Declare a System -----------------
+    // 1. Choose a directory in your local filesystem
+    const system = new freerange.System() 
+
+    // // 2. ES Module in a remote directory
+    // const system = new freerange.System('https://raw.githubusercontent.com/brainsatplay/brainsatplay-starter-kit/main/app/index.js') 
+
+    // // 3. File in the root of a remote directory
+    // const system = new freerange.System('https://raw.githubusercontent.com/brainsatplay/freerange/main/README.md')
+
+    // // 4. Arbitrary remote directory
+    // const system = new freerange.System('foo') 
+
+    await system.init()
+
+    // ----------------- Get / Create Files -----------------
+    // Text File
+    const text = await system.open('test.txt', true) // get (or create) the file
+    const textContents = await text.body // get file contents
+    console.log('Existing Text', textContents)
+    text.body = 'Hello world' // set file contents
+
+    // JSON File
+    const json = await system.open('test.json', true)
+    const jsonContents = await json.body
+    console.log('Existing JSON', jsonContents)
+    json.body = {key: 'value'}
+
+    // CSV File
+    const csv = await system.open('test.csv', true)
+    const csvContents = await csv.body
+    console.log('Existing CSV', csvContents)
+    csvContents.push({row: csvContents.length}) // We can change the csvContent variable directly because it is an object reference
+
+    await system.save() // save file contents for all files (if changed)
+}
+</code></pre>
+<h2 id="roadmap">Roadmap</h2>
+<ol>
+<li>Currently, multi-part requests are broken up client-side. Fix this!<ul>
+<li>For some reason, multi-part requests that are too long end up bouncing from the server</li>
+<li>This current approach is very expensive. Concatenate on the server!</li></ul></li>
+<li>Currently only supports range requests for .edf files. Implement more!</li>
+<li>Currently only supports iterative read. Allow writing to specific bytes!</li>
+<li>Implement NWB as an extension…</li>
+</ol>
+<h2 id="knownissue">Known Issue</h2>
+<ol>
+<li>Postprocessing a large number of bytes (e.g. for EDF files) results in long wait times.</li>
+<li>ES6 imports using a remote URL will not work for local files</li>
+</ol>
+    <footer></footer>
+</body>
+</html>

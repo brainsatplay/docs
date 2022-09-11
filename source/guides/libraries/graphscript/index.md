@@ -1,8 +1,3 @@
----
-sidebar_position: 2
-title: graphscript
----
-
 # graphscript
 `graphscript` is the foundational library behind the logic of `brainsatplay`.
 

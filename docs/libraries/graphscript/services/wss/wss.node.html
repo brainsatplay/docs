@@ -1,4 +1,32 @@
-<h2 id="wssbackend">WSSbackend</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+  padding: 0px 50px;
+}
+</style>
+    <link rel=stylesheet href="../../../../static/custom.css"/>
+    <link rel="icon" href="../../../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <nav></nav>
+    <h2 id="wssbackend">WSSbackend</h2>
 <p>This WSSbackend provides websocket server and websocket tools with one-liner configuration. Chain this with the HTTPbackend or use any generic http/https server. This uses the <a href="https://github.com/websockets/ws"><code>ws</code></a> library which includes the websocket server spec that is not default in Node.js.</p>
 <p>Socket server clients can subscribe to node states on the socket server as well so it's easy to set up listener logic in your flow graph.</p>
 <p>The default onmessage function handles service calls with jsonified commands. You can overwrite this or add custom listeners in parallel, everything else follows standard WebSocket API usage.</p>
@@ -92,3 +120,6 @@ let socketinfo = wss.openWS({
 socketinfo.subscribe('ping', console.log); //ping is available if loadDefaultRoutes is set to true when initializing a service
 socketinfo.post('ping');
 </code></pre>
+    <footer></footer>
+</body>
+</html>

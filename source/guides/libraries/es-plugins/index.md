@@ -1,8 +1,3 @@
----
-sidebar_position: 1
-title: es-plugins
----
-
 # es-plugins
 `es-plugins` is a standard for transforming ES Modules into Web Plugins to simplify the process of authoring composable web applications.
 

@@ -1,8 +1,4 @@
----
-sidebar_position: 1
-title: Libraries
----
-
+# Libraries
 The Brains@Play Framework is dependent on several interrelated libraries.
 
 <!-- Note: Make sure to transfer changes to ../../index.md -->

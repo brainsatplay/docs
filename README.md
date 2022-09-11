@@ -6,10 +6,10 @@
 **docs** aggregates documentation for the [Brains@Play Framework](https://github.com/brainsatplay/brainsatplay). This is served at [docs.brainsatplay.com](https://docs.brainsatplay.com)
 
 ### Contents
-#### [Guides](./old/docs/index.md)
+#### [Guides](./docs/index.md)
 A comprehensive introduction to the Brains@Play ecosystem.
 
-#### [Resources](./old/docs/resources/index.md)
+#### [Resources](./docs/resources/index.md)
 This is a collection of open/free source biomedical hardware and software development and learning infrastructure which is pushing us towards a future of low-cost, community-driven healthcare technology.
 
 ### Repo Contents

@@ -1,4 +1,32 @@
-<h2 id="ssefrontend">SSEfrontend</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+  padding: 0px 50px;
+}
+</style>
+    <link rel=stylesheet href="../../../../static/custom.css"/>
+    <link rel="icon" href="../../../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <nav></nav>
+    <h2 id="ssefrontend">SSEfrontend</h2>
 <p>Using the built-in EventSource API in-browser, we can establish arbitrary event responses from the server very quickly. We combined this with our HTTPbackend to enable two-way connections via REST calls and SSE subscriptions. Serverside can talk to specific clients directly with ID'd connections and association via the <code>Router</code></p>
 <p>For non-default events (message, open, close, error), set the callback to <code>true</code> to just use the default <code>this.receive</code> and <code>setState</code> (if keepState is true) built in to the service.</p>
 <pre><code class="ts language-ts">import {SSEfrontend} from 'graphscript'
@@ -48,3 +76,6 @@ const sseinfo = sse.openSSE({
 </code></pre>
 <p>That's basically it!</p>
 <p>Terminate event sources with .terminate like in every other service.</p>
+    <footer></footer>
+</body>
+</html>

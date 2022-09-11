@@ -1,8 +1,3 @@
----
-sidebar_position: 4
-title: studio
----
-
 # studio
 `studio` is a low-code editor for `brainsatplay` applications.
 

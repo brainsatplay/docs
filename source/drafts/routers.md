@@ -1,8 +1,3 @@
----
-sidebar_position: 2
-title: Routers
----
-
 # Getting Started with Routers
 
 `brainsatplay-frontend` and `brainsatplay-backend` provide default communication services including HTTPService and WebsocketService.

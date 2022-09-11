@@ -1,4 +1,32 @@
-<h2 id="workers">Workers</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+  padding: 0px 50px;
+}
+</style>
+    <link rel=stylesheet href="../../../../static/custom.css"/>
+    <link rel="icon" href="../../../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <nav></nav>
+    <h2 id="workers">Workers</h2>
 <p>To use workers within our graph hierarchy, we need to establish a worker service in the worker. This will set up the onmessage function correctly to interpret service messages.</p>
 <p>e.g. worker.ts</p>
 <pre><code class="ts language-ts">//functionality
@@ -27,3 +55,6 @@ export default self as any;
 <p>This worker implements several useful services including a dedicated gpu.js instance, allowing for multithreaded gpu kernel calls for zero downtime on the main thread.</p>
 <p>Now you can post commands and subscribe to results easily, or chain threads via message ports easily (see worker.service.md).</p>
 <p>Note the unsafeRoutes allow writing functions, properties, and classes to the thread from another thread. Use with caution!</p>
+    <footer></footer>
+</body>
+</html>

@@ -1,4 +1,32 @@
-<h2 id="ssebackend">SSEbackend</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+  padding: 0px 50px;
+}
+</style>
+    <link rel=stylesheet href="../../../../static/custom.css"/>
+    <link rel="icon" href="../../../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <nav></nav>
+    <h2 id="ssebackend">SSEbackend</h2>
 <p>The SSEbackend utilizes the lean <code>better-sse</code> library to do server-sent events. These are a special type of HTTP protocol that allow server events to be broadcast one-way, to all or to specific users. This is a nice way to avoid using sockets or bulky REST probes and fetch proxies. </p>
 <p>We built generic controls for each server and each client session instance for sending/receiving/subscribing/etc. which attempts to use the HTTP requests to handle two way communications.</p>
 <pre><code class="ts language-ts">import {SSEbackend} from 'graphscript-node'
@@ -70,3 +98,6 @@ const sseinfo = sse.setupSSE(
 </code></pre>
 <p>The service by default handles cleanup when connections close automatically. Sessions are specific to each connection so you can directly push messages to clients instead of broadcasting to all, shown above. There are common communication callbacks for all of our services that support such connectivity for predictable behaviors.</p>
 <p>Best practice is SSEs for outgoing messages from server, and sockets for incoming messages. For peer 2 peer, use sockets for the handshake and then peers can have direct controls via our message passing system. Use all of the protocols in combination for high performance, easily composable servers.</p>
+    <footer></footer>
+</body>
+</html>
