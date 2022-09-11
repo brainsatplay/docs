@@ -1,0 +1,98 @@
+<h2 id="webrtcfrontend">WebRTCfrontend</h2>
+<p>WebRTC allows peer-2-peer connections directly through the browser. Chain this with a socket server and the user router to pass session info remotely so users can connect from anywhere, with the only server overhead being the passing of needed information between clients. </p>
+<p>See <code>examples/webrtc</code> for a basic implementation you can modify easily. There are a lot of options you can customize to constrain RTC sessions. A default data channel is used to pass service messages bidirectionally, or if you don't specify a callback for custom data channels (or the first channel available).</p>
+<pre><code class="ts language-ts">import {WebRTCfrontend} from 'graphscript'
+
+export type WebRTCProps = {
+    _id?:string,
+    channels?:{
+        [key:string]:(true|RTCDataChannelInit|RTCDataChannel)
+    },
+    config?:RTCConfiguration,
+    hostdescription?:RTCSessionDescriptionInit|string,
+    peerdescription?:RTCSessionDescriptionInit|string,
+    offer?:RTCOfferOptions,
+    hostcandidates?:{[key:string]:RTCIceCandidate},
+    peercandidates?:{[key:string]:RTCIceCandidate},
+    answer?:RTCAnswerOptions,
+    ontrack?:(ev:RTCTrackEvent)=&gt;void,
+    onicecandidate?:(ev:RTCPeerConnectionIceEvent)=&gt;void,
+    onicecandidateerror?:(ev:Event)=&gt;void,
+    onnegotiationneeded?:(ev:Event)=&gt;void,
+    ondatachannel?:(ev:RTCDataChannelEvent)=&gt;void,
+    ondata?:(ev:MessageEvent&lt;any&gt;, channel:RTCDataChannel, room)=&gt;void,
+    onconnectionstatechange?:(ev:Event)=&gt;void,
+    oniceconnectionstatechange?:(ev:Event)=&gt;void,
+    onclose?:(rtc:WebRTCInfo)=&gt;void //custom callback
+}
+
+export type WebRTCInfo = {
+    _id:string,
+    rtc:RTCPeerConnection,
+    send:(message:any)=&gt;void, //these callbacks work on the first available data channel to call to other webrtc services
+    request:(message:any, method?:string)=&gt;Promise&lt;any&gt;,
+    post:(route:any, args?:any)=&gt;void,
+    run:(route:any, args?:any, method?:string)=&gt;Promise&lt;any&gt;,
+    subscribe:(route:any, callback?:((res:any)=&gt;void)|string)=&gt;Promise&lt;number&gt;,
+    unsubscribe:(route:any, sub:number)=&gt;Promise&lt;boolean&gt;,
+    terminate:()=&gt;boolean,
+    graph:WebRTCfrontend
+} &amp; WebRTCProps
+
+let rtc = new WebRTCfrontend();
+
+rtc.openRTC().then((room:WebRTCInfo) =&gt; {
+    room.rtcTransmit.addEventListener('icecandidate',(ev)=&gt;{
+        if(room._id) {
+            if(ev.candidate) {
+                //send the candidate to the other client
+                socket.send(JSON.stringify({
+                    _id:room._id,
+                    hostdescription:room.hostdescription,
+                    hostcandidates:room.hostcandidates //update endpoint with all of the host candidates
+                })); //e.g. using a socket connection 
+                //in another client, join this session
+                //need to send this info to the server which should happen automatically via the userupdateloop
+            }
+        }
+    })
+
+
+    socket.addEventListener('message',(ev) =&gt; {
+        let peerinfo = JSON.parse(ev.data);
+
+        if(peerinfo.peerdescription) {
+            rtc.answerPeer(room.rtc,peerinfo);
+        }
+
+    });
+})
+</code></pre>
+<p>Then on the receiving end…</p>
+<pre><code class="ts language-ts">socket.addEventListener('message',(ev) =&gt; {
+    let hostinfo = JSON.parse(ev.data);
+
+    if(!rtc.rooms[hostinfo._id]) {
+
+        let room = rtc.openRTC(hostinfo as WebRTCProps).then((room:WebRTCInfo) =&gt; {
+
+            room.rtcReceive.addEventListener('icecandidate',(ev)=&gt;{
+                if(ev.candidate &amp;&amp; room._id) {
+                    socket.send(JSON.stringify({
+                        _id:room._id,
+                        peerdescription:room.peerdescription,
+                        peercandidates:room.peercandidates
+                    }))
+                }
+            })
+        })
+
+    } else {
+        for(const prop in hostinfo.hostcandidates) {
+            if(!rtc.rooms[hostinfo._id].hostcandidates[prop]) {
+                rtc.addIceCandidate(rtc.rooms[hostinfo._id].rtcReceive, hostinfo.hostcandidates[prop])
+            }
+        }
+    }
+})
+</code></pre>

@@ -1,0 +1,14 @@
+<h1 id="datacaptureandstreamsapi">Data Capture and Streams API</h1>
+<p>A unified data acquisition API for the browser</p>
+<blockquote>
+  <p><strong>TL;DR:</strong> The Data Capture and Streams API (<code>datastreams-api</code>) is a simple extension of the Media Capture and Streams API to handle arbitrary data streams acquired through the browser.</p>
+</blockquote>
+<h2 id="introduction">Introduction</h2>
+<p>The latest web browsers have a wide variety of APIs for acquiring real-time data, including <code>navigator.serial</code>, <code>navigator.bluetooth</code>, and <code>WebSocket</code>. This is a proposal for <code>navigator.devices</code>, a global <code>Object</code> that acts as a top-level namespace (similar to <a href="https://developer.mozilla.org/en-US/docs/Web/API/Media_Streams_API"><code>navigator.mediaDevices</code></a>) that brings a unified data acquisition API to the ECMAScript language.</p>
+<h3 id="implementation">Implementation</h3>
+<p>The <strong>Data Capture and Streams API</strong> (<code>datastreams-api</code>) allows developers to specify their own I/O requirements by allowing for custom decoders to be written for a particular application. Independent decoded inputs are organzized as <code>DataStreamTracks</code> for standardized consumption.</p>
+<p>When the user uses requests native to the Media Capture and Streams API, the <code>tracks</code> attribute will be an array of <code>DataStream</code> objects populated with <code>DataStreamTracks</code> that provide raw data from the selected media device (e.g. audio, video).</p>
+<h2 id="documentation">Documentation</h2>
+<p>Official documentations for the <code>datastreams-api</code> package can be found at <a href="https://streams.brainsatplay.com">https://streams.brainsatplay.com</a>.</p>
+<h2 id="devices">Devices</h2>
+<p>All devices compatible with the <code>datastreams-api</code> can be found at our <a href="https://github.com/brainsatplay/devices">devices</a> repository.</p>
