@@ -1,91 +1,70 @@
-<h1 id="accessify">accessify</h1>
-<p>Web accessibility for low-bandwidth inputs</p>
+<h1 id="webapplicationspecificationlanguageswasl10">Web Application Specification Languages (WASL) 1.0</h1>
+<p><a href="https://npmjs.com/package/wasl"><img src="https://badgen.net/npm/v/wasl" alt="Npm package version" /></a>
+<a href="https://npmjs.ccom/package/wasl"><img src="https://badgen.net/npm/dm/wasl" alt="Npm package monthly downloads" /></a>
+<a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/license-AGPL_v3-blue.svg" alt="License: AGPL v3" /></a>
+<a href="https://discord.gg/CDxskSh9ZB"><img src="https://img.shields.io/badge/community-discord-7289da.svg?sanitize=true" alt="Discord" /></a></p>
+<p><strong>WASL</strong> is a specification language for defining Web applications. It allows JavaScript developers to specify a JSON tree of source files and custom scripts. This then executes a program stored across the Web.</p>
 <blockquote>
-  <p><strong>Note:</strong> We have published a proof-of-concept website at https://brainsatplay.com/accessify (index.html in this repo) that ginteractively demonstrates the value proposition of this library. Check it out!</p>
+  <p><strong>Note:</strong> <strong>WASL</strong> is a core technology of the <a href="../freerange/">Brains@Play Framework</a></p>
 </blockquote>
-<h2 id="introduction">Introduction</h2>
-<h3 id="goal">Goal</h3>
-<p>Implement a fully on-browser web navigation system for low-bandwidth inputs (e.g. BCIs).</p>
+<h2 id="thedetails">The Details</h2>
+<p><strong>WASL</strong> files inherit heavily from the <code>package.json</code> file from Node.js, allowing for less duplication of work when publishing to NPM.</p>
+<p>The specification is written in <a href="https://json-schema.org/">JSON Schema</a> and validated using <a href="https://ajv.js.org/">Ajv</a>. Typescript types are generaged using <a href="https://www.npmjs.com/package/json-schema-to-typescript">json-schema-to-typescript</a>. </p>
+<p>Each version of <code>wasl</code> is archived in the <code>versions</code> folder of this repository.</p>
+<h2 id="designhighlights">Design Highlights</h2>
+<ul>
+<li>A new <code>graph</code> key/value pair to declare application logic and associations with other code files.</li>
+<li>The adoption of <a href="">ES Plugins</a> to instantiate Web Components through a configuration object</li>
+</ul>
+<h3 id="examplewaslfile">Example WASL File</h3>
+<pre><code class="json language-json">{
+    "graph": {
+        "nodes": {
+            "first": {
+                "src": "first.wasl.json",
+                "extensions": {
+                    "arbitrary": {
+                        "x": 1080,
+                        "y": 720
+                    }
+                }
+            } ,
+            "second": {
+                "href": "https://example.com/second"
+            } 
+        },
+        "edges": {
+            "first": {
+                "second" :{
+                    "protocol": "websockets"
+                }
+            } 
+        }
+    }
+}
+</code></pre>
+<h2 id="thelibraries">The Libraries</h2>
+<p>The libraries in this repo validate and load <strong>WASL</strong> files into JavaScript.</p>
+<h3 id="libraries">Libraries</h3>
+<ol>
+<li><code>wasl</code> - Load the <code>src</code> keys into a <strong>WASL</strong> file.</li>
+<li><code>wasl-validate</code> - Validation of a <strong>WASL</strong> file using JSON Schema (Ajv)</li>
+<li><code>wasl-run</code> - Minimal execution of a <strong>WASL</strong> graph loaded using <code>wasl</code></li>
+</ol>
 <h3 id="features">Features</h3>
 <ul>
-<li>[x] Enable virtual mouse interaction with CSS elements</li>
-<li>[ ] Control mouse via WebGazer.js</li>
-<li>[ ] Make buttons available for labeling and direct selection</li>
-<li>[ ] Flash buttons for SSVEP / P300 selection</li>
-<li>[ ] Accessify Chrome Extension</li>
+<li>Validation of original JSON files and loaded objects against the JSON Schema</li>
+<li>Automatic merging of ESM imports specified using the <code>src</code> key (anywhere in the WASL file!) to their containing objects.</li>
 </ul>
-<h3 id="questions">Questions</h3>
-<h4 id="whichdevicescanbeusedtodetectp300ssvepresponses">Which devices can be used to detect P300 / SSVEP responses?</h4>
-<ul>
-<li>[ ] Muse 2: <a href="https://neurotechx.github.io/eeg-notebooks/getting_started/available_notebooks.html">P300 likely</a></li>
-<li>[ ] OpenBCI Daisy-Cyton: Previous literature says yes to both</li>
-<li>[ ] FreeEEG32</li>
-<li>[ ] Neurosity Crown</li>
-</ul>
-<h4 id="doesdetectiondisruptstimuligeneration">Does detection disrupt stimuli generation?</h4>
-<ul>
-<li>Use <code>ssvep-stimuli</code> </li>
-</ul>
-<h4 id="doesdetectionworkonlowspechardware">Does detection work on low-spec hardware?</h4>
-<ul>
-<li>Validate detection on a Chromebook</li>
-</ul>
-<h2 id="repostructure">Repo Structure</h2>
-<ul>
-<li><p><code>/src</code>: Source code</p>
-<ul>
-<li><code>/libraries</code>: Libraries to be published separately</li>
-<li><code>/core</code>: Core internal functions</li>
-<li><code>/ui</code>: Standard Web Component library<ul>
-<li><code>/core</code>: <strong>Keyboard</strong> and <strong>Mouse</strong> components</li>
-<li><code>/mouse</code>: Internal mouse components</li>
-<li><code>/keyboard</code>: Internal keyboard components</li></ul></li></ul></li>
-<li><p><code>/docs</code>: Documentation and demo site</p></li>
-</ul>
-<h2 id="roughreference">Rough Reference</h2>
-<h2 id="classes">Classes</h2>
-<h3 id="accessifykeyboard">accessify.Keyboard()</h3>
-<p>Customizable keyboard with SSVEP / P300 controls</p>
-<h3 id="accessifymouse">accessify.Mouse()</h3>
-<p>Virtual mouse</p>
-<h2 id="namespaces">Namespaces</h2>
-<h3 id="accessifyselecttype">accessify.select(type)</h3>
-<ol>
-<li><strong>p300:</strong> Basic P300 Detection<ul>
-<li>potentials.p300(): Basic P300 Detection</li></ul></li>
-<li><strong>ssvep:</strong> Basic SSVEP Detection<ul>
-<li>hightime.fbcca(): Filter Bank Canonical Correlation Analysis (FBCCA) algorithm</li></ul></li>
-</ol>
-<h3 id="accessifymovetype">accessify.move(type)</h3>
-<ol>
-<li><strong>erd / ers:</strong> Basic Event-Related (De)Synchronization (i.e. motor imagery) Detection</li>
-</ol>
-<h2 id="roadmap">Roadmap</h2>
-<ol start="0">
-<li>Write an explanatory article that also can serve as a proof-of-concept (June 1st, 2022)</li>
-<li>Plug in Webgazer to detect where the user is looking on the screen.</li>
-<li>Implement Filter Bank Canonical Correlation Analysis (FBCCA) in <strong>hightime</strong></li>
-<li>Test FBCCA algorithm on a single flashing stimulus</li>
-<li>Implement P300 detection in <strong>potentials</strong> with all the signal processing in <strong>hightime</strong></li>
-<li>Test P300 detection on a single flashing stimulus</li>
-<li>Test both algorithms on various EEG devices</li>
-<li>Test both algorithms on a Chromebook</li>
-<li>Test both algorithms with multiple stimuli to discriminate from</li>
-<li>Design a navigation scheme (i.e. Web Components) that can use the algorithms to navigate a webpage</li>
-<li>Design a Chrome Extension that allows for generic web browsing</li>
-<li>Implement auditory BCI methods too!</li>
-</ol>
-<h2 id="dependencies">Dependencies</h2>
-<ul>
-<li><a href="https://github.com/brainsatplay/ssvep">ssvep</a>: Detect SSVEP on the browser</li>
-<li><a href="https://github.com/brainsatplay/potentials">potentials</a>: Detect ERPs on the browser</li>
-<li><a href="https://github.com/brownhci/WebGazer">webgazer</a>: Scalable Webcam EyeTracking Using User Interactions</li>
-</ul>
-<h3 id="peerdependencies">Peer Dependencies</h3>
-<ul>
-<li><a href="https://github.com/brainsatplay/datastreams-api">datastreams-api</a>: Get raw data on the browser
-brew), who use contract work and community contributions through <a href="https://opencollective.com/brainsatplay">Open Collective</a> to support themselves.</li>
-</ul>
+<h4 id="errorsvswarnings">Errors vs Warnings</h4>
+<p>Errors indicate that the <strong>WASL</strong> file will not run.</p>
+<p>Warnings indicate that there is suboptimal syntax in the files themselves. However, these are corrected to load the file and don't impact loaded object format.</p>
+<h2 id="contributing">Contributing</h2>
+<blockquote>
+  <p><strong>Note:</strong> Use Node v16.15.0 or higher (which support import assertions for JSON files) to run the tests</p>
+</blockquote>
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>This library is maintained by <a href="https://github.com/garrettmflynn">Garrett Flynn</a> and <a href="https://github.com/joshbrew">Joshua Brewster</a>, who use contract work and community contributions through <a href="https://opencollective.com/brainsatplay">Open Collective</a> to support themselves.</p>
 <h3 id="backers">Backers</h3>
 <p><a href="https://opencollective.com/brainsatplay#backer">Support us with a monthly donation</a> and help us continue our activities!</p>
 <p><a href="https://opencollective.com/brainsatplay/backer/0/website" target="_blank"><img src="https://opencollective.com/brainsatplay/backer/0/avatar.svg"></a>
