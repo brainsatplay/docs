@@ -23,6 +23,7 @@ Uses https://showdownjs.com/ to generate HTML from .md files.
 ##### Roadmap
 - Check out [ESDoc](https://esdoc.org/)
 - Aggregate documentation from across all of our repositories into one distribution. 
+    - Ensure that you don't overwrite the source with .html file references
     - Optimize by grabbing all the required link maps first...
 - Generate a huge API reference (with TypeDoc) from remote files
 -  Editor with active plug-in + generated explanation from WASL file (see [htil](https://github.com/brainsatplay/htil)).

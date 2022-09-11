@@ -11,7 +11,7 @@
 For happy code!
 </p>
 
-> **Note:** **graphscript** is a core library of the [Brains@Play Framework](../freerange/)
+> **Note:** **graphscript** is a core library of the [Brains@Play Framework](../freerange/index.html)
 
 
 

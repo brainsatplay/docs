@@ -5,7 +5,9 @@ title: Introduction
 
 The Brains@Play Framework (Brains@Play) is a rapid application design system for composing interactive, high-performance web applications using **functional building blocks**. 
 
-See our [main docs README.md](./)
+See our [main docs README.md](index.html)
+
+See our [test](./test.html)
 
 Brains@Play follows a **datastream** programming paradigm and models programs as directed graphs of data flowing between operations. The advantages of this approach are: 
 1. **Inherent parallelization** for use in large, decentralized systems.

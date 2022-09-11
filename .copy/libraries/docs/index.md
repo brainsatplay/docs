@@ -23,10 +23,7 @@ Uses https://showdownjs.com/ to generate HTML from .md files.
 ##### Roadmap
 - Check out [ESDoc](https://esdoc.org/)
 - Aggregate documentation from across all of our repositories into one distribution. 
-    - [x] Implement link crawling, so you download remote links based on a specific pattern (e.g. look for "github.com/brainsatplay")
-    - Fix linking to remote files that don't have main specified...
-    - [ ] Make relative links to link between transferred content!
-    - [ ] Write files directly with new links...
+    - Optimize by grabbing all the required link maps first...
 - Generate a huge API reference (with TypeDoc) from remote files
 -  Editor with active plug-in + generated explanation from WASL file (see [htil](https://github.com/brainsatplay/htil)).
 
@@ -50,20 +47,20 @@ The old documentation site created in Docusaurus
 - [wasl]
 - [visualscript]
 
-[brainsatplay]: ../freerange/
-[wasl]: ../wasl/
-[graphscript]: ../graphscript/
-[studio]: ../studio/
-[visualscript]: ../visualscript/
-[datastreams-api]: ../datastreams-api/
-[tinybuild]: ../tinybuild/
-[components]: ../components/
-[accessify]: ../wasl/
-[docs]: ./
+[brainsatplay]: ../freerange/index.html
+[wasl]: ../wasl/index.html
+[graphscript]: ../graphscript/index.html
+[studio]: ../studio/index.html
+[visualscript]: ../visualscript/index.html
+[datastreams-api]: ../datastreams-api/index.html
+[tinybuild]: ../tinybuild/index.html
+[components]: ../components/index.html
+[accessify]: ../wasl/index.html
+[docs]: index.html
 [hegduino]: https://github.com/moothyknight/HEG_ESP32_Delobotomizer/blob/main/README.html
-[nRF52]: ../nRF52/
-[es-plugins]: ../es-plugins/
-[freerange]: ../freerange/
+[nRF52]: ../nRF52/index.html
+[es-plugins]: ../es-plugins/index.html
+[freerange]: ../freerange/index.html
 
 ## Acknowledgments
 This repository is maintained by [Garrett Flynn](https://github.com/garrettmflynn) and [Joshua Brewster](https://github.com/joshbrew), who use contract work and community contributions through [Open Collective](https://opencollective.com/brainsatplay) to support themselves.

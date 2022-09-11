@@ -31,6 +31,7 @@ class Docs {
     mappings = {}
     newFiles = {}
     broken = {}
+    registry = {}
     copyDir = '.copy'
 
     constructor(config = {}) {
@@ -77,6 +78,7 @@ class Docs {
         for (let filePath in updatedResults) this.saveText(updatedResults[filePath], filePath, config)
 
         console.log('Documentation is complete!')
+        return this.registry
     }
 
     getBases = (config) => {
@@ -212,7 +214,6 @@ class Docs {
                             https.get(rawLink, response => {
 
                                 if (response.statusCode != 200) {
-                                    console.log('Error', response.statusCode)
                                     if (response.statusCode === 404) this.broken[rawLink] = link // flag broken links
                                     else console.error('Error Downloading', response.statusCode, rawLink)
                                     reject()
@@ -233,7 +234,7 @@ class Docs {
                                 }
                             }).on('error', console.error);
                         }).catch(e => {
-                            console.error(e)
+                            console.error('Error', e)
                         })
                     }
 
@@ -270,6 +271,7 @@ class Docs {
             correctExt && 
             (relativeFile || pattern)
         ) {
+
 
             if (
                 relativeTo || 
@@ -323,23 +325,9 @@ class Docs {
                         if (!linkPath) linkPath = './' // this position
                         linkPath = path.join(linkPath, name)
                         savePath = path.join(config.input, thisPath, linkPath) // relative to this
-
-                        // if (hasMD) linkPath = linkPath.replace('.md', '.html') // replace with html
-                        // console.log('Link Path', linkPath)
                     }
-
-                    // savePath = path.join(config.input, thisPath, linkPath) // relative to this
-            } 
-
-        }
-
-            // // TODO: Maintain relative links. Flip to URLs if outside of downloaded sandbox.
-            // if (relativeFile) {
-            //     const container = (isString) ? publication.map : publication.map[base]
-            //     if (container) {
-            //         console.log('relative', link, base, relativeTo, filePath)
-            //     }
-            // }
+                } 
+            }
 
             return {
                 link,
@@ -353,6 +341,12 @@ class Docs {
                 savePath,
                 remap: (relativeTo && !hasMapping) ? false : true
             }
+    } else {
+        const markdown = isMarkdown(link)
+        if (markdown) {
+            console.log('Relinking to HTML (broken)', link)
+            info.text = this.replaceLine(line, link, link, filePath, info.text, false, relativeTo) // update text
+        }
     }
 }
     }
@@ -406,7 +400,7 @@ class Docs {
                             const copy = Object.assign({}, info)
                             copy.line = line
 
-                            const res = this.handleLink(link, o, info, config)
+                            const res = this.handleLink(link, o, copy, config)
 
                             if (res) links[line] = res
 
@@ -431,48 +425,56 @@ class Docs {
 
 
             const update = !!updateOriginal
+            const ogNewLink = newLink
             
             // Transform Markdown to HTML Links
             const remote = isRemote(newLink)
-            let transformed = false
+
             if (!remote) {
                 if (!remap) {
-                    console.log('not remapping so transforming')
                     newLink = link.slice(0,-2) + 'html'
-                    transformed = true
+                    remap = true
                 }
             }
 
-
-
           // Update Links
-          newLink = newLink.replace(readme, '') 
-          newLink = newLink.replace('index.md', '')
+          newLink = newLink.replace(readme, 'index.md') 
+          newLink = newLink.replace('index.md', 'index.html') // TODO: Ensure this doesn't reach the source!
           if (newLink == '') newLink = './'
 
           // console.log('Updateing the link', linkPath)
-          const newLine = (remap || transformed) ? line.replace(link, `${newLink}`) : line
-          
-          if (remap === false) console.log('missing', !(remap || transformed), newLink, link)
+          const linkUpdate = (remap) ? `${newLink}` : link
+        const newLine = line.replace(link, linkUpdate)
 
-          // console.log('Updating', filePath, 'with', newLine)
-          // Assign Mappings for Later HTML Generation
-          this.mappings[filePath] = text.replaceAll(line, newLine) //html transformation
-          text = this.mappings[filePath]
-      
-          // Updating Original Text (only downloaded assets)
-          if (update) {
-              this.check(filePath) 
-              fs.writeFileSync(filePath, this.mappings[filePath]) // WRITE FILES DIRECTLY WITH NEW LINKS
-          }
+        // console.log('newLine', filePath, newLine, update)
 
-          return text
+        
+        // console.log('Updating', filePath, 'with', newLine)
+        // Assign Mappings for Later HTML Generation
+        this.mappings[filePath] = text = text.replaceAll(line, newLine) //html transformation
+    
+        // Updating Original Text (only downloaded assets)
+        if (update) {
+            this.check(filePath) 
+            fs.writeFileSync(filePath, this.mappings[filePath]) // WRITE FILES DIRECTLY WITH NEW LINKS
+        }
 
-        //   console.log(`Relinked ${link} in ${this.bareFilePath(filePath)} to ${path.join(this.copyDir, newLink)}`)
-    }
+        const html = path.join(this.config.outDir, this.mergeSafe(filePath, linkUpdate))
+        const md = path.join(this.copyDir, ogNewLink)
 
-    bareFilePath = (filePath) => {
-        return filePath.replace(`${process.cwd()}/`, '')
+        // TODO: Make this registry hold all the transformations that are required. Only then execute them!
+        if (!this.registry[filePath]) this.registry[filePath] = {}
+        
+        this.registry[filePath][line] = {
+            link,
+            linkUpdate,
+            newLink,
+            ogNewLink,
+            html,
+            md
+        }
+
+        return text
     }
 
 

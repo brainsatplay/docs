@@ -6,7 +6,7 @@
 
 **visualscript** is a low-code programming system for [wasl](https://github.com/brainsatplay/wasl) applications.
 
-> **Note:** **visualscript** is a core library of the [Brains@Play Framework](../freerange/)
+> **Note:** **visualscript** is a core library of the [Brains@Play Framework](../freerange/index.html)
 
 ## Notable Dependents
 ### [Brains@Play Studio](https://github.com/brainsatplay/studio)

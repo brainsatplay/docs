@@ -6,7 +6,7 @@
 
 **WASL** is a specification language for defining Web applications. It allows JavaScript developers to specify a JSON tree of source files and custom scripts. This then executes a program stored across the Web.
 
-> **Note:** **WASL** is a core technology of the [Brains@Play Framework](../freerange/)
+> **Note:** **WASL** is a core technology of the [Brains@Play Framework](../freerange/index.html)
 
 ## The Details
 **WASL** files inherit heavily from the `package.json` file from Node.js, allowing for less duplication of work when publishing to NPM.
