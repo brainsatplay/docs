@@ -818,9 +818,14 @@ class Docs {
         const nBack = notCommon.split(pathSep).length - 2
         const rel = Array.from({ length: nBack }, _ => '..').join('/')
 
+        const stylesheetLocation = './.docs/default.css'
+        const destination =  path.join(process.cwd(), config.output, stylesheetLocation)
+        this.check(destination)
+        fs.copyFileSync('templates/default.css', destination)
+        
         const commentReplacements = {
             content: '',
-            defaultstylesheet: `<style>\n${fs.readFileSync('./templates/default.css')}\n</style>`,
+            defaultstylesheet: create.stylesheet.generator(path.join(rel,stylesheetLocation))
         }
 
         for (let key in create) {
