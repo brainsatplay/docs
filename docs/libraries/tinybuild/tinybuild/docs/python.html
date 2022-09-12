@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+  padding: 0px 50px;
+}
+</style>
+    <link rel=stylesheet href="../../../../static/custom.css"/>
+    <link rel="icon" href="../../../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <nav></nav>
+    <h2 id="pythonhttpswwwpythonorgserverwithquarthttpspgjonesgitlabioquartasynciothreadingservingthewebappandwebsocketsssedemos"><a href="https://www.python.org/">Python</a> server with <a href="https://pgjones.gitlab.io/quart/">Quart</a> asyncio + Threading, serving the webapp, and websockets, sse demos.</h2>
+<p>We've provided some boilerplate to spin up a Python server that can communicate with the node server or directly to the browser. It can also serve the built files and website, serve a custom REST api with direct python integration, and otherwise demonstrates a high performance python server skeleton.</p>
+<p>We included presets to use Quart's https production server (via <a href="https://pgjones.gitlab.io/hypercorn/">hypercorn</a>) as long as an ssl certificate is provided. See the top of the <a href="../python/server.py"><code>server.py</code></a> file for server settings which are configured manually.</p>
+<p>Our python tooling documents a high performance multi-user python scenario with an order of operations shown to run simultaneous thread processes for a dedicated server thread. It's is scalable and production-ready, with enough documentation for you to find where to insert your code (hint: start with the <em>thread</em>main function and follow the queues to how the sockets get updated) and how to update SSE and Websocket queues to any connected users.</p>
+<p>Code: <a href="../python"><code>tinybuild/python</code></a></p>
+<h3 id="settings">Settings</h3>
+<pre><code class="py language-py">## 
+production = False ### For serving HTTPS, use False for HTTP and hot reloading quart (only if this file changes)
+host = 'localhost' ## e.g. mywebsite.com
+port = 7000
+startpage = 'index.html'
+base_dir = '../../' ## Example serves both templates and static files from the base dir
+debug = False
+
+config = {
+    'keyfile':'node_server/ssl/key.pem',
+    'certfile':'node_server/ssl/cert.pem',
+    'bind':host+':'+str(port)
+}
+</code></pre>
+<p>Then run: 
+<code>python tinybuild/python/server.py</code> </p>
+<p>Then find <code>http://localhost:7000</code> to see the built app using the same start page the node server uses</p>
+<p>or <code>http://localhost:7000/test</code> to see a test websocket stream from the python thread (if using our default test server routine)</p>
+<p>For client.py <code>pip install websockets</code></p>
+<h2 id="moreinformation">More Information</h2>
+<p>Quart is natively asyncio but otherwise mimics flask. This means much faster concurrent (non-blocking) python server processing, and we included an example of implementing threads in python for more advanced processing needs. You can see this in action at our dedicated repo: <a href="https://github.com/joshbrew/esbuild_base_python">esbuild<em>base</em>python</a>. </p>
+<p>This is one of the highest performance Python backends you could use, and we saved you a lot of testing! See the code for line-by-line documentation.</p>
+<p>Also, find <code>client.py</code> to test the websocket from python! The server by default streams a counter to any open websocket and SSE connections. </p>
+    <footer></footer>
+</body>
+</html>

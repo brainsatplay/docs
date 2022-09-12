@@ -26,9 +26,7 @@ const correctExtension = (filePath, base) => {
 
 const isRemote = (str) => str.slice(0, 7) == 'http://' || str.slice(0, 8) == 'https://'
 const isRelative = (str, ext) => str[0] === '.' && ((ext) ? correctExtension(str, ext) : true)
-const isMarkdown = (str) => {
-    return (str.slice(-markdown.length) === markdown) || ['md', ''].includes(extension(str))
-}
+const isMarkdown = (str) => (str.slice(-markdown.length) === markdown)
 
 
 const create = {
@@ -231,10 +229,11 @@ class Docs {
         const {
             link,
             name,
-            base,
             split,
             after,
             remap,
+            absolute,
+            mapping
         } = links[line]
 
         const {
@@ -271,15 +270,12 @@ class Docs {
                 rawLink = this.mergeSafe(relativeTo, rawLink)
 
                 // Derive Link Path
-                if (isString) basePath = path.join(publication.map, basePath) // global
-                else if (publication.map && publication.map[base]) basePath = path.join(publication.map[base], basePath) // unique
+                if (mapping) basePath = path.join(mapping, basePath)
+
                 linkPath = basePath.replace(config.input, '')
                 remote = isRemote(rawLink) // reset remote
             }
-            else {
-                if (isString) linkPath = publication.map
-                else if (publication.map) linkPath = publication.map[base]
-            }
+            else if (mapping) linkPath = mapping
 
             if (!linkPath) linkPath = name
             if (path.basename(linkPath) !== name) linkPath = path.join(linkPath, name)
@@ -331,9 +327,8 @@ class Docs {
 
                                 var stream = response.pipe(file);
                                 stream.on("finish", async () => {
-                                    const text = fs.readFileSync(savePath).toString()
-                                    if (text == '') console.log('Empty File', savePath)
-                                    this.newFiles[savePath] = text
+                                    let text = fs.readFileSync(savePath).toString()
+                                    this.newFiles[savePath] = text // might be empty
                                     info.internalResults[savePath] = {
                                         relativeTo: rawLink,
                                         text
@@ -359,9 +354,12 @@ class Docs {
 
 
     handleLink = (link, publication, info, config) => {
-        const relativeFile = isRelative(link, publication.extension)
-        let remoteFile = isRemote(link)
+        const remoteFile = isRemote(link)
         const markdown = isMarkdown(link)
+        const relativeFile = !remoteFile
+        const absoluteFile = !isRelative(link, publication.extension) && relativeFile
+
+        // console.log('relativeFile', relativeFile, remoteFile, link )
 
         const {
             line,
@@ -372,16 +370,22 @@ class Docs {
             filePath,
         } = info
 
-        // New Link
+        // Get the New Link
+        let rel = filePath.split(config.input)[1]
+        if (rel?.[0] === pathSep) rel = rel.slice(1)
         let after = publication.pattern ? link.split(publication.pattern).slice(-1)[0] : link // no pattern
-        const name = path.basename(after)
-        const correctExt = correctExtension(after, pubExt) // transfer files with the specified extension
+        if (after[0] === pathSep) after = after.slice(1)
+
+        let correctExt = correctExtension(after, pubExt) // transfer files with the specified extension
+
 
         // Allow Relative Links on Internal Loads
         const pattern = (publication.pattern && link.match(userRegex))
+
+
         if (
             correctExt &&
-            (relativeFile || pattern)
+            (relativeFile || pattern )
         ) {
 
             if (
@@ -389,18 +393,15 @@ class Docs {
                 pattern
             ) {
 
-
-                if (after[0] === pathSep) after = after.slice(1)
-                let split = after.split(pathSep)
-                const base = split[0]
-
                 let linkPath, savePath;
-
+                const name = path.basename(after)
+                const split = after.split(pathSep)
+                const base = split[0]
                 let mapping = (isString) ? publication.map : publication.map[base]
-                let hasMapping = !!mapping // TODO: Check this with isString=true...
 
-                let rel = filePath.split(config.input)[1]
-                if (rel?.[0] === pathSep) rel = rel.slice(1)
+                
+                let hasMapping = remoteFile && !!mapping // Must be remote // TOOD: Check when isString = true
+                
                 if (rel) {
                     const thisPath = path.dirname(rel)
 
@@ -419,19 +420,7 @@ class Docs {
                         // Local Map (otherwise use default remote mapping)
                         if (hasMapping) {
 
-                            const transferredSplit = mapping.split(pathSep)
-                            const thisSplit = thisPath.split(pathSep)
-
-                            let relative = []
-                            const filtered = transferredSplit.filter((v, i) => {
-                                if (thisSplit[i] !== v) {
-                                    relative.push('..')
-                                    return true
-                                } else return false
-                            })
-
-                            linkPath = path.join(...relative, ...filtered)
-                            linkPath = path.join(linkPath, name)
+                            linkPath = this.map(name, thisPath, mapping, config)
                             savePath = path.join(config.input, thisPath, linkPath) // relative to this
                             if (linkPath?.[0] != '.') linkPath = `./${linkPath}` // force relative
                         }
@@ -442,10 +431,11 @@ class Docs {
                     link,
                     remote: remoteFile,
                     relative: relativeFile,
+                    absolute: absoluteFile,
                     name,
-                    base,
                     split,
                     after,
+                    mapping: (hasMapping) ? mapping : undefined,
                     linkPath,
                     savePath,
                     remap: (relativeTo && !hasMapping) ? false : true
@@ -455,9 +445,57 @@ class Docs {
             // Remap All Local Markdown to HTML
             else if (markdown) this.registerChange(line, link, link, filePath, false, relativeTo, 'internal') // internal link remapped to html
         } else {
-            if (!remoteFile && markdown) {
-                console.log('Caught a markdown file', filePath, link, line)
+            if (!remoteFile) {
+
+                // BUG: Will break on objects that use {[dynamicKey]: value} syntax
+                if (extension(link) === '') {
+                    console.log('THERE SHOULD ALREADY BE A FILE LOADED FOR THIS. FIND IT...')
+                    // const relDir = path.dirname(rel)
+                    // const newLink = this.map(`index${publication.extension}`, rel, link)
+                    // console.log('Remapped', newLink, link, relDir, filePath)
+                    // this.registerChange(line, link, newLink, filePath, true, relativeTo, 'internal') // internal link remapped to html
+                } else if (correctExt) {
+                    console.log('unhandled', filePath, link, !remoteFile, !relativeFile, correctExt, pattern)
+                }
+            } 
+        }
+    }
+
+    map = (name, thisPath, mapping) => {
+
+        const transferredSplit = mapping.split(pathSep)
+        const thisSplit = thisPath.split(pathSep)
+
+        let relative = []
+        const filtered = transferredSplit.filter((v, i) => {
+            if (thisSplit[i] !== v) {
+                relative.push('..')
+                return true
+            } else return false
+        })
+
+        return path.join(path.join(...relative, ...filtered), name)
+    }
+
+    addChange = (filePath, line, link, type, {html, markdown} = {}) => {
+        if (!this.changes[filePath]) this.changes[filePath] = {}
+
+        const fileRef = this.changes[filePath]
+        if (!fileRef[type]) fileRef[type] = {}
+
+        const typeRef = this.changes[filePath][type]
+        if (typeRef[link]) typeRef[link].lines.push(line)
+        else {
+            typeRef[link] = {
+                lines: [line],
+                html,
+                markdown
             }
+        }
+
+        return {
+            type: typeRef[link],
+            file: fileRef[type]
         }
     }
 
@@ -537,7 +575,7 @@ class Docs {
 
     }
 
-    registerChange = (line, link, newLink, filePath, remap = true, updateOriginal = false, type = "standard") => {
+    registerChange = (line, link, newLink, filePath, remap = true, updateOriginal = false, type) => {
 
         const update = !!updateOriginal
 
@@ -567,29 +605,16 @@ class Docs {
         const markdown = (remap) ? `${markdownProposed}` : link
 
         // Track Changes
-        if (!this.changes[filePath]) this.changes[filePath] = {}
+        const refs = this.addChange(filePath, line, link, type, {html, markdown})
 
-        const fileRef = this.changes[filePath]
-        if (!fileRef[type]) fileRef[type] = {}
-
-        const typeRef = this.changes[filePath][type]
-        if (typeRef[link]) typeRef[link].lines.push(line)
-        else {
-            typeRef[link] = {
-                lines: [line],
-                html,
-                markdown
-            }
-        }
-
-        if (update && !fileRef._write) {
-            Object.defineProperty(fileRef, '_write', {
+        if (update && !refs.file._write) {
+            Object.defineProperty(refs.file, '_write', {
                 value: true,
                 enumerable: false
             })
         }
 
-        return typeRef[link]
+        return refs.type
     }
 
 
