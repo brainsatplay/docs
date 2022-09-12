@@ -350,6 +350,7 @@ class Docs {
             const downloadedAt = this.downloads.raw[fullLink]
             if (downloadedAt) {
                 let newLinkPath = this.pathTo(downloadedAt, path.dirname(filePath))
+                console.log('newLinkPath', newLinkPath)
                 this.registerChange(line, link, newLinkPath, filePath, true, relativeTo, 'transferred') // update text
                 return
             } 
@@ -466,6 +467,7 @@ class Docs {
         if (rel?.[0] === pathSep) rel = rel.slice(1)
         let after = publication.pattern ? link.split(publication.pattern).slice(-1)[0] : link // no pattern
         if (after[0] === pathSep) after = after.slice(1)
+        const name = path.basename(after)
 
 
 
@@ -489,7 +491,6 @@ class Docs {
 
 
                 let linkPath, savePath;
-                const name = path.basename(after)
                 const split = after.split(pathSep)
                 const base = (remoteFile) ? split[0] : rel.split(pathSep)[1] // reference parent if not remote
                 let mapping = (isString) ? publication.map : publication.map[base]
@@ -558,11 +559,22 @@ class Docs {
 
             // Invalid Local Link
             else if (extension(link) === '')  {
-                    this.invalid[link] ={
+
+                // Try Linking to Remote
+                if (relativeTo){
+                    this.registerChange(line, link, this.mergeSafe(relativeTo, link), filePath, true, true, 'external')
+                    return
+                } 
+                
+                // Mark as Invalid
+                else {
+                    this.invalid[link] = {
                         link,
-                        filePath: (relativeTo) ? filePath : `${config.mdIn}/${filePath.split(`${config.input}/`)[1]}`, // transform filePath to be readable and accessible by link
+                        filePath: `${config.mdIn}/${filePath.split(`${config.input}/`)[1]}`, // transform filePath to be readable and accessible by link
                         line
                     }
+                    return
+                }
             } 
             // else this.unsupported[link] = true
         }
@@ -729,7 +741,14 @@ class Docs {
 
         // Update HTML Links
         htmlProposed = markdownProposed.replace('/index.md', '')
-        htmlProposed = htmlProposed.replace('/index.html', '')
+
+        // Always Convert Local to HTML
+        if (!remote) {
+            const split = htmlProposed.split('.')
+            split.pop()
+            split.push('html')
+            htmlProposed = split.join('.')
+        }
 
         if (htmlProposed == '') htmlProposed = './'
         if (markdownProposed == '') markdownProposed = './'
