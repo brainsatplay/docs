@@ -37,7 +37,7 @@ const create = {
     stylesheet: {
         generator: (link) => `<link rel=stylesheet href="${link}"/>`,
         format: 'link'
-    } ,
+    },
     content: {
         generator: (text) => text,
         format: 'text'
@@ -57,12 +57,20 @@ class Docs {
     config = null
 
     // File Registries
-    newFiles = {}
     originalFiles = {}
+    downloads = {
+        saved: {},
+        raw: {}
+    }
 
     // Collections
     broken = {}
+    invalid = {}
+
+    unmapped = {}
+    unmatched = {}
     ignored = {}
+    written = {}
 
     // Main Changelog
     changes = {}
@@ -94,7 +102,22 @@ class Docs {
             }
         }
 
-        this.newFiles = {}
+        // Clear File Collections
+        this.originalFiles = {}
+        this.downloads = {
+            saved: {},
+            raw: {}
+        }
+
+        this.broken = {}
+        this.invalid = {}
+        this.ignored = {}
+        this.unmapped = {}
+        this.unmatched = {}
+        this.changes = {}
+        this.written = {}
+
+        // Create Config
         const config = this.config
         config.input = input ?? this.config.mdIn
         config.output = output ?? this.config.htmlOut
@@ -122,6 +145,7 @@ class Docs {
 
         // Preload Remote Assets + Changes
         const changes = await this.preload(this.originalFiles, this.config.publications, config)
+
         const updatedResults = (changes) ? await this.list(bases.input) : this.originalFiles // grab list with new files
 
         // Save New Assets as HTML
@@ -148,6 +172,10 @@ class Docs {
         const debugCopied = isBoolean ? this.debug : this.debug?.copied
         const debugBroken = isBoolean ? this.debug : this.debug?.broken
         const debugIgnored = isBoolean ? this.debug : this.debug?.ignored
+        const debugWritten = isBoolean ? this.debug : this.debug?.written
+        const debugUnmapped = isBoolean ? this.debug : this.debug?.unmapped
+        const debugUnmatched = isBoolean ? this.debug : this.debug?.unmatched
+        const debugInvalid = isBoolean ? this.debug : this.debug?.invalid
 
         if (debugUnchanged && noChanges.length > 0) {
             console.log(`\n--------------- Unchanged Files ---------------`)
@@ -164,14 +192,34 @@ class Docs {
             copied.forEach(str => console.log(`- ${str}`))
         }
 
+        if (debugWritten && Object.keys(this.written).length > 0){
+            console.log(`\n--------------- Files Written with Changes ---------------`)
+            for (let raw in this.written) console.log(`- ${raw}`)
+        }
+
         if (debugBroken && Object.keys(this.broken).length > 0) {
             console.log(`\n--------------- Broken Links ---------------`)
-            for (let raw in this.broken) console.log(`- ${raw}, ${this.broken[raw]}`)
+            for (let raw in this.broken) console.log(`- ${raw} | ${this.broken[raw]}`)
+        }
+
+        if (debugInvalid && Object.keys(this.invalid).length > 0) {
+            console.log(`\n--------------- Invalid Links ---------------`)
+            for (let link in this.invalid) console.log(`- ${this.invalid[link].filePath} | ${link}`)
         }
 
         if (debugIgnored && Object.keys(this.ignored).length > 0) {
             console.log(`\n--------------- Ignored Links ---------------`)
-            for (let raw in this.ignored) console.log(`- ${raw}, ${this.broken[raw]}`)
+            for (let raw in this.ignored) console.log(`- ${raw} | ${this.ignored[raw]}`)
+        }
+
+        if (debugUnmapped && Object.keys(this.unmapped).length > 0) {
+            console.log(`\n--------------- Unmapped Links ---------------`)
+            for (let link in this.unmapped) console.log(`- ${link}`)
+        }
+
+        if (debugUnmatched && Object.keys(this.unmatched).length > 0) {
+            console.log(`\n--------------- Unmatched Remote Links ---------------`)
+            for (let link in this.unmatched) console.log(`- ${link}`)
         }
 
         console.log(`\nDocumentation completed in ${((performance.now() - tic) / 1000).toFixed(3)} seconds.\n`)
@@ -224,39 +272,27 @@ class Docs {
     }
 
 
-    handleLine = async (line, links, publication, info, config) => {
+    handleLine = async (line, links, info, config) => {
 
         const {
             link,
+            mapping,
             name,
-            split,
-            after,
-            remap,
-            absolute,
-            mapping
         } = links[line]
 
         const {
             relativeTo,
-            isString,
             filePath,
         } = info
 
 
         let linkPath = links[line].linkPath
         let savePath = links[line].savePath
-
-        // console.log('Line', line)
+        let remap = links[line].remap
+        let remote = links[line].remote;
 
         let rawLink = link
-
-        let basePath, remote = links[line].remote;
-
-        // transform raw link (github)
-        if (rawLink.includes('github.com') && split[1] !== 'raw') {
-            const end = rawLink.split('github.com/')[1]
-            if (end) rawLink = `https://raw.githubusercontent.com/${end.replace(after, [split[0], ...split.slice(2)].join(pathSep))}`
-        }
+        let basePath;
 
         if (!linkPath) {
 
@@ -270,85 +306,142 @@ class Docs {
                 rawLink = this.mergeSafe(relativeTo, rawLink)
 
                 // Derive Link Path
-                if (mapping) basePath = path.join(mapping, basePath)
+                // if (mapping) basePath = path.join(mapping, basePath)
 
                 linkPath = basePath.replace(config.input, '')
                 remote = isRemote(rawLink) // reset remote
-            }
-            else if (mapping) linkPath = mapping
-
-            if (!linkPath) linkPath = name
-            if (path.basename(linkPath) !== name) linkPath = path.join(linkPath, name)
-
-            if (linkPath[0] === pathSep) linkPath = linkPath.slice(1)
+            } else if (mapping) linkPath = mapping
         }
 
+        const fullLink = rawLink
+        let rawLinkPath = fullLink
+
+        // transform raw link (github)
+        const search = 'github.com'
+        if (rawLink.includes(search)) {
+            const split = rawLink.split(`${search}/`)
+            const end = split[1].split(pathSep)
+
+            if (end) {
+
+                // includes branch
+                rawLink = `https://raw.githubusercontent.com/${[...end.slice(0,2), ...end.slice(3)].join(pathSep)}`
+                
+                // removes branch
+                rawLinkPath = [
+                    (split[0].slice(-1) === pathSep) ? split[0].slice(0, -1) : split[0], 
+                    search, 
+                    ...end.slice(0,2), 
+                    ...end.slice(4)].join(pathSep
+                )
+            }
+        }
+
+        if (!linkPath) linkPath = name
+        if (path.basename(linkPath) !== name) linkPath = path.join(linkPath, name)
+
+        if (linkPath[0] === pathSep) linkPath = linkPath.slice(1)
 
 
         // Stop Broken Links (remote only...)
-        if (linkPath && !this.broken[rawLink]) {
+        if (linkPath && !this.broken[fullLink]) {
 
-            // Correct Save Path
-            if (!savePath) savePath = path.join(config.input, linkPath)
+            // Remap Files that have Already Been Transferred
+            const downloadedAt = this.downloads.raw[fullLink]
+            if (downloadedAt) {
+                let newLinkPath = this.pathTo(downloadedAt, path.dirname(filePath))
+                this.registerChange(line, link, newLinkPath, filePath, true, relativeTo, 'transferred') // update text
+                return
+            } 
+            
+            // Handle Untransferred Files
+            else {
 
-            // Rename README.md Files
-            savePath = savePath.replace(readme, 'index.md')
+                // Correct Save Path
+                if (!savePath) savePath = path.join(config.input, linkPath)
 
-            const has = this.newFiles[savePath]
-            let exists = fs.existsSync(savePath)
+                // Rename README.md Files
+                savePath = savePath.replace(readme, 'index.md')
 
-            // console.log('Link PAth', linkPath, savePath, exists, has, remote)
-            // ------------ Download Files From Remote Source ------------
-            if (
-                remote // is a remote file
-                && !has // do not current have updates
-                && (!exists || publication.update) // does not exist in filesytem (or update is requested)
-            ) {
 
-                const fileExisted = this.getOriginalFile(savePath) // can save to file
-                if (fileExisted) {
-                    this.ignored[rawLink] = link
-                    console.log(`Cannot overwite original file at ${savePath} with the contents of ${rawLink}.`)
-                    return // ignore changes
-                } else {
-                    this.check(savePath)
-                    const file = fs.createWriteStream(savePath);
 
-                    // Wait for Files to Download
-                    await new Promise((resolve, reject) => {
+                // Check If Link Points to the Docs Source
+                const internal = rawLinkPath.includes(path.join(config.repository, config.mdIn))
+                if (internal) savePath = savePath.replace(`${path.join(mapping, config.mdIn)}/`, '')
 
-                        https.get(rawLink, response => {
+                const has = this.downloads.saved[savePath] // something has been downloaded here
+                const exists = fs.existsSync(savePath) // something exists here
+                const fromOriginal = !!this.getOriginalFile(savePath)
 
-                            if (response.statusCode != 200) {
-                                if (response.statusCode === 404) this.broken[rawLink] = link // flag broken links
-                                else console.error('Error Downloading', response.statusCode, rawLink)
-                                reject()
-                            } else {
+                // ------------ Handle Remote File Paths ------------
+                if (remote) {
 
-                                var stream = response.pipe(file);
-                                stream.on("finish", async () => {
-                                    let text = fs.readFileSync(savePath).toString()
-                                    this.newFiles[savePath] = text // might be empty
-                                    info.internalResults[savePath] = {
-                                        relativeTo: rawLink,
-                                        text
+                    // Relink
+                    const relinked = has || exists || internal
+                    if (relinked) {
+                        linkPath = this.pathTo(savePath, path.dirname(filePath)) // relink to existing file
+                        remap = true
+                    }
+
+                    // ------------ Download Files From Remote Source ------------
+                    else {
+
+                        // console.log('Downloaded File Check', this.downloads[rawLink], rawLink)
+
+                        // Avoid Overwriting Original Files
+                        if (fromOriginal) {
+                            this.ignored[fullLink] = link
+                            console.log(`Cannot overwite original file at ${savePath} with the contents of ${rawLink}.`)
+                            return // ignore changes
+                        } 
+                        
+                        // Download New Assets
+                        else {
+                            this.check(savePath)
+                            const file = fs.createWriteStream(savePath);
+
+                            // Wait for Files to Download
+                            await new Promise((resolve, reject) => {
+
+                                https.get(rawLink, response => {
+
+                                    if (response.statusCode != 200) {
+                                        if (response.statusCode === 404) this.broken[fullLink] = link // flag broken links
+                                        else console.error('Error Downloading', response.statusCode, fullLink, filePath)
+                                        reject()
+                                    } else {
+
+                                        var stream = response.pipe(file);
+                                        stream.on("finish", async () => {
+                                            let text = fs.readFileSync(savePath).toString()
+                                            this.downloads.raw[fullLink] = savePath
+                                            this.downloads.saved[savePath] = text
+
+                                            info.internalResults[savePath] = {
+                                                relativeTo: fullLink,
+                                                text
+                                            }
+
+                                            resolve(true)
+                                        });
                                     }
-
-                                    resolve(true)
-                                });
-                            }
-                        }).on('error', console.error);
-                    }).catch(e => console.error)
+                                }).on('error', console.error);
+                            }).catch(e => console.error)
+                        }
+                    } 
+                } else {
+                    this.ignored[fullLink] = link
+                    return
                 }
+
+
+                const gotten = this.downloads.saved[savePath]
+
+
+                // ------------ Update Links Appropriately ------------
+                if ((exists || gotten !== undefined)) this.registerChange(line, link, linkPath, filePath, remap, relativeTo, 'transferred') // update text
+                else console.error(`No file was created or found at ${savePath}`, rawLink)
             }
-
-
-            const gotten = this.newFiles[savePath]
-
-            // ------------ Update Links Appropriately ------------
-            if ((exists || gotten !== undefined)) this.registerChange(line, link, linkPath, filePath, remap, relativeTo, 'transferred') // update text
-            else console.error(`No file was created or found at ${savePath}`, rawLink)
-
         }
     }
 
@@ -358,8 +451,6 @@ class Docs {
         const markdown = isMarkdown(link)
         const relativeFile = !remoteFile
         const absoluteFile = !isRelative(link, publication.extension) && relativeFile
-
-        // console.log('relativeFile', relativeFile, remoteFile, link )
 
         const {
             line,
@@ -376,6 +467,8 @@ class Docs {
         let after = publication.pattern ? link.split(publication.pattern).slice(-1)[0] : link // no pattern
         if (after[0] === pathSep) after = after.slice(1)
 
+
+
         let correctExt = correctExtension(after, pubExt) // transfer files with the specified extension
 
 
@@ -384,33 +477,36 @@ class Docs {
 
 
         if (
-            correctExt &&
-            (relativeFile || pattern )
+            (correctExt) &&
+            (relativeFile || pattern)
         ) {
-
+            
+            // Main Check
             if (
                 relativeTo ||
                 pattern
             ) {
 
+
                 let linkPath, savePath;
                 const name = path.basename(after)
                 const split = after.split(pathSep)
-                const base = split[0]
+                const base = (remoteFile) ? split[0] : rel.split(pathSep)[1] // reference parent if not remote
                 let mapping = (isString) ? publication.map : publication.map[base]
 
-                
                 let hasMapping = remoteFile && !!mapping // Must be remote // TOOD: Check when isString = true
-                
+
                 if (rel) {
                     const thisPath = path.dirname(rel)
 
                     if (relativeFile) {
                         const nBack = link.split('../').length - 1
                         const possible = thisPath.split(pathSep).length
+
+                        // Relink local to remote (if relative path goes out of the sandbox)
                         if (nBack >= possible) {
-                            const url = this.mergeSafe(relativeTo, link)
-                            this.registerChange(line, link, url, filePath, false, relativeTo, 'external') // relinking local to remote (goes out of sandbox)
+                            const url = path.join(this.mergeSafe(relativeTo, link), name)
+                            this.registerChange(line, link, url, filePath, true, relativeTo, 'external')
                             return
                         }
                     }
@@ -419,52 +515,65 @@ class Docs {
 
                         // Local Map (otherwise use default remote mapping)
                         if (hasMapping) {
-
-                            linkPath = this.map(name, thisPath, mapping, config)
+                            linkPath = this.map(thisPath, mapping, name)
                             savePath = path.join(config.input, thisPath, linkPath) // relative to this
                             if (linkPath?.[0] != '.') linkPath = `./${linkPath}` // force relative
                         }
                     }
                 }
-
+ 
                 return {
                     link,
                     remote: remoteFile,
                     relative: relativeFile,
                     absolute: absoluteFile,
                     name,
-                    split,
-                    after,
-                    mapping: (hasMapping) ? mapping : undefined,
+                    remap: (relativeTo && !hasMapping) ? false : true,
+                    mapping,
                     linkPath,
                     savePath,
-                    remap: (relativeTo && !hasMapping) ? false : true
                 }
             }
 
-            // Remap All Local Markdown to HTML
-            else if (markdown) this.registerChange(line, link, link, filePath, false, relativeTo, 'internal') // internal link remapped to html
-        } else {
-            if (!remoteFile) {
+            // Remap All Internal Markdown Links to HTML
+            else if (markdown) this.registerChange(line, link, link, filePath, false, relativeTo, 'internal')
+        
+        } 
+        
+        // Catch Errors
+        else {
 
-                // BUG: Will break on objects that use {[dynamicKey]: value} syntax
-                if (extension(link) === '') {
-                    console.log('THERE SHOULD ALREADY BE A FILE LOADED FOR THIS. FIND IT...')
-                    // const relDir = path.dirname(rel)
-                    // const newLink = this.map(`index${publication.extension}`, rel, link)
-                    // console.log('Remapped', newLink, link, relDir, filePath)
-                    // this.registerChange(line, link, newLink, filePath, true, relativeTo, 'internal') // internal link remapped to html
-                } else if (correctExt) {
-                    console.log('unhandled', filePath, link, !remoteFile, !relativeFile, correctExt, pattern)
-                }
+            // Common Regular Expression Issues
+            const hasSpaces = link.includes(' ')
+            if (hasSpaces) return
+
+            const isQuoted =  [`"`, `'`, '`'].includes(link[0])
+            if (isQuoted) return
+
+            const isComment =  link.slice(0, 2) === '//'
+            if (isComment) return
+
+            // No Match for Remote Link
+            if (remoteFile)  this.unmatched[link] = true
+
+            // Invalid Local Link
+            else if (extension(link) === '')  {
+                    this.invalid[link] ={
+                        link,
+                        filePath: (relativeTo) ? filePath : `${config.mdIn}/${filePath.split(`${config.input}/`)[1]}`, // transform filePath to be readable and accessible by link
+                        line
+                    }
             } 
+            // else this.unsupported[link] = true
         }
     }
 
-    map = (name, thisPath, mapping) => {
+    map = (thisPath, absoluteMapPath, name) => {
 
-        const transferredSplit = mapping.split(pathSep)
+        const transferredSplit = absoluteMapPath.split(pathSep)
         const thisSplit = thisPath.split(pathSep)
+
+        if (!name) name = thisSplit.pop() // derive name
 
         let relative = []
         const filtered = transferredSplit.filter((v, i) => {
@@ -474,10 +583,33 @@ class Docs {
             } else return false
         })
 
-        return path.join(path.join(...relative, ...filtered), name)
+        const res = path.join(path.join(...relative, ...filtered), name)
+
+        return res
     }
 
-    addChange = (filePath, line, link, type, {html, markdown} = {}) => {
+    // Use Two Paths to Get a Relative Path Between Them
+    pathTo = (to, from, name) => {
+
+
+        const fromSplit = from.split(pathSep)
+        const toSplit = to.split(pathSep)
+
+        if (!name) name = toSplit.pop() // derive name
+
+        const index = fromSplit.findIndex((v, i) => (toSplit[i] !== v) ? true : false)
+
+        let mapped = name
+        if (index > 0) {
+            const nBack = fromSplit.length - index
+            mapped = path.join(path.join(...Array.from({ length: nBack }, () => '..'), ...toSplit.slice(index)), name)
+        }
+
+        if (mapped[0] !== '.') return `./${mapped}`
+        else return mapped
+    }
+
+    addChange = (filePath, line, link, type, { html, markdown } = {}) => {
         if (!this.changes[filePath]) this.changes[filePath] = {}
 
         const fileRef = this.changes[filePath]
@@ -494,8 +626,9 @@ class Docs {
         }
 
         return {
-            type: typeRef[link],
-            file: fileRef[type]
+            type: typeRef,
+            file: fileRef,
+            link: typeRef[link]
         }
     }
 
@@ -561,7 +694,7 @@ class Docs {
                             })
 
                             // Iterate through Valid Links
-                            for (let line in links) await this.handleLine(line, links, o, info, config)
+                            for (let line in links) await this.handleLine(line, links, info, config)
                         }
                     }
                 }
@@ -582,6 +715,7 @@ class Docs {
         // Transform Markdown to HTML Links
         const remote = isRemote(newLink)
 
+        // Keep Original if Remap is False
         if (!remote) {
             if (!remap) {
                 newLink = link.slice(0, -2) + 'html'
@@ -605,7 +739,7 @@ class Docs {
         const markdown = (remap) ? `${markdownProposed}` : link
 
         // Track Changes
-        const refs = this.addChange(filePath, line, link, type, {html, markdown})
+        const refs = this.addChange(filePath, line, link, type, { html, markdown })
 
         if (update && !refs.file._write) {
             Object.defineProperty(refs.file, '_write', {
@@ -614,7 +748,7 @@ class Docs {
             })
         }
 
-        return refs.type
+        return refs.link
     }
 
 
@@ -660,7 +794,7 @@ class Docs {
         let returnVal = false
 
         const nBack = notCommon.split(pathSep).length - 2
-        const rel = Array.from({length: nBack}, _ => '..').join('/')
+        const rel = Array.from({ length: nBack }, _ => '..').join('/')
 
         const commentReplacements = {
             content: '',
@@ -698,7 +832,11 @@ class Docs {
                         }
                     }
 
-                    if (changes._write) fs.writeFileSync(filePath, mdText);
+                    if (changes._write) {
+                        this.written[filePath] = true
+                        fs.writeFileSync(filePath, mdText);
+                    }
+
                     if (debugHTML) console.log('\n')
                 }
 
@@ -718,11 +856,11 @@ class Docs {
                 break;
         }
 
-        if (pathToUse){
+        if (pathToUse) {
 
             let content = commentReplacements.content
             const template = templates[ext.slice(1)]
-            if (template){
+            if (template) {
                 content = template.text // replace with template
                 for (let key in template.map) {
                     const rep = commentReplacements[key]

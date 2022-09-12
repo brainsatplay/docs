@@ -5,6 +5,7 @@ const config = {
     mdIn: "source",
     htmlOut: "docs",
     mdOut: "compiled",
+    repository: "github.com/brainsatplay/docs",
     // publications:  {
     //     [`${basePattern}/accessify`]: "libraries/wasl",
     //     [`${basePattern}/brainsatplay`]: "libraries/brainsatplay",
@@ -32,9 +33,8 @@ const config = {
         {
             pattern: basePattern,
             extension: ".md",
-            update: true,
             map: {
-                accessify: "libraries/wasl",
+                accessify: "libraries/accessify",
                 brainsatplay: "libraries/brainsatplay",
                 components: "libraries/components",
                 [`datastreams-api`]: "libraries/datastreams-api",

@@ -15,11 +15,11 @@ All core software for The Brains@Play Framework has been released under the [AGP
 :::
 
 ## The Library
-`brainsatplay` compiles files in the Web Application Specification Language (specified in the [wasl](./guides/libraries/wasl) library) to high-performance applications. Beyond wrapping its dependencies, this library: 
-- Transforms function arguments into [`graphscript`](./guides/libraries/graphscript) graphs that can be targeted independently
+`brainsatplay` compiles files in the Web Application Specification Language (specified in the [wasl](./guides/libraries/wasl/index.md) library) to high-performance applications. Beyond wrapping its dependencies, this library: 
+- Transforms function arguments into [`graphscript`](./guides/libraries/graphscript/index.md) graphs that can be targeted independently
 - Compiles source text from other languages (e.g. Python, C++, etc) into functional nodes (TBD)
 
-Using the [`@brainsatplay/studio`](./guides/libraries/studio), the underlying WASL structure can be inspected, modified, and extended with official [plugins](https://github.com/brainsatplay/plugins).
+Using the [`@brainsatplay/studio`](./guides/libraries/studio/index.md), the underlying WASL structure can be inspected, modified, and extended with official [components](https://github.com/brainsatplay/components).
 
 ## How It Began
 At the core of `brainsatplay` is our decision to standardize the usage of ES Modules.

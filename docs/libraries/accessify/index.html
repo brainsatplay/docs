@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+body {
+  padding: 0px 50px;
+}
+</style>
+    <link rel=stylesheet href="../../static/custom.css"/>
+    <link rel="icon" href="../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <nav></nav>
+    <h1 id="accessify">accessify</h1>
+<p>Web accessibility for low-bandwidth inputs</p>
+<blockquote>
+  <p><strong>Note:</strong> We have published a proof-of-concept website at https://brainsatplay.com/accessify (index.html in this repo) that ginteractively demonstrates the value proposition of this library. Check it out!</p>
+</blockquote>
+<h2 id="introduction">Introduction</h2>
+<h3 id="goal">Goal</h3>
+<p>Implement a fully on-browser web navigation system for low-bandwidth inputs (e.g. BCIs).</p>
+<h3 id="features">Features</h3>
+<ul>
+<li>[x] Enable virtual mouse interaction with CSS elements</li>
+<li>[ ] Control mouse via WebGazer.js</li>
+<li>[ ] Make buttons available for labeling and direct selection</li>
+<li>[ ] Flash buttons for SSVEP / P300 selection</li>
+<li>[ ] Accessify Chrome Extension</li>
+</ul>
+<h3 id="questions">Questions</h3>
+<h4 id="whichdevicescanbeusedtodetectp300ssvepresponses">Which devices can be used to detect P300 / SSVEP responses?</h4>
+<ul>
+<li>[ ] Muse 2: <a href="https://neurotechx.github.io/eeg-notebooks/getting_started/available_notebooks.html">P300 likely</a></li>
+<li>[ ] OpenBCI Daisy-Cyton: Previous literature says yes to both</li>
+<li>[ ] FreeEEG32</li>
+<li>[ ] Neurosity Crown</li>
+</ul>
+<h4 id="doesdetectiondisruptstimuligeneration">Does detection disrupt stimuli generation?</h4>
+<ul>
+<li>Use <code>ssvep-stimuli</code> </li>
+</ul>
+<h4 id="doesdetectionworkonlowspechardware">Does detection work on low-spec hardware?</h4>
+<ul>
+<li>Validate detection on a Chromebook</li>
+</ul>
+<h2 id="repostructure">Repo Structure</h2>
+<ul>
+<li><p><code>/src</code>: Source code</p>
+<ul>
+<li><code>/libraries</code>: Libraries to be published separately</li>
+<li><code>/core</code>: Core internal functions</li>
+<li><code>/ui</code>: Standard Web Component library<ul>
+<li><code>/core</code>: <strong>Keyboard</strong> and <strong>Mouse</strong> components</li>
+<li><code>/mouse</code>: Internal mouse components</li>
+<li><code>/keyboard</code>: Internal keyboard components</li></ul></li></ul></li>
+<li><p><code>/docs</code>: Documentation and demo site</p></li>
+</ul>
+<h2 id="roughreference">Rough Reference</h2>
+<h2 id="classes">Classes</h2>
+<h3 id="accessifykeyboard">accessify.Keyboard()</h3>
+<p>Customizable keyboard with SSVEP / P300 controls</p>
+<h3 id="accessifymouse">accessify.Mouse()</h3>
+<p>Virtual mouse</p>
+<h2 id="namespaces">Namespaces</h2>
+<h3 id="accessifyselecttype">accessify.select(type)</h3>
+<ol>
+<li><strong>p300:</strong> Basic P300 Detection<ul>
+<li>potentials.p300(): Basic P300 Detection</li></ul></li>
+<li><strong>ssvep:</strong> Basic SSVEP Detection<ul>
+<li>hightime.fbcca(): Filter Bank Canonical Correlation Analysis (FBCCA) algorithm</li></ul></li>
+</ol>
+<h3 id="accessifymovetype">accessify.move(type)</h3>
+<ol>
+<li><strong>erd / ers:</strong> Basic Event-Related (De)Synchronization (i.e. motor imagery) Detection</li>
+</ol>
+<h2 id="roadmap">Roadmap</h2>
+<ol start="0">
+<li>Write an explanatory article that also can serve as a proof-of-concept (June 1st, 2022)</li>
+<li>Plug in Webgazer to detect where the user is looking on the screen.</li>
+<li>Implement Filter Bank Canonical Correlation Analysis (FBCCA) in <strong>hightime</strong></li>
+<li>Test FBCCA algorithm on a single flashing stimulus</li>
+<li>Implement P300 detection in <strong>potentials</strong> with all the signal processing in <strong>hightime</strong></li>
+<li>Test P300 detection on a single flashing stimulus</li>
+<li>Test both algorithms on various EEG devices</li>
+<li>Test both algorithms on a Chromebook</li>
+<li>Test both algorithms with multiple stimuli to discriminate from</li>
+<li>Design a navigation scheme (i.e. Web Components) that can use the algorithms to navigate a webpage</li>
+<li>Design a Chrome Extension that allows for generic web browsing</li>
+<li>Implement auditory BCI methods too!</li>
+</ol>
+<h2 id="dependencies">Dependencies</h2>
+<ul>
+<li><a href="https://github.com/brainsatplay/ssvep">ssvep</a>: Detect SSVEP on the browser</li>
+<li><a href="https://github.com/brainsatplay/potentials">potentials</a>: Detect ERPs on the browser</li>
+<li><a href="https://github.com/brownhci/WebGazer">webgazer</a>: Scalable Webcam EyeTracking Using User Interactions</li>
+</ul>
+<h3 id="peerdependencies">Peer Dependencies</h3>
+<ul>
+<li><a href="https://github.com/brainsatplay/datastreams-api">datastreams-api</a>: Get raw data on the browser</li>
+</ul>
+    <footer></footer>
+</body>
+</html>

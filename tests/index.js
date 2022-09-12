@@ -6,7 +6,10 @@ const debug = {
     unsupported: false,
     copied: false,
     broken: true,
-    ignored: true
+    ignored: true,
+    written: true,
+    unmapped: true,
+    invalid: true
 }
 // import config from '../docs.config.json' assert {type: 'json'}
 // const docs = new Docs(config)
