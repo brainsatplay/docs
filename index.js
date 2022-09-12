@@ -741,10 +741,13 @@ class Docs {
 
         // Always Convert Local to HTML
         if (!remote) {
-            const split = htmlProposed.split('.')
-            split.pop()
-            split.push('html')
-            htmlProposed = split.join('.')
+            const split = htmlProposed.split('/')
+            const fileSplit = split.pop().split('.')
+            if (fileSplit.length > 1) {
+                fileSplit.pop()
+                fileSplit.push('html')
+            }
+            htmlProposed = [...split, fileSplit.join('.')].join('/')
         }
 
         if (htmlProposed == '') htmlProposed = './'
