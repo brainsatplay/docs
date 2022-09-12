@@ -12,7 +12,7 @@ The Brains@Play Framework is dependent on several interrelated libraries.
 | [datastreams-api]     | [![datastreams-api-status]][datastreams-api]                   | Uniformly acquire real-time data with available browser APIs.                       |
 | [tinybuild]     | [![tinybuild-status]][tinybuild]                   | Custom build tool for web applications.     
 | [@brainsatplay/studio]         | [![@brainsatplay/studio-status]][@brainsatplay/studio] | A low-code editor for `brainsatplay` applications.       |
-| [@brainsatplay/component]         | [![@brainsatplay/component-status]][@brainsatplay/component] | The official component registry for `brainsatplay` applications.
+| [@brainsatplay/components]         | [![@brainsatplay/components-status]][@brainsatplay/components] | The official component registry for `brainsatplay` applications.
 
 
 [brainsatplay]: https://github.com/brainsatplay/brainsatplay
@@ -49,5 +49,5 @@ The Brains@Play Framework is dependent on several interrelated libraries.
 [tinybuild-status]: https://img.shields.io/npm/v/tinybuild
 
 <!-- Components Registry -->
-[@brainsatplay/component]: https://github.com/brainsatplay/component
-[@brainsatplay/component-status]: https://img.shields.io/npm/v/@brainsatplay/component
+[@brainsatplay/component]: https://github.com/brainsatplay/components
+[@brainsatplay/components-status]: https://img.shields.io/npm/v/@brainsatplay/components
