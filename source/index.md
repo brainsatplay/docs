@@ -19,7 +19,7 @@ All core software for The Brains@Play Framework has been released under the [AGP
 - Transforms function arguments into [`graphscript`](./guides/libraries/graphscript/index.md) graphs that can be targeted independently
 - Compiles source text from other languages (e.g. Python, C++, etc) into functional nodes (TBD)
 
-Using the [`@brainsatplay/studio`](./guides/libraries/studio/index.md), the underlying WASL structure can be inspected, modified, and extended with official [components](https://github.com/brainsatplay/components).
+Using the [`@brainsatplay/studio`](./guides/libraries/studio/index.md), the underlying WASL structure can be inspected, modified, and extended with official [components].
 
 ## How It Began
 At the core of `brainsatplay` is our decision to standardize the usage of ES Modules.
@@ -87,33 +87,24 @@ This documentation is written for **programmers who care about the future of com
 [@brainsatplay/docs]: https://github.com/brainsatplay/docs
 
 [brainsatplay]: https://github.com/brainsatplay/brainsatplay
-[brainsatplay-status]: https://img.shields.io/npm/v/brainsatplay
 
 <!-- Specification Language -->
 [wasl]: https://github.com/brainsatplay/wasl
-[wasl-status]: https://img.shields.io/npm/v/wasl
 
 <!-- Core Library-->
 [graphscript]: https://github.com/brainsatplay/graphscript
-[graphscript-status]: https://img.shields.io/npm/v/graphscript
 
 <!-- Integrated Editor-->
 [@brainsatplay/studio]: https://github.com/brainsatplay/studio
-[@brainsatplay/studio-status]: https://img.shields.io/npm/v/@brainsatplay/studio
 
 <!-- Low Code Programming System-->
 [visualscript]: https://github.com/brainsatplay/visualscript
-[visualscript-status]: https://img.shields.io/npm/v/visualscript
-
 
 <!-- Data Acquisition-->
 [datastreams-api]: https://github.com/brainsatplay/datastreams-api
-[datastreams-api-status]: https://img.shields.io/npm/v/datastreams-api.svg
 
 <!-- Build Tool-->
 [tinybuild]: https://github.com/brainsatplay/tinybuild
-[tinybuild-status]: https://img.shields.io/npm/v/tinybuild
 
 <!-- Plugin Registry -->
-[@brainsatplay/plugins]: https://github.com/brainsatplay/plugins
-[@brainsatplay/plugins-status]: https://img.shields.io/npm/v/@brainsatplay/plugins
+[components]: https://github.com/brainsatplay/components

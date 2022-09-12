@@ -18,6 +18,7 @@ const extension = (filePath) => {
     else return ''
 }
 
+const markdownExtension = '.md'
 const correctExtension = (filePath, base) => {
     const name = path.basename(filePath)
     const ext = name.slice(-base.length)
@@ -25,7 +26,7 @@ const correctExtension = (filePath, base) => {
 }
 
 const isRemote = (str) => str.slice(0, 7) == 'http://' || str.slice(0, 8) == 'https://'
-const isRelative = (str, ext) => str[0] === '.' && ((ext) ? correctExtension(str, ext) : true)
+const isRelative = (str) => str[0] === '.'
 const isMarkdown = (str) => (str.slice(-markdown.length) === markdown)
 
 
@@ -350,7 +351,6 @@ class Docs {
             const downloadedAt = this.downloads.raw[fullLink]
             if (downloadedAt) {
                 let newLinkPath = this.pathTo(downloadedAt, path.dirname(filePath))
-                console.log('newLinkPath', newLinkPath)
                 this.registerChange(line, link, newLinkPath, filePath, true, relativeTo, 'transferred') // update text
                 return
             } 
@@ -451,11 +451,10 @@ class Docs {
         const remoteFile = isRemote(link)
         const markdown = isMarkdown(link)
         const relativeFile = !remoteFile
-        const absoluteFile = !isRelative(link, publication.extension) && relativeFile
+        const absoluteFile = !isRelative(link) && relativeFile && markdown
 
         const {
             line,
-            pubExt,
             userRegex,
             relativeTo,
             isString,
@@ -471,7 +470,7 @@ class Docs {
 
 
 
-        let correctExt = correctExtension(after, pubExt) // transfer files with the specified extension
+        let correctExt = correctExtension(after, markdownExtension) // transfer files with the specified extension
 
 
         // Allow Relative Links on Internal Loads
@@ -664,7 +663,6 @@ class Docs {
 
                         if (typeof o != 'object') o = { map: o }
                         let isString = typeof o.map === 'string'
-                        const pubExt = o.extension ?? '.md' // default to look for markdown
 
                         let text, relativeTo
                         if (results[filePath].constructor.name === 'Buffer') text = results[filePath].toString() // Buffer
@@ -682,7 +680,6 @@ class Docs {
                             let links = {}
 
                             let info = {
-                                pubExt,
                                 userRegex,
                                 relativeTo,
                                 isString,
