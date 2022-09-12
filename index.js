@@ -168,13 +168,10 @@ class Docs {
             }
         }
 
-        const valid = await this.validate(this.links)
-        if (valid !== true) console.log('Invalid Links:', valid)
-
         this.report({
             noChanges,
             cantHandle,
-            copied
+            copied,
         })
 
         console.log(`\nDocumentation completed in ${((performance.now() - tic) / 1000).toFixed(3)} seconds.\n`)
@@ -199,12 +196,13 @@ class Docs {
 
         const invalid = []
         links.forEach(o => {
-            if (o.remote) {
 
-            } else {
+            // Only Validate Internal Links
+            if (!o.remote) {
                 const exists = fs.existsSync(o.link)
                 if (!exists) invalid.push(o)
             }
+
         })
 
         return invalid.length > 0 ? invalid : true
@@ -475,7 +473,7 @@ class Docs {
 
                         // Relink local to remote (if relative path goes out of the sandbox)
                         if (nBack >= possible) {
-                            const url = path.join(this.mergeSafe(relativeTo, link), name)
+                            const url = this.mergeSafe(relativeTo, link)
                             this.registerChange(line, link, url, filePath, true, relativeTo, 'external')
                             return
                         }
@@ -584,10 +582,11 @@ class Docs {
         let mapped = name
         if (index > 0) {
             const nBack = fromSplit.length - index
-            mapped = path.join(path.join(...Array.from({ length: nBack }, () => '..'), ...toSplit.slice(index)), name)
-        }
-
+            mapped = path.join(path.join(...Array.from({ length: nBack }, () => '..'), ...toSplit.slice(index)), name) // go out
+        } else mapped = path.join(...toSplit.slice(fromSplit.length), name) // go up
+        
         if (mapped[0] !== '.') return `./${mapped}`
+
         else return mapped
     }
 
@@ -740,7 +739,8 @@ class Docs {
             html,
             original,
             source: fileRemote ? filePath : this.prettyPath(filePath, updateOriginal ? 'copy' : 'input'),
-            remote: htmlRemote
+            remote: htmlRemote,
+            type
         })
 
         return refs.link
@@ -934,7 +934,7 @@ class Docs {
         const {
             noChanges,
             cantHandle,
-            copied
+            copied,
         } = info
 
 
@@ -993,6 +993,14 @@ class Docs {
         if (debugUnmatched && Object.keys(this.unmatched).length > 0) {
             console.log(`\n--------------- Unmatched Remote Links ---------------`)
             for (let link in this.unmatched) console.log(`- ${link}`)
+        }
+
+
+        const valid = this.validate(this.links)
+
+        if (valid !== true) {
+            console.log(`\n--------------- Links Not Handled Properly by @brainsatplay/docs ---------------`)
+            valid.forEach(o => console.log(`- ${o.link}`))
         }
     }
 }
