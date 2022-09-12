@@ -750,6 +750,9 @@ class Docs {
             htmlProposed = [...split, fileSplit.join('.')].join('/')
         }
 
+        htmlProposed = htmlProposed.replace('/index.html', '') // no index.html
+
+
         if (htmlProposed == '') htmlProposed = './'
         if (markdownProposed == '') markdownProposed = './'
 

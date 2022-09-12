@@ -7,7 +7,7 @@ const debug = {
     copied: false,
     broken: true,
     ignored: true,
-    written: true,
+    written: false,
     unmapped: true,
     invalid: true
 }
