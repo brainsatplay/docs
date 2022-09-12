@@ -65,6 +65,8 @@ class Docs {
     }
 
     // Collections
+    links = []
+
     broken = {}
     invalid = {}
 
@@ -104,6 +106,7 @@ class Docs {
         }
 
         // Clear File Collections
+        this.links = []
         this.originalFiles = {}
         this.downloads = {
             saved: {},
@@ -119,33 +122,33 @@ class Docs {
         this.written = {}
 
         // Create Config
-        const config = this.config
-        config.input = input ?? this.config.mdIn
-        config.output = output ?? this.config.htmlOut
-        config.copy = copy ?? this.config.mdOut
-        if (templates) config.templates = templates
+        this.config.input = input ?? this.config.mdIn
+        this.config.output = output ?? this.config.htmlOut
+        this.config.copy = copy ?? this.config.mdOut
+
+        if (templates) this.config.templates = templates
 
         const base = process.cwd()
-        const inputLoc = path.join(base, config.input)
-        const copyLoc = path.join(base, config.copy)
-        const outputLoc = path.join(base, config.output)
+        const inputLoc = path.join(base, this.config.input)
+        const copyLoc = path.join(base, this.config.copy)
+        const outputLoc = path.join(base, this.config.output)
 
         // Copy the Input Directory
         const res = this.check(path.join(copyLoc, 'dummy'));
         if (res) await this.clear(copyLoc)
         await this.copy(inputLoc, copyLoc)
-        config.input = config.copy // proxy input to copy
+        this.config.input = this.config.copy // proxy input to copy // TODO: Make sure this doesn't break anything
 
         // Clear the Output Directory
         const res2 = this.check(path.join(outputLoc, 'dummy'));
         if (res2) await this.clear(outputLoc)
 
         // List the Current Files
-        const bases = this.getBases(config)
+        const bases = this.getBases(this.config)
         this.originalFiles = await this.list(bases.input);
 
         // Preload Remote Assets + Changes
-        const changes = await this.preload(this.originalFiles, this.config.publications, config)
+        const changes = await this.preload(this.originalFiles, this.config.publications, this.config)
 
         const updatedResults = (changes) ? await this.list(bases.input) : this.originalFiles // grab list with new files
 
@@ -156,7 +159,7 @@ class Docs {
 
         for (let filePath in updatedResults) {
             let thisChanges = this.getChanges(filePath, changes)
-            const res = this.saveText(updatedResults[filePath], thisChanges, filePath, config)
+            const res = this.saveText(updatedResults[filePath], thisChanges, filePath, this.config)
             if (res) {
                 if (!thisChanges) noChanges.push(this.getRelName(filePath))
             } else {
@@ -165,63 +168,14 @@ class Docs {
             }
         }
 
+        const valid = await this.validate(this.links)
+        if (valid !== true) console.log('Invalid Links:', valid)
 
-        const isBoolean = typeof this.debug === 'boolean'
-
-        const debugUnchanged = isBoolean ? this.debug : this.debug?.unchanged
-        const debugUnsupported = isBoolean ? this.debug : this.debug?.unsupported
-        const debugCopied = isBoolean ? this.debug : this.debug?.copied
-        const debugBroken = isBoolean ? this.debug : this.debug?.broken
-        const debugIgnored = isBoolean ? this.debug : this.debug?.ignored
-        const debugWritten = isBoolean ? this.debug : this.debug?.written
-        const debugUnmapped = isBoolean ? this.debug : this.debug?.unmapped
-        const debugUnmatched = isBoolean ? this.debug : this.debug?.unmatched
-        const debugInvalid = isBoolean ? this.debug : this.debug?.invalid
-
-        if (debugUnchanged && noChanges.length > 0) {
-            console.log(`\n--------------- Unchanged Files ---------------`)
-            noChanges.forEach(str => console.log(`- ${str}`))
-        }
-
-        if (debugUnsupported && cantHandle.length > 0) {
-            console.log(`\n--------------- Unsupported Files ---------------`)
-            cantHandle.forEach(str => console.log(`- ${str}`))
-        }
-
-        if (debugCopied && copied.length > 0) {
-            console.log(`\n--------------- Copied Files ---------------`)
-            copied.forEach(str => console.log(`- ${str}`))
-        }
-
-        if (debugWritten && Object.keys(this.written).length > 0){
-            console.log(`\n--------------- Files Written with Changes ---------------`)
-            for (let raw in this.written) console.log(`- ${raw}`)
-        }
-
-        if (debugBroken && Object.keys(this.broken).length > 0) {
-            console.log(`\n--------------- Broken Links ---------------`)
-            for (let raw in this.broken) console.log(`- ${raw} | ${this.broken[raw]}`)
-        }
-
-        if (debugInvalid && Object.keys(this.invalid).length > 0) {
-            console.log(`\n--------------- Invalid Links ---------------`)
-            for (let link in this.invalid) console.log(`- ${this.invalid[link].filePath} | ${link}`)
-        }
-
-        if (debugIgnored && Object.keys(this.ignored).length > 0) {
-            console.log(`\n--------------- Ignored Links ---------------`)
-            for (let raw in this.ignored) console.log(`- ${raw} | ${this.ignored[raw]}`)
-        }
-
-        if (debugUnmapped && Object.keys(this.unmapped).length > 0) {
-            console.log(`\n--------------- Unmapped Links ---------------`)
-            for (let link in this.unmapped) console.log(`- ${link}`)
-        }
-
-        if (debugUnmatched && Object.keys(this.unmatched).length > 0) {
-            console.log(`\n--------------- Unmatched Remote Links ---------------`)
-            for (let link in this.unmatched) console.log(`- ${link}`)
-        }
+        this.report({
+            noChanges,
+            cantHandle,
+            copied
+        })
 
         console.log(`\nDocumentation completed in ${((performance.now() - tic) / 1000).toFixed(3)} seconds.\n`)
         return true
@@ -239,6 +193,22 @@ class Docs {
             main,
             input
         }
+    }
+
+    validate = (links=this.links) => {
+
+        const invalid = []
+        links.forEach(o => {
+            if (o.remote) {
+
+            } else {
+                const exists = fs.existsSync(o.link)
+                if (!exists) invalid.push(o)
+            }
+        })
+
+        return invalid.length > 0 ? invalid : true
+
     }
 
     exec = (command) => {
@@ -567,16 +537,17 @@ class Docs {
                 
                 // Mark as Invalid
                 else {
-                    this.invalid[link] = {
-                        link,
-                        filePath: `${config.mdIn}/${filePath.split(`${config.input}/`)[1]}`, // transform filePath to be readable and accessible by link
-                        line
-                    }
+                    this.invalid[link] = this.prettyPath(filePath, config) // transform filePath to be readable and accessible by link
                     return
                 }
             } 
             // else this.unsupported[link] = true
         }
+    }
+
+    prettyPath = (path, relative='input', config=this.config) => {
+        if (relative == 'input') relative = 'mdIn' // actual input, not copy
+        return `${config[relative]}/${path.split(`${config.input}/`)[1]}` // transform filePath to be readable and accessible by link
     }
 
     map = (thisPath, absoluteMapPath, name) => {
@@ -720,6 +691,7 @@ class Docs {
     registerChange = (line, link, newLink, filePath, remap = true, updateOriginal = false, type) => {
 
         const update = !!updateOriginal
+        const original = newLink
 
         // Transform Markdown to HTML Links
         const remote = isRemote(newLink)
@@ -737,21 +709,12 @@ class Docs {
         let htmlProposed = markdownProposed.replace('/index.md', '/index.html')
 
         // Update HTML Links
-        htmlProposed = markdownProposed.replace('/index.md', '')
+        const allRelative = markdownProposed.includes('/index.md') && markdownProposed.includes('./index.md')
+        if (!allRelative) htmlProposed = markdownProposed.replace('/index.md', '')
 
         // Always Convert Local to HTML
-        if (!remote) {
-            const split = htmlProposed.split('/')
-            const fileSplit = split.pop().split('.')
-            if (fileSplit.length > 1) {
-                fileSplit.pop()
-                fileSplit.push('html')
-            }
-            htmlProposed = [...split, fileSplit.join('.')].join('/')
-        }
-
-        htmlProposed = htmlProposed.replace('/index.html', '') // no index.html
-
+        if (!remote) htmlProposed = this.toHTML(htmlProposed)
+        if (!allRelative) htmlProposed = htmlProposed.replace('/index.html', '') // no index.html
 
         if (htmlProposed == '') htmlProposed = './'
         if (markdownProposed == '') markdownProposed = './'
@@ -770,7 +733,27 @@ class Docs {
             })
         }
 
+        const htmlRemote = isRemote(html)
+        const fileRemote = isRemote(filePath)
+        this.links.push({
+            link: htmlRemote ? html : this.prettyPath(this.mergeSafe(filePath, html), 'output'),
+            html,
+            original,
+            source: fileRemote ? filePath : this.prettyPath(filePath, updateOriginal ? 'copy' : 'input'),
+            remote: htmlRemote
+        })
+
         return refs.link
+    }
+
+    toHTML = (path) => {
+        const split = path.split('/')
+        const fileSplit = split.pop().split('.')
+        if (fileSplit.length > 1) {
+            fileSplit.pop()
+            fileSplit.push('html')
+        }
+        return[...split, fileSplit.join('.')].join('/')
     }
 
 
@@ -944,7 +927,74 @@ class Docs {
                 });
             });
         })
-    };
+    }
+
+    report = (info) => {
+
+        const {
+            noChanges,
+            cantHandle,
+            copied
+        } = info
+
+
+        const isBoolean = typeof this.debug === 'boolean'
+
+        const debugUnchanged = isBoolean ? this.debug : this.debug?.unchanged
+        const debugUnsupported = isBoolean ? this.debug : this.debug?.unsupported
+        const debugCopied = isBoolean ? this.debug : this.debug?.copied
+        const debugBroken = isBoolean ? this.debug : this.debug?.broken
+        const debugIgnored = isBoolean ? this.debug : this.debug?.ignored
+        const debugWritten = isBoolean ? this.debug : this.debug?.written
+        const debugUnmapped = isBoolean ? this.debug : this.debug?.unmapped
+        const debugUnmatched = isBoolean ? this.debug : this.debug?.unmatched
+        const debugInvalid = isBoolean ? this.debug : this.debug?.invalid
+
+        if (debugUnchanged && noChanges.length > 0) {
+            console.log(`\n--------------- Unchanged Files ---------------`)
+            noChanges.forEach(str => console.log(`- ${str}`))
+        }
+
+        if (debugUnsupported && cantHandle.length > 0) {
+            console.log(`\n--------------- Unsupported Files ---------------`)
+            cantHandle.forEach(str => console.log(`- ${str}`))
+        }
+
+        if (debugCopied && copied.length > 0) {
+            console.log(`\n--------------- Copied Files ---------------`)
+            copied.forEach(str => console.log(`- ${str}`))
+        }
+
+        if (debugWritten && Object.keys(this.written).length > 0){
+            console.log(`\n--------------- Files Written with Changes ---------------`)
+            for (let raw in this.written) console.log(`- ${raw}`)
+        }
+
+        if (debugBroken && Object.keys(this.broken).length > 0) {
+            console.log(`\n--------------- Broken Links ---------------`)
+            for (let raw in this.broken) console.log(`- ${raw} | ${this.broken[raw]}`)
+        }
+
+        if (debugInvalid && Object.keys(this.invalid).length > 0) {
+            console.log(`\n--------------- Invalid Links ---------------`)
+            for (let link in this.invalid) console.log(`- ${this.invalid[link]} | ${link}`)
+        }
+
+        if (debugIgnored && Object.keys(this.ignored).length > 0) {
+            console.log(`\n--------------- Ignored Links ---------------`)
+            for (let raw in this.ignored) console.log(`- ${raw} | ${this.ignored[raw]}`)
+        }
+
+        if (debugUnmapped && Object.keys(this.unmapped).length > 0) {
+            console.log(`\n--------------- Unmapped Links ---------------`)
+            for (let link in this.unmapped) console.log(`- ${link}`)
+        }
+
+        if (debugUnmatched && Object.keys(this.unmatched).length > 0) {
+            console.log(`\n--------------- Unmatched Remote Links ---------------`)
+            for (let link in this.unmatched) console.log(`- ${link}`)
+        }
+    }
 }
 
 export default Docs
