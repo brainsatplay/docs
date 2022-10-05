@@ -31,6 +31,11 @@ const isMarkdown = (str) => (str.slice(-markdown.length) === markdown)
 
 
 const create = {
+    name: {
+        generator: (text) => `<h1>${text}</h1>`,
+        // generator: (text) => `<a href="/"><h1>${text}</h1></a>`,
+        format: 'text'
+    },
     title: {
         generator: (text) => `<title>${text}</title>`,
         format: 'text'
@@ -49,7 +54,17 @@ const create = {
     }
 }
 
-const converter = new showdown.Converter();
+// Valid Options: https://github.com/showdownjs/showdown#valid-options
+const converter = new showdown.Converter({
+    tables: true,
+    tasklists: true,
+    emoji: true,
+    moreStyling: true
+    // metadata: true
+});
+
+converter.setFlavor('github');
+
 
 // This class manages all documentation generation for @brainsatplay/docs
 class Docs {

@@ -5,8 +5,58 @@
 html, body {
     margin: 0;
     padding: 0;
+    width: 100vw;
 }
 
-body {
-  padding: 0px 50px;
+section {
+  padding: 15px 50px;
+}
+
+
+/* Default Nav Bar */
+nav {
+  background: black;
+  color: white;
+  padding: 2px 25px;
+  pointer-events: none;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+}
+
+/* Block Quotes */
+blockquote {
+  border-left: 3px solid black;
+  padding: 1px 20px;
+}
+
+/* Code Blocks */
+pre {
+  overflow: auto;
+  position: relative;
+  border-radius: 20px;
+  border: 1px solid black;
+  overflow-y: hidden;
+}
+
+pre > code {
+  display: block;
+  padding: 15px 25px;
+}
+
+pre:before {
+  content: "Code";
+  color: white;
+  background: black;
+  display: block;
+  font-family: auto;
+  padding: 10px 25px;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
 }

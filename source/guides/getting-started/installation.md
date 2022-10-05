@@ -16,3 +16,5 @@ import * as brainsatplay from 'brainsatplay'
 ``` js
 const brainsatplay = require('brainsatplay')
 ```
+
+After you've installed the Brains@Play Framework, you're going to need to [familiarize yourself with a few conventions](./conventions.md) before you can develop your first application!

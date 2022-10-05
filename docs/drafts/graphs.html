@@ -10,24 +10,26 @@
     <link rel="icon" href="../static/img/favicon.ico" type="image/x-icon" />
 </head>
 <body>
-    <nav></nav>
-    <h1 id="gettingstartedwithgraphs">Getting Started with Graphs</h1>
+    <header>
+        <nav><h1>Brains@Play</h1></nav>
+    </header>
+    <section>
+        <h1 id="getting-started-with-graphs">Getting Started with Graphs</h1>
 <p>To create a graph, simply use the <code>Graph</code> class.</p>
-<p>``` javascript 
+<p>``` javascript <br />
     let graph = new brainsatplay.Graph();</p>
-<pre><code>Then populate the graph with nodes.
-</code></pre>
-<p>javascript 
-    // -------------------------------------------------------------------------
-    let upstreamProps = {
-      tag:'upstream',
-      increment:1,
-      multiplier:2,
-      operator:(input,self)=&gt;{
-        let output =  self.multiplier*(input + self.increment);
-       console.log(<code>Upstream: ${self.multiplier}*(${input} + ${self.increment}) = ${output}</code>)<br />
-       return output;
-      }
+<pre><code>Then populate the graph with nodes.</code></pre>
+<p>javascript <br />
+    // -------------------------------------------------------------------------<br />
+    let upstreamProps = {<br />
+      tag:'upstream',<br />
+      increment:1,<br />
+      multiplier:2,<br />
+      operator:(input,self)=&gt;{<br />
+        let output =  self.multiplier*(input + self.increment);<br />
+       console.log(<code>Upstream: ${self.multiplier}*(${input} + ${self.increment}) = ${output}</code>)        <br />
+       return output;<br />
+      }<br />
     }</p>
 <pre><code>let upstream2 = graph.add(upstreamProps);
 let downstream2 = graph.create((input,self)=&gt;{
@@ -91,9 +93,9 @@ let res = await flowNode.run(6);
 
 // -------------------------------------------------------------------------
 let res2 = await graph.run('upstream2',7);
-console.log(res,res2);
-</code></pre>
+console.log(res,res2);</code></pre>
 <p>```</p>
+    </section>
     <footer></footer>
 </body>
 </html>

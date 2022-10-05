@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <link rel=stylesheet href="../../../../.docs/default.css"/>
+    <link rel=stylesheet href="../../../../static/custom.css"/>
+    <link rel="icon" href="../../../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <header>
+        <nav><h1>Brains@Play</h1></nav>
+    </header>
+    <section>
+        <h2 id="ssefrontend">SSEfrontend</h2>
+<p>Using the built-in EventSource API in-browser, we can establish arbitrary event responses from the server very quickly. We combined this with our HTTPbackend to enable two-way connections via REST calls and SSE subscriptions. Serverside can talk to specific clients directly with ID'd connections and association via the <code>Router</code></p>
+<p>For non-default events (message, open, close, error), set the callback to <code>true</code> to just use the default <code>this.receive</code> and <code>setState</code> (if keepState is true) built in to the service.</p>
+<pre><code class="ts language-ts">import {SSEfrontend} from 'graphscript'
+
+export type EventSourceProps = {
+    url:string,
+    events:{
+        message?:(ev:any,sseinfo?:EventSourceInfo)=&gt;void,  //will use this.receive as default
+        open?:(ev:any,sseinfo?:EventSourceInfo)=&gt;void,
+        close?:(ev:any,sseinfo?:EventSourceInfo)=&gt;void,
+        error?:(ev:any,sseinfo?:EventSourceInfo)=&gt;void,
+        [key:string]:any
+    }
+    //these callbacks are copied to events object above if not defined, just simpler
+    onmessage?:(ev:any,sseinfo?:EventSourceInfo)=&gt;void,  //will use this.receive as default
+    onopen?:(ev:any,sseinfo?:EventSourceInfo)=&gt;void,
+    onclose?:(ev:any,sseinfo?:EventSourceInfo)=&gt;void,
+    onerror?:(ev:any,sseinfo?:EventSourceInfo)=&gt;void,
+    evoptions?:boolean|AddEventListenerOptions,
+    type?:'eventsource'|string,
+    _id?:string,
+    keepState?:boolean
+}
+
+export type EventSourceInfo = {
+    source:EventSource,
+    send:(message:any)=&gt;any,
+    request:(message:any, method?:string)=&gt;Promise&lt;any&gt;,
+    post:(route:any, args?:any)=&gt;void,
+    run:(route:any, args?:any, method?:string)=&gt;Promise&lt;any&gt;,
+    subscribe:(route:any, callback?:((res:any)=&gt;void)|string)=&gt;any,
+    unsubscribe:(route:any, sub:number)=&gt;Promise&lt;boolean&gt;,
+    terminate:() =&gt; void,
+    graph:SSEfrontend
+} &amp; EventSourceProps
+
+
+
+const sse = new SSEfrontend();
+
+const sseinfo = sse.openSSE({
+    url:'http://localhost:8080/sse',
+    events:{
+        'test':(ev)=&gt;{console.log('test',ev.data)}
+    }
+} as EventSourceProps) as EventSourceInfo;</code></pre>
+<p>That's basically it!</p>
+<p>Terminate event sources with .terminate like in every other service.</p>
+    </section>
+    <footer></footer>
+</body>
+</html>

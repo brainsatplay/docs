@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <link rel=stylesheet href="../../../../.docs/default.css"/>
+    <link rel=stylesheet href="../../../../static/custom.css"/>
+    <link rel="icon" href="../../../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <header>
+        <nav><h1>Brains@Play</h1></nav>
+    </header>
+    <section>
+        <h2 id="wssfrontend">WSSfrontend</h2>
+<p>To open a websocket connection from node to another server</p>
+<pre><code class="ts language-ts">import {WSSfrontend} from 'graphscript'
+
+
+export type WebSocketProps = {
+    host:string,
+    port:number,
+    path?:string,
+    onmessage?:(data:string | ArrayBufferLike | Blob | ArrayBufferView,  ws:WebSocket, wsinfo:WebSocketInfo)=&gt;void, //will use this.receive as default
+    onopen?:(ev:any, ws:WebSocket, wsinfo:WebSocketInfo)=&gt;void,
+    onclose?:(ev:any,  ws:WebSocket, wsinfo:WebSocketInfo)=&gt;void,
+    onerror?:(ev:any,  ws:WebSocket, wsinfo:WebSocketInfo)=&gt;void
+    protocol?:'ws'|'wss',
+    keepState?:boolean,
+    type?:'socket',
+    _id?:string,
+    [key:string]:any
+}
+
+export type WebSocketInfo = {
+    socket:WebSocket,
+    address:string,
+    send:(message:any)=&gt;void,
+    request:(message:any, method?:string)=&gt;Promise&lt;any&gt;,
+    post:(route:any, args?:any)=&gt;void,
+    run:(route:any, args?:any, method?:string)=&gt;Promise&lt;any&gt;,
+    subscribe:(route:any, callback?:((res:any)=&gt;void)|string)=&gt;any,
+    unsubscribe:(route:any, sub:number)=&gt;Promise&lt;boolean&gt;,
+    terminate:()=&gt;boolean,
+    _id?:string,
+    graph:WSSfrontend
+} &amp; WebSocketProps
+
+
+const wss = new WSSfrontend();
+
+let socketinfo = wss.openWS({
+    host:'localhost',
+    port:8080, //server port, not the wss port 
+    path:'wss' //if using the actual wss port, don't pass a path
+} as SocketProps) as SocketInfo;
+
+//e.g..
+socketinfo.subscribe('ping', console.log); //ping is available if loadDefaultRoutes is set to true when initializing a service
+socketinfo.post('ping');</code></pre>
+<p>The default onmessage function handles service calls with jsonified commands. You can overwrite this or add custom listeners in parallel, everything else follows standard WebSocket API usage.</p>
+    </section>
+    <footer></footer>
+</body>
+</html>

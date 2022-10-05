@@ -21,9 +21,11 @@ const config = {
     //     [`${basePattern}/wasl`]: "libraries/wasl",
     //     [`${basePattern}/visualscript`]: "libraries/visualscript"
     // },
+
     stylesheet: './static/custom.css',
     favicon: './static/img/favicon.ico',
     title: "Brains@Play Docs",
+    name: "Brains@Play",
 
     templates: {
         "html": "templates/document.template.html",
@@ -34,19 +36,19 @@ const config = {
             pattern: basePattern,
             extension: ".md",
             map: {
-                accessify: "libraries/accessify",
-                brainsatplay: "libraries/brainsatplay",
-                components: "libraries/components",
-                [`datastreams-api`]: "libraries/datastreams-api",
-                docs: "libraries/docs",
-                [`es-plugins`]: "libraries/es-plugins",
-                freerange: "libraries/freerange",
-                graphscript: "libraries/graphscript",
-                [`nRF52-Biosensing-Boards`]: "libraries/nRF52",
-                studio: "libraries/studio",
-                tinybuild: "libraries/tinybuild",
-                wasl: "libraries/wasl",
-                visualscript: "libraries/visualscript"
+                accessify: "repos/accessify",
+                brainsatplay: "repos/brainsatplay",
+                components: "repos/components",
+                [`datastreams-api`]: "repos/datastreams-api",
+                docs: "repos/docs",
+                [`es-plugins`]: "repos/es-plugins",
+                freerange: "repos/freerange",
+                graphscript: "repos/graphscript",
+                [`nRF52-Biosensing-Boards`]: "repos/nRF52",
+                studio: "repos/studio",
+                tinybuild: "repos/tinybuild",
+                wasl: "repos/wasl",
+                visualscript: "repos/visualscript"
             }
         }
     ]
