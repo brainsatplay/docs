@@ -67,5 +67,6 @@ As specified in `.wasl.json` files, each **graph** has **nodes** and **edges**. 
 
 > Although specified in the WASL standard, these are *not* handled by the [wasl](../repos/wasl/index.md) library itself. Instead, **graphs** are assembled by external libraries such as [graphscript](../repos/graphscript/index.md).
 
+---
 
-Now that you know more about the Brains@Play Framework, let's[develop your first application](./your-first-app.md)!
+Now that you know more about the Brains@Play Framework, let's[develop your first Component](./component.md)!
