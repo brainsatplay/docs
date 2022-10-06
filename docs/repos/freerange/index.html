@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <link rel=stylesheet href="../../.docs/default.css"/>
+    <link rel=stylesheet href="../../static/custom.css"/>
+    <link rel="icon" href="../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <header>
+        <nav><h1>Brains@Play</h1></nav>
+    </header>
+    <section>
+        <h1 id="freerange">freerange</h1>
+<p>File import and export utilities with <strong>free</strong> range-request support for remote files.</p>
+<h2 id="installation">Installation</h2>
+<h3 id="browser">Browser</h3>
+<pre><code class="javascript language-javascript">&lt;script src="https://cdn.jsdelivr.net/npm/freerange"&gt;&lt;/script&gt;</code></pre>
+<h3 id="es-modules">ES Modules</h3>
+<pre><code class="javascript language-javascript">import * as freerange from `https://cdn.jsdelivr.net/npm/freerange/index.esm.js`</code></pre>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="codecs">Codecs</h3>
+<p>The <code>Codecs</code> class allow for easily encoding and decoding files.</p>
+<pre><code class="javascript language-javascript">const codecs = new freerange.Codecs()
+
+const buffer = await codecs.encode('Hi there')
+const text = await codecs.decode(buffer)
+console.log('text', text)</code></pre>
+<p>For more than text encoding / decoding, you'll need to use our a codec from our library—or roll your own!</p>
+<pre><code class="javascript language-javascript">const jsonPlugin = freerange.codecs.json
+codecs.add(jsonPlugin)
+const buffer = await codecs.encode({key: 'value'}, jsonPlugin.type)
+const json = await codecs.decode(buffer, jsonPlugin.type)
+console.log('JSON', json)</code></pre>
+<h3 id="system">System</h3>
+<p>The freerange <code>System</code> class allows you to rapidly access local and remote filesysems. It contains a <code>Codecs</code> instance to allow for generic read / write capabilities.</p>
+<pre><code class="javascript language-javascript">document.querySelector('button').onclick = async () =&gt; {
+
+    // ----------------- Declare a System -----------------
+    // 1. Choose a directory in your local filesystem
+    const system = new freerange.System() 
+
+    // // 2. ES Module in a remote directory
+    // const system = new freerange.System('https://raw.githubusercontent.com/brainsatplay/brainsatplay-starter-kit/main/app/index.js') 
+
+    // // 3. File in the root of a remote directory
+    // const system = new freerange.System('https://raw.githubusercontent.com/brainsatplay/freerange/main/README.md')
+
+    // // 4. Arbitrary remote directory
+    // const system = new freerange.System('foo') 
+
+    await system.init()
+
+    // ----------------- Get / Create Files -----------------
+    // Text File
+    const text = await system.open('test.txt', true) // get (or create) the file
+    const textContents = await text.body // get file contents
+    console.log('Existing Text', textContents)
+    text.body = 'Hello world' // set file contents
+
+    // JSON File
+    const json = await system.open('test.json', true)
+    const jsonContents = await json.body
+    console.log('Existing JSON', jsonContents)
+    json.body = {key: 'value'}
+
+    // CSV File
+    const csv = await system.open('test.csv', true)
+    const csvContents = await csv.body
+    console.log('Existing CSV', csvContents)
+    csvContents.push({row: csvContents.length}) // We can change the csvContent variable directly because it is an object reference
+
+    await system.save() // save file contents for all files (if changed)
+}</code></pre>
+<h2 id="roadmap">Roadmap</h2>
+<ol>
+<li>Currently, multi-part requests are broken up client-side. Fix this!<ul>
+<li>For some reason, multi-part requests that are too long end up bouncing from the server</li>
+<li>This current approach is very expensive. Concatenate on the server!</li></ul></li>
+<li>Currently only supports range requests for .edf files. Implement more!</li>
+<li>Currently only supports iterative read. Allow writing to specific bytes!</li>
+<li>Implement NWB as an extension…</li>
+</ol>
+<h2 id="known-issue">Known Issue</h2>
+<ol>
+<li>Postprocessing a large number of bytes (e.g. for EDF files) results in long wait times.</li>
+<li>ES6 imports using a remote URL will not work for local files</li>
+</ol>
+    </section>
+    <footer></footer>
+</body>
+</html>

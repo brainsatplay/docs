@@ -72,8 +72,6 @@ The Brains@Play Framework and [all of its its dependencies](./repositories/index
 
 Keep reading to [install the Brains@Play Framework](./guides/getting-started/installation.md) and develop your first application!
 
-[@brainsatplay/docs]: https://github.com/brainsatplay/docs/blob/main/README.md
-
 [brainsatplay]: https://github.com/brainsatplay/brainsatplay/blob/main/README.md
 
 <!-- Specification Language -->

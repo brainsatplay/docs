@@ -14,18 +14,18 @@
         <nav><h1>Brains@Play</h1></nav>
     </header>
     <section>
-        <h2 id="ecmascript-plugins-es-plugins">ECMAScript Plugins (ES Plugins)</h2>
-<p><a href="https://npmjs.com/package/es-plugins"><img src="https://badgen.net/npm/v/es-plugins" alt="Npm package version" /></a><br />
-<a href="https://npmjs.ccom/package/es-plugins"><img src="https://badgen.net/npm/dm/es-plugins" alt="Npm package monthly downloads" /></a><br />
+        <h2 id="escompose">escompose</h2>
+<p><a href="https://npmjs.com/package/escompose"><img src="https://badgen.net/npm/v/escompose" alt="Npm package version" /></a><br />
+<a href="https://npmjs.com/package/escompose"><img src="https://badgen.net/npm/dm/escompose" alt="Npm package monthly downloads" /></a><br />
 <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/license-AGPL_v3-blue.svg" alt="License: AGPL v3" /></a><br />
 <a href="https://discord.gg/CDxskSh9ZB"><img src="https://img.shields.io/badge/community-discord-7289da.svg?sanitize=true" alt="Discord" /></a></p>
-<p><strong>ES Plugins</strong> is a standard for transforming ES Modules into standardized Web Components to simplify the process of authoring composable web applications.</p>
-<p>The <strong>es-plugins</strong> library uses <a href="https://github.com/brainsatplay/graphscript">graphscript</a> to compose plugins—as well as its <code>DOMService</code> class to transform plugins into Web Components.</p>
+<p><strong>ES Components</strong> is a standard for transforming ES Modules into standardized Web Components to simplify the process of authoring composable web applications.</p>
+<p>The <strong>escompose</strong> library uses <a href="https://github.com/brainsatplay/graphscript">graphscript</a> to compile ES Components into Web Components that respond to each other. </p>
 <blockquote>
-  <p><strong>Note:</strong> <strong>es-plugins</strong> is a core library of the <a href="https://github.com/brainsatplay/brainsatplay">Brains@Play Framework</a></p>
+  <p><strong>escompose</strong> is a core library of the <a href="https://github.com/brainsatplay/brainsatplay">Brains@Play Framework</a></p>
 </blockquote>
 <h2 id="the-specification">The Specification</h2>
-<p>Each Plugin contains one <code>default</code> export and any number of <code>named</code> exports.</p>
+<p>Each Component contains one <code>default</code> export and any number of <code>named</code> exports.</p>
 <pre><code class="javascript language-javascript">export let nExecutions = 0
 
 export default function(){
@@ -34,10 +34,10 @@ export default function(){
 }</code></pre>
 <p>As such, this specification treats <strong>namespace imports</strong> (which access default <em>and</em> named exports) as first-class citizens.</p>
 <h3 id="default-exports">Default Exports</h3>
-<p>The <code>default</code> export defines the behavior of the Plugin.</p>
+<p>The <code>default</code> export defines the behavior of the Component.</p>
 <h3 id="named-exports">Named Exports</h3>
-<p><code>named</code> exports define the states of the Plugin. </p>
-<p>However, <strong>multiple named exports</strong> without a default function may also be passed. These are transformed into individual plugins within the same graph.</p>
+<p><code>named</code> exports define the states of the Component. </p>
+<p>However, <strong>multiple named exports</strong> without a default function may also be passed. These are transformed into individual Components within the same graph.</p>
 <h2 id="acknowledgments">Acknowledgments</h2>
 <p>This library is maintained by <a href="https://github.com/garrettmflynn">Garrett Flynn</a> and <a href="https://github.com/joshbrew">Joshua Brewster</a>, who use contract work and community contributions through <a href="https://opencollective.com/brainsatplay">Open Collective</a> to support themselves.</p>
 <h3 id="backers">Backers</h3>
