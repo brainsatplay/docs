@@ -20,10 +20,13 @@
 <p>Code: <a href="https://github.com/brainsatplay/tinybuild/blob/master/tinybuild/esbuild"><code>tinybuild/esbuild</code></a></p>
 <h2 id="bundling">Bundling</h2>
 <p>Create an index.js (or whatever name) file serving as the entry point script for your webapp or library e.g.:</p>
-<pre><code class="js language-js">if(typeof window !== 'undefined') alert('Tinybuild successful!')
-console.log('Tinybuild succesful!')</code></pre>
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>if(typeof window !== 'undefined') alert('Tinybuild successful!')
+console.log('Tinybuild succesful!')
+</code></pre></div>
 <p>Now create a bundler.js file which we'll execute with <code>node bundler.js</code></p>
-<pre><code class="js language-js">import {bundle} from 'tinybuild'
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>import {bundle} from 'tinybuild'
 
 bundle({
     entryPoints: ['index.js'],
@@ -32,12 +35,15 @@ bundle({
     bundleESM: false, //.esm format
     bundleTypes: false, //you need a .tsconfig for this to work
     bundleHTML: true
-})</code></pre>
+})
+</code></pre></div>
 <p>Our presets will let you quickly bundle apps, browser and node modules, generate types, create "executable" html files from entry points, "webpacked" globals and init scripts, and more with esbuild (minification, sourcemaps, js or browser version targeting, etc.), all with just one input object!</p>
 <p>The other half of our preset tools in tinybuild include a boilerplate node development server with optional https, hot reloading, pwa support, python server interoperation examples, and websocket presets so it can work as a quick and dirty production server as well.</p>
 <h2 id="bundler-settings">Bundler settings</h2>
 <p>Any unlisted settings are just typical esbuild settings, which can be configured per build type via the .options tag (e.g. config.options.browser = {…more esbuild settings})</p>
-<pre><code class="js language-js">//found in esbuild/bundler.js
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+//found in esbuild/bundler.js
 const bundlerSettings = {
   bundleBrowser:true, //create plain js build? Can include globals and init scripts
   bundleESM:false,     //create esm module js files
@@ -82,7 +88,9 @@ const bundlerSettings = {
   //globals:{['index.ts']:['Graph']}
   //init:{['index.ts']:function(bundle) { console.log('prepackaged bundle script!', bundle); }.toString() }
 }
-//the rest are based on what esbuild offers</code></pre>
+//the rest are based on what esbuild offers
+
+</code></pre></div>
 <h3 id="browser-bundling">Browser Bundling</h3>
 <p>Browser bundling simply breaks projects down into plain js format, usable e.g. in script tags. </p>
 <p>This includes support for setting module global names as well as specifying specific class names or functions, variables, etc you want to expose via the <code>globalThis:string</code> and <code>globals:{'entryPoints.js':['ClassToSetOnglobalThis']}</code> settings. </p>
@@ -103,10 +111,13 @@ const bundlerSettings = {
 <p>You may also use it if you want to write quick library or frontend tests with init scripts and test serving scripts to execute in-browser. Currently this test setting only applies to the browser bundle, which you could override to format for esm via .outputs.browser.format = 'esm' or .outputs.browser.platform = 'node'. </p>
 <h3 id="worker-bundling">Worker bundling</h3>
 <p>This custom plugin is active by default. The only prerequisite is that your worker files have 'worker.js' or '.worker' (e.g. for ts worker files) in their path. Then import your workers like this:</p>
-<pre><code class="js language-js">import worker from 'worker.js' //or if the worker is a ts file, '.worker' will resolve the separate worker bundle too
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>import worker from 'worker.js' //or if the worker is a ts file, '.worker' will resolve the separate worker bundle too
 //export { worker } //you can re-export the bundled worker blob/path or use it in your app/library
 
-let w = new Worker(worker);</code></pre>
+let w = new Worker(worker);
+
+</code></pre></div>
 <p>And esbuild will bundle the worker with your distribution! You'll find the bundled workers in the same output file location. You can bundle workers directly in your app/library using our plugin (applied by default) which bundles and inserts the worker code as an inline object url. </p>
 <p>If you set the blobWorkers setting to false using the workerPlugin manually in your config, it will supply the expected url to the server's node_modules folder when you install the worker library. You can set the bundler settings for the worker in the workerPlugin initialization as well, it defaults to only setting <code>minifyWhitespace:true</code> in the bundler settings. </p>
 <p>Find our <a href="https://github.com/brainsatplay/graphscript/examples">graphscript</a> examples for multiple worker implementations for graphics rendering with threejs.</p>

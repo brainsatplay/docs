@@ -27,7 +27,8 @@
 </ul>
 <p>Quick start server from Node:</p>
 <p>Create index.html (or any name):</p>
-<pre><code class="html language-html">&lt;!DOCTYPE html&gt;
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>&lt;!DOCTYPE html&gt;
 &lt;head&gt;&lt;/head&gt;
 &lt;body&gt;
 
@@ -36,9 +37,12 @@
 
         alert('Served from ' + window.location.host)
     &lt;/script&gt;
-&lt;/body&gt;</code></pre>
+&lt;/body&gt;
+</code></pre></div>
 <p>Create server.js</p>
-<pre><code class="js language-js">import 'serve' from 'tinybuild'
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+import 'serve' from 'tinybuild'
 
 let config = {
     protocol:'http', //'http' or 'https'. HTTPS required for Nodejs &lt;---&gt; Python sockets. If using http, set production to False in python/server.py as well
@@ -47,11 +51,14 @@ let config = {
     startpage: 'index.html',  //home page
 }
 
-serve(config);</code></pre>
+serve(config);
+
+</code></pre></div>
 <p>Then via command line: <code>node server.js</code></p>
 <h2 id="hot-reloading-python-concurrency-bundling-then-serving-etc">Hot reloading, python, concurrency, bundling then serving, etc:</h2>
 <p>We recommend these as your package.json settings with tinybuild and to use the concurrent + development server features, choose the devDependencies tag based on if you are using source or the libraries and follow the rest of the instructions to set up the tinybuild.js entry point.</p>
-<pre><code class="json language-json">{
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>{
     "name": "tinybuildapp",
     "version": "0.0.0",
     "description": "Barebones esbuild and test node server implementation. For building",
@@ -95,7 +102,9 @@ serve(config);</code></pre>
             "dist/"
         ]
     }
-}</code></pre>
+}
+
+</code></pre></div>
 <p>then <code>npm install</code> in the directory with this file.</p>
 <ul>
 <li>Hot reloading is accomplished with <code>nodemon</code> and <code>ws</code></li>
@@ -135,7 +144,8 @@ serve(config);</code></pre>
 <h2 id="pwa-build">PWA build:</h2>
 <p>To test:</p>
 <p>Create a manifest.json and a template serviceworker file like so (tinybuild server will write these for you) </p>
-<pre><code class="json language-json">{
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>{
     "short_name": "PWA",
     "name": "PWA",
     "start_url": ".",
@@ -147,8 +157,10 @@ serve(config);</code></pre>
     "permissions": [
       "storage"
     ]
-  }</code></pre>
-<pre><code class="js language-js">//sw.js
+  }
+</code></pre></div>
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>//sw.js
 
 //https://github.com/ibrahima92/pwa-with-vanilla-js
 const assets = [
@@ -171,9 +183,12 @@ self.addEventListener("fetch", fetchEvent =&gt; {
       return res || fetch(fetchEvent.request);
     })
   );
-});</code></pre>
+});
+
+</code></pre></div>
 <p>In your index.html:</p>
-<pre><code class="html language-html">&lt;link rel="manifest" href="manifest.webmanifest"&gt;
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>&lt;link rel="manifest" href="manifest.webmanifest"&gt;
 &lt;link rel="apple-touch-icon" href="src/assets/square.png"&gt;
 &lt;meta name="apple-mobile-web-app-status-bar" content="#000000"&gt;
 &lt;meta name="theme-color" content="#000000"&gt;
@@ -186,7 +201,8 @@ self.addEventListener("fetch", fetchEvent =&gt; {
         .catch((err) =&gt; console.log("Service worker registration failed", err));
     });
 
-&lt;/script&gt;</code></pre>
+&lt;/script&gt;
+</code></pre></div>
 <p>And run the server with https.</p>
 <h3 id="other-notes">Other notes:</h3>
 <p>See README.md files in each folder for more explanation on how to work with these types of applications.</p>

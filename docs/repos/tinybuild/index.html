@@ -38,7 +38,8 @@
 <p>then from an empty project folder, initialize a default app with:</p>
 <p><code>tinybuild</code></p>
 <p>Or first create a tinybuild.config.js like so:</p>
-<pre><code class="js language-js">//import {defaultBundler, defaultServer, packager} from 'tinybuild'
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>//import {defaultBundler, defaultServer, packager} from 'tinybuild'
 
 const config = {
     bundler: { //esbuild settings, set false to skip build step or add bundle:true to config object to only bundle (alt methods)
@@ -76,7 +77,8 @@ const config = {
     }
 }
 
-export default config;</code></pre>
+export default config;
+</code></pre></div>
 <p>Then run <code>tinybuild</code>.</p>
 <h3 id="tinybuild-commands">tinybuild commands:</h3>
 <p><code>tinybuild help</code> lists accepted arguments, see the boilerplate created in the new repo for more. The <code>tinybuild</code> command will use your edited <code>tinybuild.config.js</code> or <code>tinybuild.js</code> (which includes the library and executes the packager with the bundler and/or server itself for more control) config file after initialization so you can use it generically, else see the created <code>package.json</code> for more local commands.</p>

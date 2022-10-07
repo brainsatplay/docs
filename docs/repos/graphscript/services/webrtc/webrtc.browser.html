@@ -17,7 +17,9 @@
         <h2 id="webrtcfrontend">WebRTCfrontend</h2>
 <p>WebRTC allows peer-2-peer connections directly through the browser. Chain this with a socket server and the user router to pass session info remotely so users can connect from anywhere, with the only server overhead being the passing of needed information between clients. </p>
 <p>See <code>examples/webrtc</code> for a basic implementation you can modify easily. There are a lot of options you can customize to constrain RTC sessions. A default data channel is used to pass service messages bidirectionally, or if you don't specify a callback for custom data channels (or the first channel available).</p>
-<pre><code class="ts language-ts">import {WebRTCfrontend} from 'graphscript'
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+import {WebRTCfrontend} from 'graphscript'
 
 export type WebRTCProps = {
     _id?:string,
@@ -82,9 +84,13 @@ rtc.openRTC().then((room:WebRTCInfo) =&gt; {
         }
 
     });
-})</code></pre>
+})
+
+</code></pre></div>
 <p>Then on the receiving end…</p>
-<pre><code class="ts language-ts">socket.addEventListener('message',(ev) =&gt; {
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+socket.addEventListener('message',(ev) =&gt; {
     let hostinfo = JSON.parse(ev.data);
 
     if(!rtc.rooms[hostinfo._id]) {
@@ -109,7 +115,10 @@ rtc.openRTC().then((room:WebRTCInfo) =&gt; {
             }
         }
     }
-})</code></pre>
+})
+
+
+</code></pre></div>
     </section>
     <footer></footer>
 </body>

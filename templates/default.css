@@ -35,19 +35,25 @@ blockquote {
 /* Code Blocks */
 pre {
   overflow: auto;
-  position: relative;
-  border-radius: 20px;
-  border: 1px solid black;
-  overflow-y: hidden;
+  max-height: 300px;
+  margin: 0;
 }
 
 pre > code {
   display: block;
-  padding: 15px 25px;
+  padding: 15px;
 }
 
-pre:before {
-  content: "Code";
+.brainsatplay-docs-code {
+  overflow: auto;
+  position: relative;
+  border-radius: 20px;
+  border: 1px solid black;
+  overflow-y: hidden;
+  margin: 25px;
+}
+
+.brainsatplay-docs-code > span {
   color: white;
   background: black;
   display: block;

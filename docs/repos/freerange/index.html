@@ -17,27 +17,36 @@
         <h1 id="freerange">freerange</h1>
 <p>File import and export utilities with <strong>free</strong> range-request support for remote files.</p>
 <h2 id="installation">Installation</h2>
-<h3 id="browser">Browser</h3>
-<pre><code class="javascript language-javascript">&lt;script src="https://cdn.jsdelivr.net/npm/freerange"&gt;&lt;/script&gt;</code></pre>
+<div class="brainsatplay-docs-code"><span>Browser</span>
+<pre><code>&lt;script src="https://cdn.jsdelivr.net/npm/freerange"&gt;&lt;/script&gt;
+</code></pre></div>
 <h3 id="es-modules">ES Modules</h3>
-<pre><code class="javascript language-javascript">import * as freerange from `https://cdn.jsdelivr.net/npm/freerange/index.esm.js`</code></pre>
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>import * as freerange from `https://cdn.jsdelivr.net/npm/freerange/index.esm.js`
+</code></pre></div>
 <h2 id="getting-started">Getting Started</h2>
 <h3 id="codecs">Codecs</h3>
 <p>The <code>Codecs</code> class allow for easily encoding and decoding files.</p>
-<pre><code class="javascript language-javascript">const codecs = new freerange.Codecs()
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>const codecs = new freerange.Codecs()
 
 const buffer = await codecs.encode('Hi there')
 const text = await codecs.decode(buffer)
-console.log('text', text)</code></pre>
+console.log('text', text)
+</code></pre></div>
 <p>For more than text encoding / decoding, you'll need to use our a codec from our library—or roll your own!</p>
-<pre><code class="javascript language-javascript">const jsonPlugin = freerange.codecs.json
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>const jsonPlugin = freerange.codecs.json
 codecs.add(jsonPlugin)
 const buffer = await codecs.encode({key: 'value'}, jsonPlugin.type)
 const json = await codecs.decode(buffer, jsonPlugin.type)
-console.log('JSON', json)</code></pre>
+console.log('JSON', json)
+</code></pre></div>
 <h3 id="system">System</h3>
 <p>The freerange <code>System</code> class allows you to rapidly access local and remote filesysems. It contains a <code>Codecs</code> instance to allow for generic read / write capabilities.</p>
-<pre><code class="javascript language-javascript">document.querySelector('button').onclick = async () =&gt; {
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+document.querySelector('button').onclick = async () =&gt; {
 
     // ----------------- Declare a System -----------------
     // 1. Choose a directory in your local filesystem
@@ -74,7 +83,8 @@ console.log('JSON', json)</code></pre>
     csvContents.push({row: csvContents.length}) // We can change the csvContent variable directly because it is an object reference
 
     await system.save() // save file contents for all files (if changed)
-}</code></pre>
+}
+</code></pre></div>
 <h2 id="roadmap">Roadmap</h2>
 <ol>
 <li>Currently, multi-part requests are broken up client-side. Fix this!<ul>

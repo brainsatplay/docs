@@ -17,8 +17,10 @@
         <h1 id="installation">Installation</h1>
 <p>To begin a new project in the Brains@Play Framework, you'll need to include the <a href="./index.html">WASL</a> library in you JavaScript code. This can be done in a few different ways, depending on the needs of your project.<br />
 If you're using a standalone HTML page, it may be easiest to include WASL as a global variable using a <strong>script tag</strong>:</p>
-<pre><code class="html language-html">&lt;script src="https://cdn.jsdelivr.net/npm/wasl@latest"&gt;&lt;/script&gt; 
-&lt;script&gt; console.log(wasl) &lt;/script&gt;</code></pre>
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>&lt;script src="https://cdn.jsdelivr.net/npm/wasl@latest"&gt;&lt;/script&gt; 
+&lt;script&gt; console.log(wasl) &lt;/script&gt;
+</code></pre></div>
 <p>As you get more familiar with ES Module syntax, however, it will be best to use ESM import syntax to include the library. This will work in browser and Node.js (v14+):</p>
 <pre><code class="js language-js">import * as wasl from 'https://cdn.jsdelivr.net/npm/wasl@latest/dist/index.esm.js' // Downloaded from a CDN
 // import * as wasl from 'wasl' // Contained in Node Modules

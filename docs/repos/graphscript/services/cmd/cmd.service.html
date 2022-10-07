@@ -18,7 +18,9 @@
 <p>The CMD service lets you command child processes in Node.js (using the <code>graphscript-node</code> dist). It's a pretty straightforward process,<br />
  you provide routes with commands and arguments as they fit into normal child process callbacks. </p>
 <p>See <code>services/cmd/childproces.js</code> for a boilerplate node process you can run that sets up a CMDService to enable cross-process message passing by listening to process.stdin the same way other message passing services listen, including all of the helpful utilities like running functions or subscribing across processes.</p>
-<pre><code class="ts language-ts">type CMDRoute = {
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+type CMDRoute = {
     command:string|ChildProcess,
     args?:string[],
     options?:{shell:true, stdio:'inherit',[key:string]:any},
@@ -52,24 +54,35 @@ const service = new CMDService({
 
 console.log("Child process listening...") 
 
- //....</code></pre>
+ //....
+
+</code></pre></div>
 <p>Then create childprocess.js in your root (for this example)</p>
-<pre><code class="ts language-ts">import { CMDService } from "./CMD.node";
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+import { CMDService } from "./CMD.node";
 import { unsafeRoutes } from '../unsafe/Unsafe.service';
 
 const service = new CMDService({
     routes:[unsafeRoutes]
 }); //now we can send/receive messages
 
-console.log("Child process listening...") </code></pre>
+console.log("Child process listening...") 
+
+
+</code></pre></div>
 <p>and from your main program, add the following after instantiating a CMDService</p>
-<pre><code class="js language-js">//....
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+//....
 
 
 const p = service.createProcess({
     command:'node',
     args:['childprocess.js']
-});</code></pre>
+});
+
+</code></pre></div>
 <p>and now you can interact with it nodes across child processes!</p>
     </section>
     <footer></footer>

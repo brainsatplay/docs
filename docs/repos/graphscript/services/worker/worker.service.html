@@ -18,7 +18,8 @@
 <p>The Worker Service makes it very easy to create multithreaded applications with a generic communication format, and construct arbitrary function graphs.</p>
 <p>This includes custom route definitions that allow you to chain workers (incl through message ports for worker -&gt; worker parent-child relationships) and node callbacks seamlessly. </p>
 <p>The custom route:</p>
-<pre><code class="ts language-ts">type WorkerRoute = {
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>type WorkerRoute = {
     worker?:WorkerInfo
     workerUrl?: string|URL|Blob,
     workerId?: string,
@@ -26,9 +27,13 @@
     transferClasses?:{[key:string]:Function},
     parentRoute?:string, //if a child of a worker node, subscribe to a route on a parent worker?
     callback?:string //Run this route on the worker when the operator is called. If this route is a child of another node, run this node on the child worker when it receives a message. 
-} &amp; GraphNodeProperties &amp; WorkerProps</code></pre>
+} &amp; GraphNodeProperties &amp; WorkerProps
+
+</code></pre></div>
 <p>To use the worker service:</p>
-<pre><code class="ts language-ts">import {WorkerService, canvasWorkerRoutes} from 'graphscript' 
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+import {WorkerService, canvasWorkerRoutes} from 'graphscript' 
 
 import gsworker from 'graphscript/dist/Worker' //This is the default worker which is set up with a worker service to send/receive messages, plus unsafeservice to write data and functions arbitrarily to build single file pipelines
 
@@ -112,13 +117,16 @@ worker2.subscribe('log',(res)=&gt;{console.log('returned from worker2: ',res);})
 worker1.post('add1',3);
 
 
-//check console, worker2 should log the result!</code></pre>
+//check console, worker2 should log the result!
+
+</code></pre></div>
 <p>You can use <code>workers.transferClass</code> to transfer class methods, but note that if it is extending another class it will error unless the extended class already exists on the receiving thread.</p>
 <p>This is an incredibly powerful feature set, use threads for any and all heavy computations, they can even run fetch and server APIs on independent scopes, but note that the memory pool is shared with the main thread unlike child processes in node.</p>
 <h2 id="canvas-threading-example">Canvas Threading Example</h2>
 <p>OffscreenCanvases allow multithreaded draw calls, this easily extends to libraries like ThreeJS or BabylonJS. We even included a nifty proxy event listener for mouse events, which you can extend to support more if you see the <code>eventHandlers</code> import that lists supported key events. It automaticall detects resize events as well and sends the new clientHeight/clientWidth, which you can fix or make stretch using CSS rules (shown below);</p>
 <p>Main</p>
-<pre><code class="ts language-ts">import {
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>import {
     Router,
     WorkerService,
     DOMService,
@@ -192,9 +200,11 @@ let ret = router.load({
     } as ElementProps
 });
 
-//console.log(ret)</code></pre>
+//console.log(ret)
+</code></pre></div>
 <p>Worker:</p>
-<pre><code class="ts language-ts">import { 
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>import { 
     WorkerService, 
     unsafeRoutes, 
     workerCanvasRoutes,
@@ -219,10 +229,14 @@ if(typeof WorkerGlobalScope !== 'undefined' &amp;&amp; self instanceof WorkerGlo
 
 
 
-export default self as any;</code></pre>
+export default self as any;
+
+</code></pre></div>
 <h2 id="threejs-worker-example">ThreeJS Worker Example</h2>
 <p>We ripped this example from a threejsfundamentals tutorial just to show how easy it is to load up a rendering solution like ThreeJS into our system.</p>
-<pre><code class="ts language-ts">import {
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+import {
     Router,
     WorkerService,
     DOMService,
@@ -445,9 +459,13 @@ let ret = router.load({
     } as ElementProps
 });
 
-//console.log(ret)</code></pre>
+//console.log(ret)
+
+</code></pre></div>
 <p>And to set up the worker, we add an intermediate function to the worker's <code>receiveCanvas</code>function using the <code>workerCanvasRoutes</code> we provided. This simply adds references to desirable ThreeJS modules to the canvas properties that you can reference in the functions you write from the main thread.</p>
-<pre><code class="ts language-ts">import { 
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+import { 
     WorkerService, 
     unsafeRoutes, 
     workerCanvasRoutes,
@@ -511,7 +529,9 @@ if(typeof WorkerGlobalScope !== 'undefined' &amp;&amp; self instanceof WorkerGlo
     console.log(worker)
 }
 
-export default self as any;</code></pre>
+export default self as any;
+
+</code></pre></div>
 <p>For another interesting example, see <code>examples/audiofeedback</code> which includes a multithreaded USB and BLE driver system to use HEGs for audiofeedback, implemented in less than 400 lines of code via the frontend DOMService.</p>
     </section>
     <footer></footer>

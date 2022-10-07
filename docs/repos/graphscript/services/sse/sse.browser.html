@@ -17,7 +17,9 @@
         <h2 id="ssefrontend">SSEfrontend</h2>
 <p>Using the built-in EventSource API in-browser, we can establish arbitrary event responses from the server very quickly. We combined this with our HTTPbackend to enable two-way connections via REST calls and SSE subscriptions. Serverside can talk to specific clients directly with ID'd connections and association via the <code>Router</code></p>
 <p>For non-default events (message, open, close, error), set the callback to <code>true</code> to just use the default <code>this.receive</code> and <code>setState</code> (if keepState is true) built in to the service.</p>
-<pre><code class="ts language-ts">import {SSEfrontend} from 'graphscript'
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+import {SSEfrontend} from 'graphscript'
 
 export type EventSourceProps = {
     url:string,
@@ -60,7 +62,10 @@ const sseinfo = sse.openSSE({
     events:{
         'test':(ev)=&gt;{console.log('test',ev.data)}
     }
-} as EventSourceProps) as EventSourceInfo;</code></pre>
+} as EventSourceProps) as EventSourceInfo;
+
+
+</code></pre></div>
 <p>That's basically it!</p>
 <p>Terminate event sources with .terminate like in every other service.</p>
     </section>

@@ -17,7 +17,9 @@
         <h2 id="ssebackend">SSEbackend</h2>
 <p>The SSEbackend utilizes the lean <code>better-sse</code> library to do server-sent events. These are a special type of HTTP protocol that allow server events to be broadcast one-way, to all or to specific users. This is a nice way to avoid using sockets or bulky REST probes and fetch proxies. </p>
 <p>We built generic controls for each server and each client session instance for sending/receiving/subscribing/etc. which attempts to use the HTTP requests to handle two way communications.</p>
-<pre><code class="ts language-ts">import {SSEbackend} from 'graphscript-node'
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+import {SSEbackend} from 'graphscript-node'
 
 
 export type SSEProps = {
@@ -82,7 +84,9 @@ const sseinfo = sse.setupSSE(
                 );
             },
         } as SSEProps
-    ) as SSESessionInfo</code></pre>
+    ) as SSESessionInfo
+
+</code></pre></div>
 <p>The service by default handles cleanup when connections close automatically. Sessions are specific to each connection so you can directly push messages to clients instead of broadcasting to all, shown above. There are common communication callbacks for all of our services that support such connectivity for predictable behaviors.</p>
 <p>Best practice is SSEs for outgoing messages from server, and sockets for incoming messages. For peer 2 peer, use sockets for the handshake and then peers can have direct controls via our message passing system. Use all of the protocols in combination for high performance, easily composable servers.</p>
     </section>

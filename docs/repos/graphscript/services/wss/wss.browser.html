@@ -16,7 +16,9 @@
     <section>
         <h2 id="wssfrontend">WSSfrontend</h2>
 <p>To open a websocket connection from node to another server</p>
-<pre><code class="ts language-ts">import {WSSfrontend} from 'graphscript'
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+import {WSSfrontend} from 'graphscript'
 
 
 export type WebSocketProps = {
@@ -59,7 +61,9 @@ let socketinfo = wss.openWS({
 
 //e.g..
 socketinfo.subscribe('ping', console.log); //ping is available if loadDefaultRoutes is set to true when initializing a service
-socketinfo.post('ping');</code></pre>
+socketinfo.post('ping');
+
+</code></pre></div>
 <p>The default onmessage function handles service calls with jsonified commands. You can overwrite this or add custom listeners in parallel, everything else follows standard WebSocket API usage.</p>
     </section>
     <footer></footer>

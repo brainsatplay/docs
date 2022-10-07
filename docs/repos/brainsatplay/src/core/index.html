@@ -27,7 +27,8 @@
 <blockquote>
   <p>See complete documentation for the Brains@Play Framework at <a href="https://docs.brainsatplay.com">docs.brainsatplay.com</a>.</p>
 </blockquote>
-<pre><code class="javascript language-javascript">import * as brainsatplay from 'https://cdn.jsdelivr.com/npm/brainsatplay/dist/index.esm.js'
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>import * as brainsatplay from 'https://cdn.jsdelivr.com/npm/brainsatplay/dist/index.esm.js'
 
  let app = new brainsatplay.App(
          'https://raw.githubusercontent.com/brainsatplay/wasl/main/tests/0/0.0/0.0.0/external/index.wasl.json', // undefine to select from filesystem | object to load directly | string for url imports
@@ -41,7 +42,9 @@
             console.log('App', app)
             console.log('Errors', wasl.errors)
             console.log('Warnings', wasl.warnings)
-        }</code></pre>
+        }
+
+</code></pre></div>
 <h2 id="acknowledgments">Acknowledgments</h2>
 <p>This library is maintained by <a href="https://github.com/garrettmflynn">Garrett Flynn</a> and <a href="https://github.com/joshbrew">Joshua Brewster</a>, who use contract work and community contributions through <a href="https://opencollective.com/brainsatplay">Open Collective</a> to support themselves.</p>
 <h3 id="backers">Backers</h3>

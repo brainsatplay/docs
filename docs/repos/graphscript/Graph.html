@@ -24,7 +24,10 @@
 <p>These are the objects created to represent each node in the tree. They can be created without belonging to a graph. The graph simply makes it easier to instantiate and index nodes. </p>
 <p>Every node shares a state with a common state object that allows for quick subscription for function outputs across your graph/tree. Access this feature simply by calling .subscribe on a node or on the graph class where you specify the node by tag.</p>
 <p>GraphNode properties</p>
-<pre><code class="ts language-ts">export type OperatorType = ( //can be async
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+
+export type OperatorType = ( //can be async
     ...args:any //input arguments, e.g. output from another node
 )=&gt;any|void
 
@@ -89,9 +92,13 @@ type Tree = {
         OperatorType |
         ((...args)=&gt;any|void) |
         { aliases:string[] } &amp; GraphNodeProperties
-}</code></pre>
+}
+
+</code></pre></div>
 <p>GraphNode utilities</p>
-<pre><code class="js language-js">    //node properties you can set, create a whole tree using the children
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+    //node properties you can set, create a whole tree using the children
     let props={
         operator:(
             ...args    //e.g. 'loop' or 'animate' will be defined if the operator is running on the loop or animate routines, needed something. Can define more commands but you might as well use an object in input for that. 
@@ -167,9 +174,15 @@ node
 
     .print(node=this,printChildren=true) //recursively print a reconstrucible json hierarchy of the graph nodes, including arbitrary keys/functions, if printChildren is set to false it will only print the tags and not the whole object in the .children property of this node
 
-    .reconstruct(json='{}') //reconstruct a jsonified node hierarchy into a functional GraphNode tree and add it to the list</code></pre>
+    .reconstruct(json='{}') //reconstruct a jsonified node hierarchy into a functional GraphNode tree and add it to the list
+
+</code></pre></div>
 <h3 id="acyclic-graph-utilities">Acyclic Graph Utilities</h3>
-<pre><code class="js language-js">let tree = { //you may pass an object to register a list of nodes from prototypes given here. The keys given will be the tag for the base node (parent/child prototypes need tags, else they are randomly assigned tags)
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+
+
+let tree = { //you may pass an object to register a list of nodes from prototypes given here. The keys given will be the tag for the base node (parent/child prototypes need tags, else they are randomly assigned tags)
     log:(...inp)=&gt;{
         console.log(...inp);
     },
@@ -238,10 +251,14 @@ let graph = new Graph(tree);
 
         .reconstruct(json='{}') //reconstruct a jsonified node hierarchy into a functional GraphNode tree
 
-        .create(operator,parentNode,props) //create a node from this recipe</code></pre>
+        .create(operator,parentNode,props) //create a node from this recipe
+
+</code></pre></div>
 <h3 id="basic-usage">Basic usage</h3>
 <p>(need to make a less useless example)</p>
-<pre><code class="js language-js">const tree = {
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+const tree = {
     add:(a=0,b=0)=&gt;{
         return a+b;
     },
@@ -281,7 +298,9 @@ const graph = new Graph(tree,'graph1',undefined);
 graph.run('sequence',21,23).then((res) =&gt; {
     console.log(res);
     console.log(graph.get('sequence').result);
-});</code></pre>
+});
+
+</code></pre></div>
     </section>
     <footer></footer>
 </body>

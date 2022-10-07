@@ -18,28 +18,35 @@
 <p><code>brainsatplay-frontend</code> and <code>brainsatplay-backend</code> provide default communication services including HTTPService and WebsocketService.</p>
 <h2 id="loading-frontend-services">Loading Frontend Services</h2>
 <p>In your frontend code, load specify the Sockets your Router will listen to:</p>
-<pre><code class="js language-js">const SERVER_URI = (window.location.href.includes('localhost')) ? 'http://localhost:80' : 'http://localhost:80' // Replace with production server URI
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>const SERVER_URI = (window.location.href.includes('localhost')) ? 'http://localhost:80' : 'http://localhost:80' // Replace with production server URI
 const SERVER_URI_2 = (window.location.href.includes('localhost')) ? 'http://localhost:81' : 'http://localhost:81' // Replace with production server URI
 
 const sockets = []
 sockets.push(router.addSocket(SERVER_URI))
-sockets.push(router.addSocket(SERVER_URI_2))</code></pre>
+sockets.push(router.addSocket(SERVER_URI_2))
+</code></pre></div>
 <p>Then load any services you'll want the Router to use:</p>
-<pre><code class="js language-js">import {WebsocketService} from 'brainsatplay-frontend' // TODO: Publish and change name
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+import {WebsocketService} from 'brainsatplay-frontend' // TODO: Publish and change name
 
 let services = [ 
     new HTTPService(), 
     new WebsocketService(), 
 ]
 
-services.forEach(service =&gt; router.load(service).then(() =&gt; console.log('Service connected!', service)))</code></pre>
+services.forEach(service =&gt; router.load(service).then(() =&gt; console.log('Service connected!', service)))
+</code></pre></div>
 <p>At this point, your project should be able to send HTTP and WebSocket messages to supported servers.</p>
 <blockquote>
   <p>Services can be strongly or weakly linked to FE / BE. Weakly linked Services can run on either FE or BE. For this case, specify backend methods with an underscore (e.g. _backendMethod) so that all frontend methods are easily referenced by an end-user.</p>
 </blockquote>
 <h2 id="adding-the-backend">Adding the Backend</h2>
 <p>In your backend code, create an Express application and link this to your Router with an HTTP Service. Here we will instantiate the Router class ourselves to enable auto-debugging:</p>
-<pre><code class="js language-js">// Express Imports
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+// Express Imports
 let express = require("express")
 let bodyParser = require("body-parser")
 
@@ -73,7 +80,8 @@ router.load(websocket)
 // Start the Server
 server.listen(parseInt(port), () =&gt; {
   console.log(`Server created on ${protocol}://localhost:${port}`);
-});</code></pre>
+});
+</code></pre></div>
     </section>
     <footer></footer>
 </body>

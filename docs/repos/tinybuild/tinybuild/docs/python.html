@@ -20,7 +20,8 @@
 <p>Our python tooling documents a high performance multi-user python scenario with an order of operations shown to run simultaneous thread processes for a dedicated server thread. It's is scalable and production-ready, with enough documentation for you to find where to insert your code (hint: start with the _thread_main function and follow the queues to how the sockets get updated) and how to update SSE and Websocket queues to any connected users.</p>
 <p>Code: <a href="https://github.com/brainsatplay/tinybuild/blob/master/tinybuild/python"><code>tinybuild/python</code></a></p>
 <h3 id="settings">Settings</h3>
-<pre><code class="py language-py">## 
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>## 
 production = False ### For serving HTTPS, use False for HTTP and hot reloading quart (only if this file changes)
 host = 'localhost' ## e.g. mywebsite.com
 port = 7000
@@ -32,7 +33,10 @@ config = {
     'keyfile':'node_server/ssl/key.pem',
     'certfile':'node_server/ssl/cert.pem',
     'bind':host+':'+str(port)
-}</code></pre>
+}
+
+
+</code></pre></div>
 <p>Then run: <br />
 <code>python tinybuild/python/server.py</code> </p>
 <p>Then find <code>http://localhost:7000</code> to see the built app using the same start page the node server uses</p>

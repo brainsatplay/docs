@@ -20,22 +20,27 @@
 <p>Follow the steps in the <a href="./installation.html">installation</a> documentation to get started with a new WASL project.</p>
 <h2 id="mockup-the-app-logic">Mockup the App Logic</h2>
 <p>In the <code>index.wasl.json</code> file targeted in your project, we'll begin by outlining the behavior of our application: the creation of a button. Since we're just trying to produce a single plugin, this will be quite simple: </p>
-<pre><code class="json language-json">{
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>{
     "components": {
         "button": {
             "src": "./components/button.js"
         }
     }
-}</code></pre>
+}
+</code></pre></div>
 <h2 id="create-a-simple-component">Create a Simple Component</h2>
 <p>After creating the expected <code>components/button.js</code> file, you'll specify the <code>tagName</code> keyword and some element <code>attributes</code> to begin working with WASL Components.</p>
-<pre><code class="js language-js">export const tagName = 'button' // Attach this component to a button element
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>export const tagName = 'button' // Attach this component to a button element
 export const attributes = {
     "innerText": "Click Me" // Set default text
-}</code></pre>
+}
+</code></pre></div>
 <p>If you refresh the HTML page, you'll now see that a button has been created on screen! However, it's not doing much right now. Let's see if we can pass the <code>onclick</code> event to another component. </p>
 <p>To do this, we'll use the default <code>log</code> plugin provided in the <a href="https://github.com/brainsatplay/components">components</a> repository:</p>
-<pre><code class="json language-json">{
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>{
     "components": {
         "button": {
             "src": "./components/button.js"
@@ -44,9 +49,11 @@ export const attributes = {
             "src": "https://raw.githubusercontent.com/brainsatplay/components/main/components/wasl/log.js"
         }
     }
-}</code></pre>
+}
+</code></pre></div>
 <p>To get these components to talk to each other, we'll need to define a <strong>listener</strong> that will pass the output of <code>button</code> to <code>log</code>.</p>
-<pre><code class="json language-json">{
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>{
     "components": {
         "button": {
             "src": "./components/button.js"
@@ -60,16 +67,20 @@ export const attributes = {
             "log": true
         }
     }
-}</code></pre>
+}
+</code></pre></div>
 <p>To get the <code>button</code> to pass information to the <code>log</code> Component, we'll need to define two more things: </p>
 <ol>
 <li>A default function used by <code>button</code> when it is triggered internally or by another Component</li>
 <li>An <code>onmousedown</code> event that internally triggers this default function when the mouse has been pressed</li>
 </ol>
 <p>Thankfully, the underlying logic framework for WASL (<a href="https://github.com/brainsatplay/graphscript">grpahscript</a>) already assigns a basic default function for us:</p>
-<pre><code class="js language-js">export default (input) =&gt; input // This default function is specified by graphscript and will forward any input to this Component to any linked Components.</code></pre>
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>export default (input) =&gt; input // This default function is specified by graphscript and will forward any input to this Component to any linked Components.
+</code></pre></div>
 <p>However, we still need to manually trigger this function with an <code>onmousedown</code> event:</p>
-<pre><code class="js language-js">//  ...
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>//  ...
 export const attributes = {
     "innerHTML": "Click Me"
     onmousedown: function () {
@@ -81,14 +92,16 @@ export const attributes = {
         globalThis.addEventListener('mouseup', onMouseUp) // Monitor when the user releases the mouse
     }
 }
-//  ...</code></pre>
+//  ...
+</code></pre></div>
 <p>At this point, you should be able to click on the button and get its state to print to the Developer Console!</p>
 <p>And with that, we have a ready-to-use <code>button</code> component for anyone using the Brains@Play Framework!</p>
 <h2 id="further-considerations">Further Considerations</h2>
 <h3 id="changing-default-properties">Changing Default Properties</h3>
 <p>In many cases, the end-user of your Component would like to customize certain aspects of it for their application. For instance, I might want my button to say <code>Submit Form</code> rather than the default <code>Click Me</code> text we have defined here. </p>
 <p>To override any property of a Component, you can simply declare that property in the associated WASL file:</p>
-<pre><code class="json language-json">{
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>{
     "components": {
         "button": {
             "attributes": {
@@ -105,11 +118,13 @@ export const attributes = {
             "log": true
         }
     }
-}</code></pre>
+}
+</code></pre></div>
 <h3 id="storing-a-passed-value">Storing a Passed Value</h3>
 <p>In many cases, a user will want to use a button to <strong>submit</strong> a selected item. In this case, it would be useful for the <code>button</code> to store the last value passed to it. </p>
 <p>For this to happen, however, we'll need to discriminate between internal <strong>trigger</strong> events and external <strong>set</strong> events:</p>
-<pre><code class="js language-js">// ...
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>// ...
 export const attributes = {
     "innerHTML": "Click Me",
     onmousedown: function () {
@@ -138,7 +153,8 @@ export default function (input){
 
     // Set the cache with external values
     else if (value) this.cache = value
-}</code></pre>
+}
+</code></pre></div>
 <p>With these changes, our <code>button</code> Component can now be used for more use-cases!</p>
 <hr />
 <p>In the next section, we'll <a href="./application.html">develop a simple todo app</a> using this <code>button</code> Component.</p>

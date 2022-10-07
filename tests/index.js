@@ -1,4 +1,4 @@
-import Docs from '../index.js'
+import Docs from '../src/index.js'
 
 const debug = {
     html: false,

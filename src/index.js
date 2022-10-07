@@ -4,6 +4,7 @@ import process from 'process'
 import https from 'https'
 import { exec } from "child_process"
 import showdown from 'showdown'
+import * as preprocess from './preprocess/index.js'
 
 
 const pathSep = '/'
@@ -868,6 +869,9 @@ class Docs {
                 pathToUse = path.join(main, output, notCommon.replace('.md', '.html'))
                 ext = '.html'
                 returnVal = true
+
+                text = preprocess.code.default(text)
+
                 commentReplacements.content = converter.makeHtml(text); // html content
                 break;
 

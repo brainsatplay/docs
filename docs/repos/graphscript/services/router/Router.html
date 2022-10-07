@@ -19,7 +19,9 @@
 <p>See <code>examples/webrtcrouter</code> for a robust example that implements a backend with server-sent events, websockets, hot reloading, and a frontend for sharing webrtc peer connections mediated by the socket server - all in less than 500 lines of code! The Frontend-Backend and the Peer-Peer connections are handled with the exact same callbacks, only specifying different endpoint ids! This allows for remote controls and multi-user contexts with the smoothest code you've ever seen! </p>
 <h4 id="router-options">Router Options</h4>
 <p>Routers have additional important options on top of the base service. They otherwise function exactly like a service, where any service can load any other service, but give an additional layer of control to how services are named, configured, and referenced in your program, as well as the macros for user and general remote networking graphs.</p>
-<pre><code class="ts language-ts">export type RouterOptions = ServiceOptions &amp; {
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+export type RouterOptions = ServiceOptions &amp; {
     services?:{
         [key:string]:Service|any|{
             service:Service|any,
@@ -37,10 +39,14 @@
     }
     syncServices?:boolean,
     order?:string[]
-}</code></pre>
+}
+
+</code></pre></div>
 <h4 id="connection-template-schema">Connection Template Schema</h4>
 <p>Any service can have a 'connections' object for storing connections or multiple groups of connections (e.g. socket servers in one group and all of the client sockets in another group) that the Router can look for automatically to pool connections that are then available by id for tying to different sources. It makes it a series of one-liners to configure a full endpoint systems and subscriptions through connections to events on programs across clients and servers. </p>
-<pre><code class="ts language-ts">type ConnectionTemplate = {
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+type ConnectionTemplate = {
     _id?:string,
     send?:(message:any, ...args:any[])=&gt;any,
     request?:(message:any, method?:any,...args:any[])=&gt;Promise&lt;any&gt;|Promise&lt;any&gt;[],
@@ -49,19 +55,24 @@
     subscribe?:(route:any, callback?:((res:any)=&gt;void)|string, ...args:any[])=&gt;Promise&lt;number&gt;|Promise&lt;number&gt;[]|undefined,
     unsubscribe?:(route:any, sub:number, ...args:any[])=&gt;Promise&lt;boolean&gt;|Promise&lt;boolean&gt;[],
     terminate:(...args:any[]) =&gt; boolean,
-}</code></pre>
+}
+
+</code></pre></div>
 <p>The current templates exist based on the frontend and backend (respective) remote endpoint services we've constructed so far:</p>
-<pre><code class="ts language-ts">type WebRTCInfo; //rtc
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>type WebRTCInfo; //rtc
 type WebSocketInfo; //browser ws
 type SocketInfo; //node ws, incl wss clients
 type SocketServerInfo; //node wss
 type SSEChannelInfo; //node sse
 type SSESessionInfo; //node sse client-specific
 type EventSourceInfo; //browser sse
-type ServerInfo;    //node http/https server</code></pre>
+type ServerInfo;    //node http/https server
+</code></pre></div>
 <p>Or use any Graphs or GraphNodes to wrap with the template functions, these can then handle local transmission or be a quick proxy to other connections you want to add yourself without implementing a Service.</p>
 <p>Now add a connection with <code>addConnection</code> or use the router constructor options to do it all in one shot with each service specified</p>
-<pre><code class="ts language-ts">router.addConnection(options:ConnectionProps|ConnectionInfo|string,source?:string)
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>router.addConnection(options:ConnectionProps|ConnectionInfo|string,source?:string)
 
 //via
 
@@ -89,9 +100,13 @@ export type ConnectionInfo = {
     unsubscribe?:(route:any, sub:number, ...arrayBuffer:any[])=&gt;Promise&lt;boolean&gt;|Promise&lt;boolean&gt;[],
     terminate:(...a:any[]) =&gt; boolean,
     onclose?:(connection:ConnectionInfo,...args:any[])=&gt;void
-}</code></pre>
+}
+
+
+</code></pre></div>
 <p>Or something like:</p>
-<pre><code class="ts language-ts">router.addUser({_id:'me'},{socketId:'socket12345678'})
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>router.addUser({_id:'me'},{socketId:'socket12345678'})
 
 //which returns via promise:
 export type User = { //users have macros to call grouped connections generically, based on what's available
@@ -105,10 +120,15 @@ export type User = { //users have macros to call grouped connections generically
     terminate:(...args:any[]) =&gt; boolean,
     onclose?:(user:User)=&gt;void,
     [key:string]:any
-} &amp; Partial&lt;ProfileStruct&gt;</code></pre>
+} &amp; Partial&lt;ProfileStruct&gt;
+
+</code></pre></div>
 <p>The user's send/post/etc. handles will search available connections sourced to that user and use the best connection that has the available functionality based on matching methods. The services we have all follow the same straightforward, fully functional (including all of the source API features for each type of protocol still on-hand), and reproducible format for pooling and matching connections for easier high level integration and a fairly limited learning curve for the amount of features you can pack together in a few dozen lines. It's very performant, while you still have full control over your servers and services as you need deeper specifications.</p>
 <p>All together now with sessions and mixed SSE + Websocket connections and a configurable http/https server… See backend.ts in <code>examples/webrtcrouter</code></p>
-<pre><code class="ts language-ts">import { Router, User } from "../../services/router/Router";
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>
+
+import { Router, User } from "../../services/router/Router";
 import { SocketServerProps, WSSbackend } from "../../services/wss/WSS.node";
 import { SSEbackend, SSEProps } from "../../services/sse/SSE.node";
 import { HTTPbackend, ServerProps } from "../../services/http/HTTP.node";
@@ -236,7 +256,9 @@ router.subscribe('addUser', (user:User) =&gt; {
     }
 });
 
-//console.log('router nodes',router.nodes.keys(),'\n\n wss nodes',router.services.wss.nodes.keys())</code></pre>
+//console.log('router nodes',router.nodes.keys(),'\n\n wss nodes',router.services.wss.nodes.keys())
+
+</code></pre></div>
     </section>
     <footer></footer>
 </body>

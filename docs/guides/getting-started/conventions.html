@@ -23,7 +23,9 @@
   <li><strong>Named exports should be modifiers</strong> for this function, consistent with the <a href="../repos/es-plugins/index.md">ES Plugins</a> and <a href="../repos/wasl">WASL</a> standards.</li>
   </ol>
 </blockquote>
-<pre><code class="javascript language-javascript">export default (message="world") =&gt; console.log(`hello ${message}!`)</code></pre>
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>export default (message="world") =&gt; console.log(`hello ${message}!`)
+</code></pre></div>
 <h2 id="components">Components</h2>
 <p>A <strong>component</strong> is an extension of the <strong>plugin</strong> type which specifies a logic flow between <strong>plugin</strong> instances in a <code>[name].wasl.json</code> file. Accompanied by a <code>package.json</code> file, <strong>components</strong> may use the <code>main</code> field to specify an exposed library—composed of <strong>plugins</strong>—for distribution on Node Package Manager (NPM).</p>
 <blockquote>
@@ -46,7 +48,8 @@ export default () =&gt; graph.run('world')</code></pre>
 <h2 id="graphs">Graphs</h2>
 <p>A <strong>graph</strong> is a connected set of <strong>plugins</strong> that pass messages between each other. </p>
 <p>As specified in <code>.wasl.json</code> files, each <strong>graph</strong> has <strong>nodes</strong> and <strong>edges</strong>. You may think of <strong>nodes</strong> as the plugin instances in the graph, whereas <strong>edges</strong> are the flow logic that happens <em>between</em> these plugins.</p>
-<pre><code class="json language-json">{
+<div class="brainsatplay-docs-code"><span>Code</span>
+<pre><code>{
     "graph": {
         "nodes": {
             "input": {
@@ -62,7 +65,8 @@ export default () =&gt; graph.run('world')</code></pre>
             }
         }
     }
-}</code></pre>
+}
+</code></pre></div>
 <blockquote>
   <p>Nodes in the <strong>graph</strong> are individually visualized by the Properties tab (TBD) of the <code>@brainsatplay/studio</code>, while edges are visualized by the Graph tab.</p>
 </blockquote>
