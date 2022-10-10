@@ -1,68 +1,139 @@
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-}
-
-section {
-  padding: 15px 50px;
-}
-
-
-/* Default Nav Bar */
-nav {
-  background: black;
-  color: white;
-  padding: 2px 25px;
-  pointer-events: none;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-}
-
-/* Block Quotes */
-blockquote {
-  border-left: 3px solid black;
-  padding: 1px 20px;
-}
-
-/* Code Blocks */
-pre {
-  overflow: auto;
-  max-height: 300px;
-  margin: 0;
-}
-
-pre > code {
-  display: block;
-  padding: 15px;
-}
-
-.brainsatplay-docs-code {
-  overflow: auto;
-  position: relative;
-  border-radius: 20px;
-  border: 1px solid black;
-  overflow-y: hidden;
-  margin: 25px;
-}
-
-.brainsatplay-docs-code > span {
-  color: white;
-  background: black;
-  display: block;
-  font-family: auto;
-  padding: 10px 25px;
-  font-weight: bold;
-  position: sticky;
-  top: 0;
-  left: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
+:root {
+  --nav-height: 70px;
+ }
+ 
+ * {
+   box-sizing: border-box;
+ }
+ 
+ html, body {
+     margin: 0;
+     padding: 0;
+     width: 100vw;
+     position: relative;
+ }
+ 
+ #brainsatplay-docs-main {
+   display: grid;
+   width: 100%;
+   height: 100%;
+   grid-template-areas:
+   "sidebar content info";
+   grid-template-columns: 250px 1fr 0px;
+   position: relative;
+ }
+ 
+ /* Sidebar */
+ #brainsatplay-docs-sidebar {
+   grid-area: sidebar;
+   max-height: calc(100vh - var(--nav-height));
+   overflow: scroll;
+   position: sticky;
+   top: var(--nav-height);
+   left: 0;
+   box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+ }
+ 
+ #brainsatplay-docs-sidebar ul {
+   list-style-type: none; /* Remove bullets */
+   padding-inline-start: 10px;
+ }
+ 
+ #brainsatplay-docs-sidebar a {
+   text-decoration: none;
+ }
+ 
+ #brainsatplay-docs-sidebar li {
+   padding: 5px;
+ }
+ 
+ #brainsatplay-docs-sidebar li:hover {
+   background: #ededed;
+ }
+ 
+ #brainsatplay-docs-content {
+   grid-area: content;
+ }
+ 
+ #brainsatplay-docs-info {
+   grid-area: info;
+ }
+ 
+ section {
+   padding: 15px 50px;
+ }
+ 
+ 
+ /* Default Nav Bar */
+ header {
+   z-index: 100;
+   position: sticky;
+   top: 0;
+   left: 0;
+ }
+ 
+ nav {
+   background: black;
+   color: white;
+   padding: 0px 25px;
+   display: flex;
+   align-items: center;
+   pointer-events: none;
+   height: var(--nav-height);
+ }
+ 
+ nav a {
+   color: white;
+   text-decoration: none;
+ }
+ 
+ footer {
+   background: black;
+   color: white;
+   padding: 2px 25px;
+   min-height: 50px;
+   display: flex;
+   align-items: center;
+   z-index: 100;
+ }
+ 
+ /* Block Quotes */
+ blockquote {
+   border-left: 3px solid black;
+   padding: 1px 20px;
+ }
+ 
+ /* Code Blocks */
+ pre {
+   overflow: auto;
+   max-height: 300px;
+   margin: 0;
+ }
+ 
+ pre > code {
+   display: block;
+   padding: 15px;
+ }
+ 
+ .brainsatplay-docs-code {
+   overflow: auto;
+   position: relative;
+   border-radius: 20px;
+   border: 1px solid black;
+   overflow-y: hidden;
+   margin: 25px;
+ }
+ 
+ .brainsatplay-docs-code > span {
+   color: white;
+   background: black;
+   display: block;
+   font-family: auto;
+   padding: 10px 25px;
+   font-weight: bold;
+   position: sticky;
+   top: 0;
+   left: 0;
+   width: 100%;
+   box-sizing: border-box;
+ }

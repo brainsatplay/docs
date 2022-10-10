@@ -20,7 +20,8 @@ export async function transform(info) {
 
         if (organization && repo) {
 
-            const branchesToTry = (branch) ? [branch] : ['main', 'master']
+            const branchesToTry = ['main', 'master']
+            if (branch && !branchesToTry.includes(branch)) branchesToTry.shift(branch)
 
             const tryPath = async (path) => {
                 const promise = new Promise((resolve, reject) => {
@@ -49,7 +50,6 @@ export async function transform(info) {
             }
 
             if (raw === null) return // No resolved file...
-
             resolved = [
                 (split[0].slice(-1) === utils.pathSep) ? split[0].slice(0, -1) : split[0],
                 search, organization, repo, 'blob', rightBranch, ...details // remove branch

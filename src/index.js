@@ -25,14 +25,17 @@ class Docs {
     // Collections
     links = []
 
-    broken = {}
-    invalid = {}
+    log = {
+        broken: {},
+        invalid: {},
 
-    unmapped = {}
-    unmatched = {}
-    ignored = {}
-    written = {}
-    unsupported = {}
+        unmapped: {},
+        unmatched: {},
+        ignored: {},
+        written: {},
+        unsupported: {}
+    }
+
 
     // Main Changelog
     changes = {}
@@ -68,13 +71,12 @@ class Docs {
         this.links = []
         this.documents = {}
 
-        this.broken = {}
-        this.invalid = {}
-        this.ignored = {}
-        this.unmapped = {}
-        this.unmatched = {}
-        this.changes = {}
-        this.written = {}
+        this.log.invalid = {}
+        this.log.ignored = {}
+        this.log.unmapped = {}
+        this.log.unmatched = {}
+        this.log.changes = {}
+        this.log.written = {}
 
         // Create Config
         this.config.input = input ?? this.config.mdIn
@@ -118,6 +120,7 @@ class Docs {
     }
 
     save = (changes) => {
+
         const noChanges = []
         const cantHandle = []
         const copied = []
@@ -363,7 +366,7 @@ class Docs {
 
                 if (response.statusCode != 200) {
                     if (response.statusCode === 404) {
-                        link.info.context.broken[link.properties.original] = link.value // flag broken links
+                        link.info.context.log.broken[link.properties.original] = link.value // flag broken links
                         link.status = 'broken'
                     } else console.error(`Error downloading ${link.properties.original} from ${link.info.document.path}`, response.statusCode)
                     reject()
@@ -418,34 +421,36 @@ class Docs {
             copied.forEach(str => console.log(`- ${str}`))
         }
 
-        if (debugWritten && Object.keys(this.written).length > 0) {
+        if (debugWritten && Object.keys(this.log.written).length > 0) {
             console.log(`\n--------------- Files Written with Changes ---------------`)
-            for (let raw in this.written) console.log(`- ${raw}`)
+            for (let raw in this.log.written) console.log(`- ${raw}`)
         }
 
-        if (debugBroken && Object.keys(this.broken).length > 0) {
+        if (debugBroken && Object.keys(this.log.broken).length > 0) {
             console.log(`\n--------------- Broken Links ---------------`)
-            for (let raw in this.broken) console.log(`- ${raw} | ${this.broken[raw]}`)
+            for (let raw in this.log.broken) console.log(`- ${raw} | ${this.log.broken[raw]}`)
         }
 
-        if (debugInvalid && Object.keys(this.invalid).length > 0) {
+        if (debugInvalid && Object.keys(this.log.invalid).length > 0) {
+            console.log('this.log.invalid', this.log.invalid)
             console.log(`\n--------------- Invalid Links ---------------`)
-            for (let link in this.invalid) console.log(`- ${this.invalid[link]} | ${link}`)
+            for (let link in this.log.invalid) console.log(`- ${this.log.invalid[link]} | ${link}`)
         }
 
-        if (debugIgnored && Object.keys(this.ignored).length > 0) {
+        if (debugIgnored && Object.keys(this.log.ignored).length > 0) {
+            console.log('this.log.ignored', this.log.ignored)
             console.log(`\n--------------- Ignored Links ---------------`)
-            for (let raw in this.ignored) console.log(`- ${raw} | ${this.ignored[raw]}`)
+            for (let raw in this.log.ignored) console.log(`- ${raw} | ${this.log.ignored[raw]}`)
         }
 
-        if (debugUnmapped && Object.keys(this.unmapped).length > 0) {
+        if (debugUnmapped && Object.keys(this.log.unmapped).length > 0) {
             console.log(`\n--------------- Unmapped Links ---------------`)
-            for (let link in this.unmapped) console.log(`- ${link}`)
+            for (let link in this.log.unmapped) console.log(`- ${link}`)
         }
 
-        if (debugUnmatched && Object.keys(this.unmatched).length > 0) {
+        if (debugUnmatched && Object.keys(this.log.unmatched).length > 0) {
             console.log(`\n--------------- Unmatched Remote Links ---------------`)
-            for (let link in this.unmatched) console.log(`- ${link}`)
+            for (let link in this.log.unmatched) console.log(`- ${link}`)
         }
 
 

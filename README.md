@@ -20,8 +20,6 @@ This is a collection of open/free source biomedical hardware and software develo
 We use https://showdownjs.com/ to generate HTML from .md files.
 
 ##### Roadmap
-- Separate the resolution of the remote files and the assignment of a changed link path
-    - This avoid running relink() twice in Docs.generate() (`/src/index.js`)
 - Check out [ESDoc](https://esdoc.org/)
 - Generate a huge API reference (with TypeDoc) from remote files
 -  Editor with active plug-in + generated explanation from WASL file (see [htil](https://github.com/brainsatplay/htil)).

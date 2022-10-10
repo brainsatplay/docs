@@ -14,7 +14,7 @@ const isMarkdown = utils.isMarkdown
 
 export default class Link {
 
-    errors = {
+    log = {
         unsupported: {},
         invalid: {},
         unmatched: {},
@@ -62,6 +62,12 @@ export default class Link {
 
 
     submit = () => {
+        for (let type in this.log) {
+            this.info.context.log[type] = {
+                ...this.info.context.log?.[type] ?? {},
+                ...this.log[type],
+            }
+        }
         if (this.status === 'valid') this.info.context.registerChange(this)
     }
 
@@ -175,7 +181,7 @@ export default class Link {
                 // No Match for Remote Link
                 if (this.properties.remote) {
                     this.status = 'unmatched'
-                    this.errors.unmatched[link] = true
+                    this.log.unmatched[link] = true
                 } 
                 
                 // Actually Is Valid
@@ -200,12 +206,12 @@ export default class Link {
                     // Mark as Invalid
                     else {
                         this.status = 'invalid'
-                        this.errors.invalid[link] = utils.prettyPath(this.info.document.path, undefined, config) // transform filePath to be readable and accessible by link
+                        this.log.invalid[link] = utils.prettyPath(this.info.document.path, undefined, config) // transform filePath to be readable and accessible by link
                         return
                     }
                 } else {
                     this.status = 'unsupported'
-                    this.errors.unsupported[link] = true
+                    this.log.unsupported[link] = true
                 }
             }
         }
@@ -252,7 +258,7 @@ export default class Link {
         // Update Properties
         this.properties.linkPath = linkPath
 
-        if (linkPath && !this.info.context.broken[this.properties.original]) {
+        if (linkPath && !this.info.context.log.broken[this.properties.original]) {
 
             // Remap Files that have Already Been Transferred
             const downloadedAt = this.info.context.documents[savePath]
@@ -284,7 +290,7 @@ export default class Link {
                         // Avoid Overwriting Original Files
                         if (fromOriginal) {
                             this.status = 'aborted'
-                            this.errors.ignored[this.properties.original] = this.value
+                            this.log.ignored[this.properties.original] = this.value
                             console.log(`Cannot overwite original file at ${savePath} with the contents of ${this.properties.raw}.`)
                             return // ignore changes
                         }
@@ -302,7 +308,7 @@ export default class Link {
                     }
                 } else {
                     this.status = 'ignored'
-                    this.errors.ignored[this.properties.original] = this.value
+                    this.log.ignored[this.properties.original] = this.value
                     return
                 }
             }
@@ -343,9 +349,8 @@ export default class Link {
         const isGithub = await github.check(githubInfo)
         // console.log('Berfore!', rawLink, linkPath)
         let processed = (isGithub) ? await github.transform(githubInfo) : { resolved: rawLink, raw: rawLink, original: rawLink, linkPath }
-        
         if (!processed) {
-            this.errors.invalid[rawLink] = true // register error
+            this.info.context.log.broken[rawLink] = this.value // register error
             return
         }
 

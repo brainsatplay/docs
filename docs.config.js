@@ -24,6 +24,7 @@ const config = {
     favicon: './static/img/favicon.ico',
     title: "Brains@Play Docs",
     name: "Brains@Play",
+    sidebar: true,
 
     templates: {
         "html": "templates/document.template.html",

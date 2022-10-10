@@ -1,5 +1,4 @@
 import fs from 'fs'
-import Link from './Link.js'
 import Line from './Line.js'
 import * as utils from './utils/index.js'
 import * as create from './create.js'
@@ -12,7 +11,6 @@ import * as preprocess from './preprocess/index.js'
 const pathSep = utils.pathSep
 const htmlCommentRegex = utils.htmlCommentRegex
 const lineLinkRegex = utils.lineLinkRegex
-const linkRegex = utils.linkRegex
 
 export default class Document {
 
@@ -23,7 +21,7 @@ export default class Document {
     publication = undefined
     origin = undefined
 
-    errors = {
+    log = {
         written: {}
     }
 
@@ -134,6 +132,67 @@ export default class Document {
         if (this.path.includes('.wasl.json')) ext = '.wasl' // recognize .wasl.json files
 
 
+        // ----------------------- Get Sidebar -----------------------
+        const find = `${process.cwd()}/${config.input}/`
+        const docNames = Object.keys(this.context.documents).map(key => {
+            return {
+                name: key.replace(find, ''),
+                link: utils.pathTo(key, this.path)
+            }
+        })
+
+        const createListItem = (name, link) => {
+            return `<a href="${link.replace('.md', '.html')}"><li>${name.replace('.md', '')}</li></a>`
+        }
+
+        const toUpperCase = name => name[0].toUpperCase() + name.slice(1)
+        const getName = (name) => {
+            name = name.split(/(?=[A-Z][a-z])/).join(' ') // Split on Capital Letters (but not acronyms)
+            name = name.split('-').map(toUpperCase).join(' ')
+            name = toUpperCase(name) // Capitalize Each Word
+            return name
+        }
+
+        const hierarchy = {}
+        docNames.forEach(o => {
+            const path = o.name.split('/')
+            let name = path.pop()
+            if (name === 'index.md') name = 'Main Page'
+            if (path.length === 0) name = 'Home'
+
+            name = getName(name) 
+
+            let target = hierarchy
+            path.forEach(str => {
+                if (!target[str]) target[str] = {} //createListItem(str, accum.join('/'))
+                target = target[str]
+            })
+
+            target[name] = o
+        })
+
+        const getList = (target, name, top=true) => {
+
+            const items = []
+            for (let name in target) {
+                if (name === 'drafts') continue // Removing drafts from the sidebar
+                const info = target[name]
+                if (typeof info === 'object' && info.link) {
+                    items.push(createListItem(name, info.link))
+                } else {
+                    const list = getList(info, name, false)
+                    items.push(list)
+                }
+            }
+
+            const ul = `<ul>${items.join('')}</ul>`
+            const output = (top) ? ul : (name) ? `<li>${getName(name) }</li>${ul}` : ul
+            return output
+        }
+
+        const sidebar = `<div id="brainsatplay-docs-sidebar">${getList(hierarchy)}</div>`
+
+
         for (let ext in templates) {
             if (typeof templates[ext] === 'string') {
                 templates[ext] = {
@@ -177,6 +236,8 @@ export default class Document {
             content: '',
             defaultstylesheet: create.stylesheet.generator(path.join(rel, stylesheetLocation))
         }
+
+        if (config.sidebar) commentReplacements.sidebar = sidebar
 
         for (let key in create) {
             if (config[key] && create[key]) {
@@ -226,7 +287,7 @@ export default class Document {
                     }
 
                     if (changes._write) {
-                        this.errors.written[filePath] = true
+                        this.log.written[filePath] = true
                         fs.writeFileSync(filePath, mdText);
                     }
 
