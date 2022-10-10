@@ -8,7 +8,6 @@ import path from 'path'
 
 import * as preprocess from './preprocess/index.js'
 
-const pathSep = utils.pathSep
 const htmlCommentRegex = utils.htmlCommentRegex
 const lineLinkRegex = utils.lineLinkRegex
 
@@ -171,7 +170,7 @@ export default class Document {
             target[name] = o
         })
 
-        const getList = (target, name, top=true) => {
+        const getList = (target, name, depth=0) => {
 
             const items = []
             for (let name in target) {
@@ -180,13 +179,13 @@ export default class Document {
                 if (typeof info === 'object' && info.link) {
                     items.push(createListItem(name, info.link))
                 } else {
-                    const list = getList(info, name, false)
+                    const list = getList(info, name, depth + 1, false)
                     items.push(list)
                 }
             }
 
-            const ul = `<ul>${items.join('')}</ul>`
-            const output = (top) ? ul : (name) ? `<li>${getName(name) }</li>${ul}` : ul
+            const ul = `<ul data-sidebar-depth=${depth}>${items.join('')}</ul>`
+            const output = (depth === 0) ? ul : (name) ? `<li>${getName(name) }</li>${ul}` : ul
             return output
         }
 
@@ -211,7 +210,6 @@ export default class Document {
 
         // console.log('templates', templates)
 
-        const notCommon = this.path.replace(input, '')
         const isBoolean = typeof this.context.debug === 'boolean'
         const debugHTML = isBoolean ? this.context.debug : this.context.debug?.html
 
@@ -224,24 +222,35 @@ export default class Document {
         let pathToUse = ''
         let returnVal = false
 
-        const nBack = notCommon.split(pathSep).length - 2
-        const rel = Array.from({ length: nBack }, _ => '..').join('/')
+        const notCommon = this.path.replace(input, '')
+
+        const getPath = (relPath) => {
+            const destination = path.join(process.cwd(), config.input, relPath)
+            return utils.pathTo(destination, this.path)
+        }
 
         const stylesheetLocation = './.docs/default.css'
         const destination = path.join(process.cwd(), config.output, stylesheetLocation)
+
         utils.filesystem.check(destination)
         fs.copyFileSync('templates/default.css', destination)
 
         const commentReplacements = {
             content: '',
-            defaultstylesheet: create.stylesheet.generator(path.join(rel, stylesheetLocation))
+            defaultstylesheet: create.stylesheet.generator(getPath(stylesheetLocation))
         }
 
         if (config.sidebar) commentReplacements.sidebar = sidebar
 
         for (let key in create) {
             if (config[key] && create[key]) {
-                commentReplacements[key] = create[key].generator(create[key].format === 'link' ? path.join(rel, config[key]) : config[key])
+                if (create[key].format === 'link') {
+                    const input = getPath(config[key])
+                    commentReplacements[key] = create[key].generator(input)
+
+                } else {
+                    commentReplacements[key] = create[key].generator(config[key])
+                }
             }
         }
 
@@ -266,22 +275,12 @@ export default class Document {
                             changeLogListItem(`${link} —> ${html}`)
 
                             lines.forEach(line => {
-
-                                // No Line in text anymore
-                                if (!text.includes(line.html)) {
-                                    console.log('OH NO! No Line in text anymore...', line.id, line.value, line.html, text)
-                                    throw new Error('e')
-                                    // > Although specified in the WASL standard, these are *not* handled by the [wasl](https://github.com/brainsatplay/wasl/blob/main/README.md) library itself. Instead, **graphs** are assembled by external libraries such as [graphscript](https://github.com/brainsatplay/graphscript/blob/master/README.md).
-                                }
-
-                                // console.log('changes', changes)
                                 const newHTML = line.html.replace(link, html)
                                 const newMarkdown = line.markdown.replace(link, markdown) // Update markdown in placeholder line
                                 text = text.replace(line.html, newHTML) // update for HTML
                                 mdText = mdText.replace(line.markdown, newMarkdown) // update for MD
                                 line.markdown = newMarkdown
                                 line.html = newHTML
-
                             })
                         }
                     }

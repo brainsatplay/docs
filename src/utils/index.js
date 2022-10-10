@@ -89,11 +89,7 @@ export const pathTo = (to, from, name) => {
         mapped = path.join(path.join(...Array.from({ length: nBack }, () => '..'), ...toSplit.slice(index)), name) // go out
     } else mapped = path.join(...toSplit.slice(fromSplit.length), name) // go up
 
-
-    // console.log('Path To', to, ogFrom, mapped)
-    // console.log('Path To (res)', mapped)
-
-    if (mapped[0] !== '.') return `./${mapped}`
+    if (mapped.slice(0, 2) !== './' || mapped.slice(0,3) !== '../') return `./${mapped}`
 
     else return mapped
 }

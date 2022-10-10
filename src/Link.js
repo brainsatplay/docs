@@ -347,7 +347,6 @@ export default class Link {
         }
 
         const isGithub = await github.check(githubInfo)
-        // console.log('Berfore!', rawLink, linkPath)
         let processed = (isGithub) ? await github.transform(githubInfo) : { resolved: rawLink, raw: rawLink, original: rawLink, linkPath }
         if (!processed) {
             this.info.context.log.broken[rawLink] = this.value // register error
