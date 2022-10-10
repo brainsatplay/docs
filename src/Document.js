@@ -229,7 +229,7 @@ export default class Document {
             return utils.pathTo(destination, this.path)
         }
 
-        const stylesheetLocation = './.docs/default.css'
+        const stylesheetLocation = './brainsatplay-docs/default.css'
         const destination = path.join(process.cwd(), config.output, stylesheetLocation)
 
         utils.filesystem.check(destination)
