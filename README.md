@@ -15,8 +15,6 @@ This is a collection of open/free source biomedical hardware and software develo
 ### The Library
 **docs** autogenerates documentation for Brains@Play applications as they recompose the web. This allows developers to generate thorough documentation automatically!
 
-> **Note**: This is still just a rough implementation of a docs generation API. It's not gonna really work how you want (yet)!
-
 We use https://showdownjs.com/ to generate HTML from .md files.
 
 ##### Roadmap
