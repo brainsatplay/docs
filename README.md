@@ -20,6 +20,8 @@ This is a collection of open/free source biomedical hardware and software develo
 We use https://showdownjs.com/ to generate HTML from .md files.
 
 ##### Roadmap
+- Separate the resolution of the remote files and the assignment of a changed link path
+    - This avoid running relink() twice in Docs.generate() (`/src/index.js`)
 - Check out [ESDoc](https://esdoc.org/)
 - Generate a huge API reference (with TypeDoc) from remote files
 -  Editor with active plug-in + generated explanation from WASL file (see [htil](https://github.com/brainsatplay/htil)).
@@ -30,12 +32,11 @@ We use https://showdownjs.com/ to generate HTML from .md files.
 - [components]
 - [datastreams-api]
 - [docs]
-- [es-plugins]
+- [escompose]
 - [freerange]
 - [graphscript]
 - [hegduino]
 - [nRF52]
-- [studio]
 - [tinybuild]
 - [wasl]
 - [visualscript]
@@ -43,7 +44,6 @@ We use https://showdownjs.com/ to generate HTML from .md files.
 [brainsatplay]: https://github.com/brainsatplay/brainsatplay/blob/main/src/core/README.md
 [wasl]: https://github.com/brainsatplay/wasl/blob/main/README.md
 [graphscript]: https://github.com/brainsatplay/graphscript/blob/master/README.md
-[studio]: https://github.com/brainsatplay/studio/blob/main/README.md
 [visualscript]: https://github.com/brainsatplay/visualscript/blob/main/README.md
 [datastreams-api]: https://github.com/brainsatplay/datastreams-api/blob/main/README.md
 [tinybuild]: https://github.com/brainsatplay/tinybuild/blob/master/README.md
@@ -52,7 +52,8 @@ We use https://showdownjs.com/ to generate HTML from .md files.
 [docs]: https://github.com/brainsatplay/docs/blob/main/README.md
 [hegduino]: https://github.com/moothyknight/HEG_ESP32_Delobotomizer/blob/main/README.md
 [nRF52]: https://github.com/brainsatplay/nRF52-Biosensing-Boards/blob/main/README.md
-[es-plugins]: https://github.com/brainsatplay/es-plugins/blob/main/README.md
+[escompose]: https://github.com/brainsatplay/escompose/blob/main/README.md
+[escomposer]: https://github.com/brainsatplay/escomposer/blob/main/libraries/escomposer/README.md
 [freerange]: https://github.com/brainsatplay/freerange/blob/main/README.md
 
 ## Acknowledgments

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brains@Play Docs</title>
+    <link rel=stylesheet href="../../../../.docs/default.css"/>
+    <link rel=stylesheet href="../../../../static/custom.css"/>
+    <link rel="icon" href="../../../../static/img/favicon.ico" type="image/x-icon" />
+</head>
+<body>
+    <header>
+        <nav><h1>Brains@Play</h1></nav>
+    </header>
+    <section>
+        <hr />
+<p>sidebar_position: 1</p>
+<h2 id="title-introduction">title: Introduction</h2>
+<p>The Brains@Play Framework (Brains@Play) is a rapid application design system for composing interactive, high-performance web applications using <strong>functional building blocks</strong>. </p>
+<p>Brains@Play follows a <strong>datastream</strong> programming paradigm and models programs as directed graphs of data flowing between operations. The advantages of this approach are: </p>
+<ol>
+<li><strong>Inherent parallelization</strong> for use in large, decentralized systems.</li>
+<li><strong>Seamless transition between different transport protocols</strong> (e.g. HTTP, Websocket, WebRTC, etc.) for passing messages.</li>
+<li><strong>No need to maintain state</strong> as a developer</li>
+</ol>
+<p>While the team behind Brains@Play has initially sought to re-envision physiological computing education with the University of Alabama's <a href="https://htilua.org/">Human Technology Interaction Lab</a>, we ultimately intend to steward this framework into a <strong>copyleft software ecosystem for open-source application development</strong> that will recompose the web into a massive collection of reusable code blocks.</p>
+<p>:::info The Developers<br />
+All core software for The Brains@Play Framework has been released under the <a href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPLv3</a> license. It is maintained by <a href="https://github.com/garrettmflynn">Garrett Flynn</a> and <a href="https://github.com/joshbrew">Josh Brewster</a> from <a href="https://brainsatplay.com">Brains@Play LLC</a>.<br />
+:::</p>
+<h2 id="the-library">The Library</h2>
+<p><code>brainsatplay</code> compiles files in the Web Application Specification Language (specified in the <a href="./guides/libraries/wasl">wasl</a> library) to high-performance applications. Beyond wrapping its dependencies, this library: </p>
+<ul>
+<li>Transforms function arguments into <a href="./guides/libraries/graphscript"><code>graphscript</code></a> graphs that can be targeted independently</li>
+<li>Compiles source text from other languages (e.g. Python, C++, etc) into functional nodes (TBD)</li>
+</ul>
+<p>Using the <a href="./guides/libraries/studio"><code>@brainsatplay/studio</code></a>, the underlying WASL structure can be inspected, modified, and extended with official <a href="../../../components">components</a>.</p>
+<h2 id="how-it-began">How It Began</h2>
+<p>At the core of <code>brainsatplay</code> is our decision to standardize the usage of ES Modules.</p>
+<p>With the release of ECMAScript 2015 (ES6) in 2015, ECMAScript Modules (ES Modules) became the standard format to package JavaScript code for reuse and provide modularity to the Web. </p>
+<p>```javascript title="hello.js"<br />
+export const world = () =&gt; console.log('hello world!')<br />
+export const friend = () =&gt; console.log('hello friend!')</p>
+<pre><code></code></pre>
+<p>javascript title="index.js"<br />
+import * as hello from './hello.js'<br />
+hello.world()<br />
+hello.friend()</p>
+<pre><code>The release of Firefox 60 (May 2018) marked its support in all major browsers. And Node.js 14 (April 2021) finally made these capabilities stable for server-side code. But had anything really changed about reuse?
+
+Package managers such as NPM and Yarn made the process of reusing code easier by installing sub-dependencies, configuring your dependency tree, and much more. But packages aren't composable. They don't have a shared structure.
+
+While working on browser-based physiological computing systems, Joshua Brewster and Garrett Flynn designed the [Web Application Specification Language (WASL)](./guides/libraries/wasl): a standard that combines ESM and JSON to specify [Web Components](https://developer.mozilla.org/en-US/docs/Web/Web_Components). </code></pre>
+<p>javascript title="trigger.js"<br />
+export const loop = 1000/10<br />
+export default () =&gt; true</p>
+<pre><code></code></pre>
+<p>javascript title="hello.js"<br />
+export default (message="world") =&gt; console.log(<code>hello ${message}!</code>)</p>
+<pre><code></code></pre>
+<p>json title="index.wasl.json"<br />
+{<br />
+    "name": "My App",<br />
+    "graph": {<br />
+        "nodes": {<br />
+            "trigger": {<br />
+                "src": "trigger.js"<br />
+            },<br />
+             "hello": {<br />
+                "src": "hello.js"<br />
+            }<br />
+        },</p>
+<pre><code>    "edges": {
+        "trigger": {
+            "hello": {}
+        }
+    }
+}</code></pre>
+<p>}<br />
+```</p>
+<p>At that point, they hooked up Web Bluetooth, Web Serial, and other data acquisition APIs to these components and optimized <a href="./guides/libraries"><code>brainsatplay</code> and its dependencies</a> to be as fast as possible. </p>
+<h2 id="playing-with-code">Playing with Code</h2>
+<p><code>brainstplay</code> embodies our desire to support the joy of developers as they create high-performance applications. It encompasses many different goals including <strong>free software use</strong>, a focus on <strong>inspectability and interactivity</strong>, and <strong>accessibility</strong> for everyone with a brain. </p>
+<p>More generally, <code>brainsatplay</code> refers to the culture of rapid prototyping that permeates the project by composing simple components without the need to focus on unneccesary complexity.</p>
+<h2 id="audience">Audience</h2>
+<p>This documentation is written for <strong>programmers who care about the future of composability</strong>. We assume that you can read JavaScript code—as all of the examples here are written for the browser (specifically the latest Chromium browsers) or Node.js. Other than that basic background, we try to present all the concepts you will need to use <code>brainsatplay</code>.</p>
+<p>[brainsatplay-status]: <a href="https://img.shields.io/npm/v/brainsatplay">https://img.shields.io/npm/v/brainsatplay</a></p>
+<!-- Specification Language -->
+<p>[wasl-status]: <a href="https://img.shields.io/npm/v/wasl">https://img.shields.io/npm/v/wasl</a></p>
+<!-- Core Library-->
+<p>[graphscript-status]: <a href="https://img.shields.io/npm/v/graphscript">https://img.shields.io/npm/v/graphscript</a></p>
+<!-- Integrated Editor-->
+<p>[@brainsatplay/studio-status]: <a href="https://img.shields.io/npm/v/@brainsatplay/studio">https://img.shields.io/npm/v/@brainsatplay/studio</a></p>
+<!-- Low Code Programming System-->
+<p>[visualscript-status]: <a href="https://img.shields.io/npm/v/visualscript">https://img.shields.io/npm/v/visualscript</a></p>
+<!-- Data Acquisition-->
+<p>[datastreams-api-status]: <a href="https://img.shields.io/npm/v/datastreams-api.svg">https://img.shields.io/npm/v/datastreams-api.svg</a></p>
+<!-- Build Tool-->
+<p>[tinybuild-status]: <a href="https://img.shields.io/npm/v/tinybuild">https://img.shields.io/npm/v/tinybuild</a></p>
+<!-- Component Registry -->
+<p>[@brainsatplay/components-status]: <a href="https://img.shields.io/npm/v/@brainsatplay/components">https://img.shields.io/npm/v/@brainsatplay/components</a></p>
+    </section>
+    <footer></footer>
+</body>
+</html>

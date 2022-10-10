@@ -1,13 +1,15 @@
 import Docs from '../src/index.js'
 
+const allOn = false
+
 const debug = {
-    html: false,
-    unchanged: false,
-    unsupported: false,
-    copied: false,
+    html: allOn,
+    unchanged: allOn,
+    unsupported: allOn,
+    copied: allOn,
     broken: true,
     ignored: true,
-    written: false,
+    written: allOn,
     unmapped: true,
     invalid: true
 }

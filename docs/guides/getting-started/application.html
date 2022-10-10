@@ -19,7 +19,110 @@
 <blockquote>
   <p>Check out the working code for this example on the live <a href="https://brainsatplay.com/components/">WASL Components Demo</a> website.</p>
 </blockquote>
-<p><em>Coming soon</em></p>
+<h2 id="defining-the-application-logic">Defining the Application Logic</h2>
+<p>Before we get started with more Components, we'll need to determine how the information of our application should flow. </p>
+<p>In general, we will input our todo item into an <code>input</code> tag. When we're ready to submit, we'll press a <code>button</code> that send this new item to the UI <code>list</code> to be displayed and the LocalStorage API to <code>store</code> as "todos" for later page reloads. When the page is reloaded, then, the LocalStorage API should <code>load</code> the previous "todos" into the <code>list</code>.</p>
+<p>Translated into a WASL file, our application looks something like this:</p>
+<div class="brainsatplay-docs-code"><span>index.wasl.json</span>
+<pre><code>{
+    "components": {
+        "input": {
+            "src": "./components/ui/input.js"
+        },
+        "button": {
+            "attributes": {
+                "innerHTML": "Add Todo",
+                "type": "submit"
+            },
+            "src": "./components/ui/button.js"
+        },
+        "list": {
+            "src": "./components/ui/ul.js"
+        },
+        "store": {
+            "src": "./components/storage/local/set.js"
+        },
+        "load": {
+            "arguments": {
+                "key": "todos"
+            },
+            "src": "./components/storage/local/get.js"
+        }
+    },
+    "listeners": {
+        "input": {
+            "button": true
+        },
+        "button": {
+            "list": true
+        },
+        "list": {
+            "store": true
+        },
+        "load": {
+            "list": true
+        },
+    }
+}
+</code></pre></div>
+<p>We can use the <code>button</code> Component we'd specified in the <a href="./component.html">previous tutorial</a>—but otherwise we'll need to define more Components from scratch!</p>
+<h2 id="defining-the-components">Defining the Components</h2>
+<h3 id="input">Input</h3>
+<p>The <code>input</code> Component is going to be relatively similar to the <code>button</code> component—although external inputs are going to reset the current input value before being passed on.</p>
+<div class="brainsatplay-docs-code"><span>input.js</span>
+<pre><code>export const tagName = 'input' // Specify the HTML Element
+export const attributes = {
+    oninput: function (ev) {
+        this.run({value: ev.target.value, _internal: true}) // Activate with new inputs
+    }
+}
+
+export default function (input){
+    if (input?._internal) return input.value // Pass input to linked Components
+    else {
+        this.element.value = input // Set the value of the input
+        return input // Pass to linked Components
+    }
+}
+</code></pre></div>
+<h3 id="list">List</h3>
+<p>The <code>list</code> Component, on the other hand, is going to accumulate inputs, both on the DOM and inside an Array that is passed to linked Components.</p>
+<div class="brainsatplay-docs-code"><span>ul.js</span>
+<pre><code>export const tagName = 'ul' // Specify the HTML Element
+export const items = [] // Maintain a list of items
+export default function (...args) {
+    const inputs = args.flat() // Treat all arguments as single list items
+    inputs.forEach(input =&gt; {
+        if (typeof input === 'string'){ // Only allow strings
+            const li = document.createElement('li')
+            li.innerText = input
+            this.element.appendChild(li) // Add list item to the DOM
+            items.push(input) // Record new list item in the Array
+        }
+    })
+    return [items]
+}
+</code></pre></div>
+<h3 id="store">Store</h3>
+<p>The <code>store</code> Component will require a basic call <strong>set the item in storage</strong> using the LocalStorage API.</p>
+<div class="brainsatplay-docs-code"><span>set.js</span>
+<pre><code>export default (value, key='todos') =&gt; {
+    const string = JSON.stringify(value) // Parse input into a string.
+    localStorage.setItem(key, string) // Store string in Local Storage.
+}
+</code></pre></div>
+<h3 id="load">Load</h3>
+<p>Similarly, the <code>load</code> Component will <strong>get the item from storage</strong> and parse it into a JavaScript object.</p>
+<div class="brainsatplay-docs-code"><span>get.js</span>
+<pre><code>export default (key='todos') =&gt; {
+    let item = localStorage.getItem(key) // Get key from local storage.
+    item = JSON.parse(item) // Parse the string into a JavaScript Object.
+    return (item === null) ? undefined : item // Return values that are not null
+}
+</code></pre></div>
+<h2 id="final-notes">Final Notes</h2>
+<p>Now that you've completed all of your Components, you should be able to run the application and create your own todo lists. Huzzah!</p>
+<p>In our next tutorial, we'll see how what you've learned will generalize to <a href="./realtime.html">real-time signals</a> (coming soon…).</p>
     </section>
     <footer></footer>
 </body>

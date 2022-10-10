@@ -19,7 +19,7 @@ hello.friend()
 
 However, since ES Modules didn't standardize the exported code itself, there remains a lack of support for immediate composability.
 
-> If you're most interested purely in scalable UI management, the Brains@Play Framework might not be for you; in this case, you might want to check out [React](https://reactjs.org/), [Vue](https://vuejs.org/), [Svelte](https://svelte.dev/), [Angular](https://angular.io/) or the vast array of other UI frameworks). On the other hand, **this framework is particularly suited for organizing and sharing code at scale**. If you're interested, read on!
+> If you're most interested purely in scalable UI management, the Brains@Play Framework might not be for you. In this case, you might want to check out [React](https://reactjs.org/), [Vue](https://vuejs.org/), [Svelte](https://svelte.dev/), [Angular](https://angular.io/) or the vast array of other UI frameworks. <br/><br/>On the other hand, **this framework is particularly suited for organizing and sharing code at scale**. If you're interested, read on!
 
 ### Thinking in Datastreams
 We believe that the most general solutions are the best solutions—period. As such, the Brains@Play Framework inherits from the **datastream** programming paradigm, which models programs as directed graphs of data flowing between operations. 
@@ -63,7 +63,7 @@ Using the [Web Application Specification Language (WASL)](https://github.com/bra
 
 In our experience, we've found the Brains@Play Framework most useful for high-throughput, real-time applications (e.g. processing brain data streamed from an electroencephalography (EEG) device at 512hz, which is translated into UI changes that inform the user about their internal state). But we're excited to see the use-cases you all dream up for it!
 
-In the near future, you will be able to use our visual programming system ([@brainsatplay/studio]) for intuitive inspection, modification, and extension of WASL applications using our official [components] collection.
+In the near future, you will be able to use our visual programming system ([ES Composer](https://github.com/brainsatplay/escompose/blob/main/libraries/escomposer/README.md) for intuitive inspection, modification, and extension of WASL applications using our official [components] collection.
 
 ## Playing with Code
 Brains@Play embodies our desire to support the joy of developers as they create high-performance applications. It encompasses many different goals including **free software use**, **inspectability** and, **composability**
@@ -91,9 +91,6 @@ Keep reading to [install the Brains@Play Framework](./guides/getting-started/ins
 <!-- Core Library-->
 [graphscript]: https://github.com/brainsatplay/graphscript/blob/master/README.md
 
-<!-- Integrated Editor-->
-[@brainsatplay/studio]: https://github.com/brainsatplay/studio/blob/main/README.md
-
 <!-- Low Code Programming System-->
 [visualscript]: https://github.com/brainsatplay/visualscript/blob/main/README.md
 
@@ -106,4 +103,4 @@ Keep reading to [install the Brains@Play Framework](./guides/getting-started/ins
 <!-- Plugin Registry -->
 [components]: https://github.com/brainsatplay/components/blob/main/README.md
 
-[es-plugins]: https://github.com/brainsatplay/es-plugins/blob/main/README.md
+[escompose]: https://github.com/brainsatplay/escompose/blob/main/README.md

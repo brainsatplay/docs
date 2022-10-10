@@ -38,7 +38,7 @@ export const attributes = {
 }
 </code></pre></div>
 <p>If you refresh the HTML page, you'll now see that a button has been created on screen! However, it's not doing much right now. Let's see if we can pass the <code>onclick</code> event to another component. </p>
-<p>To do this, we'll use the default <code>log</code> plugin provided in the <a href="https://github.com/brainsatplay/components">components</a> repository:</p>
+<p>To do this, we'll use the default <code>log</code> plugin provided in the <a href="../../repos/components">components</a> repository:</p>
 <div class="brainsatplay-docs-code"><span>Code</span>
 <pre><code>{
     "components": {
@@ -74,7 +74,7 @@ export const attributes = {
 <li>A default function used by <code>button</code> when it is triggered internally or by another Component</li>
 <li>An <code>onmousedown</code> event that internally triggers this default function when the mouse has been pressed</li>
 </ol>
-<p>Thankfully, the underlying logic framework for WASL (<a href="https://github.com/brainsatplay/graphscript">grpahscript</a>) already assigns a basic default function for us:</p>
+<p>Thankfully, the underlying logic framework for WASL (<a href="../../repos/graphscript">grpahscript</a>) already assigns a basic default function for us:</p>
 <div class="brainsatplay-docs-code"><span>Code</span>
 <pre><code>export default (input) =&gt; input // This default function is specified by graphscript and will forward any input to this Component to any linked Components.
 </code></pre></div>

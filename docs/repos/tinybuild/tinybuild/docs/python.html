@@ -18,7 +18,7 @@
 <p>We've provided some boilerplate to spin up a Python server that can communicate with the node server or directly to the browser. It can also serve the built files and website, serve a custom REST api with direct python integration, and otherwise demonstrates a high performance python server skeleton.</p>
 <p>We included presets to use Quart's https production server (via <a href="https://pgjones.gitlab.io/hypercorn/">hypercorn</a>) as long as an ssl certificate is provided. See the top of the <a href="../python/server.py"><code>server.py</code></a> file for server settings which are configured manually.</p>
 <p>Our python tooling documents a high performance multi-user python scenario with an order of operations shown to run simultaneous thread processes for a dedicated server thread. It's is scalable and production-ready, with enough documentation for you to find where to insert your code (hint: start with the _thread_main function and follow the queues to how the sockets get updated) and how to update SSE and Websocket queues to any connected users.</p>
-<p>Code: <a href="https://github.com/brainsatplay/tinybuild/blob/master/tinybuild/python"><code>tinybuild/python</code></a></p>
+<p>Code: <a href="../python"><code>tinybuild/python</code></a></p>
 <h3 id="settings">Settings</h3>
 <div class="brainsatplay-docs-code"><span>Code</span>
 <pre><code>## 

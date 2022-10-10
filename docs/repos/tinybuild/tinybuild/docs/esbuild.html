@@ -17,7 +17,7 @@
         <h2 id="esbuildhttpsesbuildgithubio"><a href="https://esbuild.github.io/">esbuild</a></h2>
 <p>esbuild is an ultra lightweight and fast bundler (based in Rust) used in NodeJS to compile javascript projects. It works using Nodejs and can bundle any javascript and typescript projects generically like other bundlers. It typically takes &lt;100ms to bundle a javascript project, and about 2 seconds if you add the type generation plugin.</p>
 <p>esbuild supports the full spectrum of javascript bundling needs we've encountered so far and we have documented and abstracted its typical features fairly well with our settings. See their website for more information. </p>
-<p>Code: <a href="https://github.com/brainsatplay/tinybuild/blob/master/tinybuild/esbuild"><code>tinybuild/esbuild</code></a></p>
+<p>Code: <a href="../esbuild"><code>tinybuild/esbuild</code></a></p>
 <h2 id="bundling">Bundling</h2>
 <p>Create an index.js (or whatever name) file serving as the entry point script for your webapp or library e.g.:</p>
 <div class="brainsatplay-docs-code"><span>Code</span>
@@ -120,7 +120,7 @@ let w = new Worker(worker);
 </code></pre></div>
 <p>And esbuild will bundle the worker with your distribution! You'll find the bundled workers in the same output file location. You can bundle workers directly in your app/library using our plugin (applied by default) which bundles and inserts the worker code as an inline object url. </p>
 <p>If you set the blobWorkers setting to false using the workerPlugin manually in your config, it will supply the expected url to the server's node_modules folder when you install the worker library. You can set the bundler settings for the worker in the workerPlugin initialization as well, it defaults to only setting <code>minifyWhitespace:true</code> in the bundler settings. </p>
-<p>Find our <a href="https://github.com/brainsatplay/graphscript/examples">graphscript</a> examples for multiple worker implementations for graphics rendering with threejs.</p>
+<p>Find our <a href="../../../graphscript">graphscript</a> examples for multiple worker implementations for graphics rendering with threejs.</p>
 <h3 id="external">External</h3>
 <p>For modules including node libraries that are meant to interoperate with the browser, make sure you exclude them in via the 'external' setting.</p>
 <h3 id="outputs">Outputs</h3>

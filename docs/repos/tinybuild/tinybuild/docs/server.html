@@ -16,7 +16,7 @@
     <section>
         <h2 id="node-serverhttpsnodejsorg"><a href="https://nodejs.org">Node Server</a></h2>
 <p>The node server is no-frills with websocket based hot reloading and basic examples of python backend communication and relaying. It's small and fast and meets our most common development server needs without giant dependencies.</p>
-<p>Code: <a href="https://github.com/brainsatplay/tinybuild/blob/master/tinybuild/node_server"><code>tinybuild/node_server</code></a></p>
+<p>Code: <a href="../node_server"><code>tinybuild/node_server</code></a></p>
 <h3 id="features">Features:</h3>
 <ul>
 <li>Serve whatever files</li>
@@ -119,7 +119,7 @@ serve(config);
 <p>In server_settings.js, set settings.python to undefined to not use it, or port 7000 is default.</p>
 <p>This test runs a websocket and a thread on the <a href="https://www.python.org/downloads/">python</a> quart server. You can access the Node-served build at <code>http://localhost:8080</code> or the quart server build at <code>http://localhost:7000</code> to experiment (if on default settings).</p>
 <p>Quart enables fast asyncio server streams from python. Bonus thread-generated data in python streaming through websockets to show off the potential.</p>
-<p><code>npm run pip</code> should install any missing python packages. See <a href="https://github.com/moothyknight/esbuild_base_python/blob/master/python/README.md">README</a>)</p>
+<p><code>npm run pip</code> should install any missing python packages. See <a href="https://github.com/moothyknight/esbuild_base_python/blob/master/python">README</a>)</p>
 <p><code>npm run concurrent</code> runs both python and node servers concurrently (with hot reloading for FE with a persistent python streaming server backend).</p>
 <p>After installing dependencies, </p>
 <h2 id="run-python-and-node-together">Run Python and Node together:</h2>

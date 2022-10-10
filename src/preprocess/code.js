@@ -10,10 +10,10 @@ export default (text) => {
 
             // Instantiate Editors
             if (name && language && code) {
-                console.log(`Should load ${name} (${language}) into WASL`)
-                if (name.includes('.wasl.json')) {
-                    console.log('Should bind above Components to this WASL file', text)
-                } else console.log(code)
+                // console.log(`Should load ${name} (${language}) into WASL`)
+                // if (name.includes('.wasl.json')) {
+                //     console.log('Should bind above Components to this WASL file', text)
+                // } else console.log(code)
             } 
             
             // Wrap Code with Editor View

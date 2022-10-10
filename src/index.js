@@ -1,71 +1,16 @@
 import fs from 'fs'
 import path from 'path'
 import process from 'process'
-import https from 'https'
 import { exec } from "child_process"
-import showdown from 'showdown'
-import * as preprocess from './preprocess/index.js'
+import * as utils from './utils/index.js'
+import Document from './Document.js'
+import https from 'https'
 
 
-const pathSep = '/'
-const readme = 'README.md'
-const lineLinkRegex = /(?:.*)\](?:\(|:\s)([^)\n\s]+)\)?(?:[^\n]*)/g
-const markdown = '.md'
-const htmlCommentRegex = /\<\!\-\-\s([^\s].*)\s\-\-\>/g
+const readme = utils.readme
 
-const extension = (filePath) => {
-    const split = path.basename(filePath).split('/').slice(-1)[0].split('.')
-    if (split.length > 1) return split.slice(-1)[0]
-    else return ''
-}
-
-const markdownExtension = '.md'
-const correctExtension = (filePath, base) => {
-    const name = path.basename(filePath)
-    const ext = name.slice(-base.length)
-    return ext === base
-}
-
-const isRemote = (str) => str.slice(0, 7) == 'http://' || str.slice(0, 8) == 'https://'
-const isRelative = (str) => str[0] === '.'
-const isMarkdown = (str) => (str.slice(-markdown.length) === markdown)
-
-
-const create = {
-    name: {
-        generator: (text) => `<h1>${text}</h1>`,
-        // generator: (text) => `<a href="/"><h1>${text}</h1></a>`,
-        format: 'text'
-    },
-    title: {
-        generator: (text) => `<title>${text}</title>`,
-        format: 'text'
-    },
-    stylesheet: {
-        generator: (link) => `<link rel=stylesheet href="${link}"/>`,
-        format: 'link'
-    },
-    content: {
-        generator: (text) => text,
-        format: 'text'
-    },
-    favicon: {
-        generator: (link) => `<link rel="icon" href="${link}" type="image/x-icon" />`,
-        format: 'link'
-    }
-}
-
-// Valid Options: https://github.com/showdownjs/showdown#valid-options
-const converter = new showdown.Converter({
-    tables: true,
-    tasklists: true,
-    emoji: true,
-    moreStyling: true
-    // metadata: true
-});
-
-converter.setFlavor('github');
-
+const markdown = utils.markdown
+const isRemote = utils.isRemote
 
 // This class manages all documentation generation for @brainsatplay/docs
 class Docs {
@@ -74,11 +19,8 @@ class Docs {
     config = null
 
     // File Registries
-    originalFiles = {}
-    downloads = {
-        saved: {},
-        raw: {}
-    }
+    documents = {}
+    downloads = {}
 
     // Collections
     links = []
@@ -90,6 +32,7 @@ class Docs {
     unmatched = {}
     ignored = {}
     written = {}
+    unsupported = {}
 
     // Main Changelog
     changes = {}
@@ -123,11 +66,7 @@ class Docs {
 
         // Clear File Collections
         this.links = []
-        this.originalFiles = {}
-        this.downloads = {
-            saved: {},
-            raw: {}
-        }
+        this.documents = {}
 
         this.broken = {}
         this.invalid = {}
@@ -150,37 +89,48 @@ class Docs {
         const outputLoc = path.join(base, this.config.output)
 
         // Copy the Input Directory
-        const res = this.check(path.join(copyLoc, 'dummy'));
+        const res = utils.filesystem.check(path.join(copyLoc, 'dummy'));
         if (res) await this.clear(copyLoc)
         await this.copy(inputLoc, copyLoc)
         this.config.input = this.config.copy // proxy input to copy // TODO: Make sure this doesn't break anything
 
         // Clear the Output Directory
-        const res2 = this.check(path.join(outputLoc, 'dummy'));
+        const res2 = utils.filesystem.check(path.join(outputLoc, 'dummy'));
         if (res2) await this.clear(outputLoc)
 
         // List the Current Files
-        const bases = this.getBases(this.config)
-        this.originalFiles = await this.list(bases.input);
+        const bases = utils.getBases(this.config)
 
         // Preload Remote Assets + Changes
-        const changes = await this.preload(this.originalFiles, this.config.publications, this.config)
+        await this.getDocuments(bases.input); // get all documents
+        const changes = await this.relink(this.config.publications)
 
-        const updatedResults = (changes) ? await this.list(bases.input) : this.originalFiles // grab list with new files
+        if (changes) {
+            this.documents = {}
+            await this.getDocuments(bases.input) // Get new documents
+        }
 
         // Save New Assets as HTML
+        this.save(changes)
+
+        console.log(`\nDocumentation completed in ${((performance.now() - tic) / 1000).toFixed(3)} seconds.\n`)
+        return true
+    }
+
+    save = (changes) => {
         const noChanges = []
         const cantHandle = []
         const copied = []
 
-        for (let filePath in updatedResults) {
+        for (let filePath in this.documents) {
             let thisChanges = this.getChanges(filePath, changes)
-            const res = this.saveText(updatedResults[filePath], thisChanges, filePath, this.config)
+            const res = this.documents[filePath].save(thisChanges)
             if (res) {
                 if (!thisChanges) noChanges.push(this.getRelName(filePath))
             } else {
-                if (res === false) cantHandle.push(filePath.replace(`${bases.main}/`, ''))
-                else copied.push(filePath.replace(`${bases.main}/`, ''))
+                const main = process.cwd()
+                if (res === false) cantHandle.push(filePath.replace(`${main}/`, ''))
+                else copied.push(filePath.replace(`${main}/`, ''))
             }
         }
 
@@ -189,26 +139,17 @@ class Docs {
             cantHandle,
             copied,
         })
-
-        console.log(`\nDocumentation completed in ${((performance.now() - tic) / 1000).toFixed(3)} seconds.\n`)
-        return true
     }
 
     getRelName = (name) => name.replace(`${process.cwd()}/`, '')
 
     getChanges = (name, changes = this.changes) => changes[name] ?? changes[this.getRelName(name)]
-    getOriginalFile = (name) => this.originalFiles[name] ?? this.originalFiles[path.join(process.cwd(), name)]
-
-    getBases = (config) => {
-        const main = process.cwd()
-        const input = path.join(main, config.input)
-        return {
-            main,
-            input
-        }
+    getOriginalDocument = (name) => {
+        const document = this.documents[name] ?? this.documents[path.join(process.cwd(), name)]
+        if (document?.type === 'filesystem') return document
     }
 
-    validate = (links=this.links) => {
+    validate = (links = this.links) => {
 
         const invalid = []
         links.forEach(o => {
@@ -247,365 +188,6 @@ class Docs {
 
     clear = async (dir) => await this.exec(`rm -r ${path.join(dir, '*')}`).catch(console.error)
 
-    mergeSafe = (base, update) => {
-        const baseNoFile = path.dirname(base)
-        try {
-            return new URL(update, baseNoFile + '/').href
-        } catch (e) {
-            return path.join(baseNoFile, update)
-        }
-    }
-
-
-    handleLine = async (line, links, info, config) => {
-
-        const {
-            link,
-            mapping,
-            name,
-        } = links[line]
-
-        const {
-            relativeTo,
-            filePath,
-        } = info
-
-
-        let linkPath = links[line].linkPath
-        let savePath = links[line].savePath
-        let remap = links[line].remap
-        let remote = links[line].remote;
-
-        let rawLink = link
-        let basePath;
-
-        if (!linkPath) {
-
-            // Transform to New Directory
-            if (relativeTo && !remote) {
-
-                // Get Base Path
-                basePath = path.join(path.dirname(filePath), rawLink) // no url
-
-                // Update Raw Link
-                rawLink = this.mergeSafe(relativeTo, rawLink)
-
-                // Derive Link Path
-                // if (mapping) basePath = path.join(mapping, basePath)
-
-                linkPath = basePath.replace(config.input, '')
-                remote = isRemote(rawLink) // reset remote
-            } else if (mapping) linkPath = mapping
-        }
-
-        const fullLink = rawLink
-        let rawLinkPath = fullLink
-
-        // transform raw link (github)
-        const search = 'github.com'
-        if (rawLink.includes(search)) {
-            const split = rawLink.split(`${search}/`)
-            const end = split[1].split(pathSep)
-
-            if (end) {
-
-                // includes branch
-                rawLink = `https://raw.githubusercontent.com/${[...end.slice(0,2), ...end.slice(3)].join(pathSep)}`
-                
-                // removes branch
-                rawLinkPath = [
-                    (split[0].slice(-1) === pathSep) ? split[0].slice(0, -1) : split[0], 
-                    search, 
-                    ...end.slice(0,2), 
-                    ...end.slice(4)].join(pathSep
-                )
-            }
-        }
-
-        if (!linkPath) linkPath = name
-        if (path.basename(linkPath) !== name) linkPath = path.join(linkPath, name)
-
-        if (linkPath[0] === pathSep) linkPath = linkPath.slice(1)
-
-
-        // Stop Broken Links (remote only...)
-        if (linkPath && !this.broken[fullLink]) {
-
-            // Remap Files that have Already Been Transferred
-            const downloadedAt = this.downloads.raw[fullLink]
-            if (downloadedAt) {
-                let newLinkPath = this.pathTo(downloadedAt, path.dirname(filePath))
-                this.registerChange(line, link, newLinkPath, filePath, true, relativeTo, 'transferred') // update text
-                return
-            } 
-            
-            // Handle Untransferred Files
-            else {
-
-                // Correct Save Path
-                if (!savePath) savePath = path.join(config.input, linkPath)
-
-                // Rename README.md Files
-                savePath = savePath.replace(readme, 'index.md')
-
-
-
-                // Check If Link Points to the Docs Source
-                const internal = rawLinkPath.includes(path.join(config.repository, config.mdIn))
-                if (internal) savePath = savePath.replace(`${path.join(mapping, config.mdIn)}/`, '')
-
-                const has = this.downloads.saved[savePath] // something has been downloaded here
-                const exists = fs.existsSync(savePath) // something exists here
-                const fromOriginal = !!this.getOriginalFile(savePath)
-
-                // ------------ Handle Remote File Paths ------------
-                if (remote) {
-
-                    // Relink
-                    const relinked = has || exists || internal
-                    if (relinked) {
-                        linkPath = this.pathTo(savePath, path.dirname(filePath)) // relink to existing file
-                        remap = true
-                    }
-
-                    // ------------ Download Files From Remote Source ------------
-                    else {
-
-                        // console.log('Downloaded File Check', this.downloads[rawLink], rawLink)
-
-                        // Avoid Overwriting Original Files
-                        if (fromOriginal) {
-                            this.ignored[fullLink] = link
-                            console.log(`Cannot overwite original file at ${savePath} with the contents of ${rawLink}.`)
-                            return // ignore changes
-                        } 
-                        
-                        // Download New Assets
-                        else {
-                            this.check(savePath)
-                            const file = fs.createWriteStream(savePath);
-
-                            // Wait for Files to Download
-                            await new Promise((resolve, reject) => {
-
-                                https.get(rawLink, response => {
-
-                                    if (response.statusCode != 200) {
-                                        if (response.statusCode === 404) this.broken[fullLink] = link // flag broken links
-                                        else console.error('Error Downloading', response.statusCode, fullLink, filePath)
-                                        reject()
-                                    } else {
-
-                                        var stream = response.pipe(file);
-                                        stream.on("finish", async () => {
-                                            let text = fs.readFileSync(savePath).toString()
-                                            this.downloads.raw[fullLink] = savePath
-                                            this.downloads.saved[savePath] = text
-
-                                            info.internalResults[savePath] = {
-                                                relativeTo: fullLink,
-                                                text
-                                            }
-
-                                            resolve(true)
-                                        });
-                                    }
-                                }).on('error', console.error);
-                            }).catch(e => console.error)
-                        }
-                    } 
-                } else {
-                    this.ignored[fullLink] = link
-                    return
-                }
-
-
-                const gotten = this.downloads.saved[savePath]
-
-
-                // ------------ Update Links Appropriately ------------
-                if ((exists || gotten !== undefined)) this.registerChange(line, link, linkPath, filePath, remap, relativeTo, 'transferred') // update text
-                else console.error(`No file was created or found at ${savePath}`, rawLink)
-            }
-        }
-    }
-
-
-    handleLink = (link, publication, info, config) => {
-        const remoteFile = isRemote(link)
-        const markdown = isMarkdown(link)
-        const relativeFile = !remoteFile
-        const absoluteFile = !isRelative(link) && relativeFile && markdown
-
-        const {
-            line,
-            userRegex,
-            relativeTo,
-            isString,
-            filePath,
-        } = info
-
-        // Get the New Link
-        let rel = filePath.split(config.input)[1]
-        if (rel?.[0] === pathSep) rel = rel.slice(1)
-        let after = publication.pattern ? link.split(publication.pattern).slice(-1)[0] : link // no pattern
-        if (after[0] === pathSep) after = after.slice(1)
-        const name = path.basename(after)
-
-
-
-        let correctExt = correctExtension(after, markdownExtension) // transfer files with the specified extension
-
-
-        // Allow Relative Links on Internal Loads
-        const pattern = (publication.pattern && link.match(userRegex))
-
-
-        if (
-            (correctExt) &&
-            (relativeFile || pattern)
-        ) {
-            
-            // Main Check
-            if (
-                relativeTo ||
-                pattern
-            ) {
-
-
-                let linkPath, savePath;
-                const split = after.split(pathSep)
-                const base = (remoteFile) ? split[0] : rel.split(pathSep)[1] // reference parent if not remote
-                let mapping = (isString) ? publication.map : publication.map[base]
-
-                let hasMapping = remoteFile && !!mapping // Must be remote // TOOD: Check when isString = true
-
-                if (rel) {
-                    const thisPath = path.dirname(rel)
-
-                    if (relativeFile) {
-                        const nBack = link.split('../').length - 1
-                        const possible = thisPath.split(pathSep).length
-
-                        // Relink local to remote (if relative path goes out of the sandbox)
-                        if (nBack >= possible) {
-                            const url = this.mergeSafe(relativeTo, link)
-                            this.registerChange(line, link, url, filePath, true, relativeTo, 'external')
-                            return
-                        }
-                    }
-
-                    if (relativeTo) {
-
-                        // Local Map (otherwise use default remote mapping)
-                        if (hasMapping) {
-                            linkPath = this.map(thisPath, mapping, name)
-                            savePath = path.join(config.input, thisPath, linkPath) // relative to this
-                            if (linkPath?.[0] != '.') linkPath = `./${linkPath}` // force relative
-                        }
-                    }
-                }
- 
-                return {
-                    link,
-                    remote: remoteFile,
-                    relative: relativeFile,
-                    absolute: absoluteFile,
-                    name,
-                    remap: (relativeTo && !hasMapping) ? false : true,
-                    mapping,
-                    linkPath,
-                    savePath,
-                }
-            }
-
-            // Remap All Internal Markdown Links to HTML
-            else if (markdown) this.registerChange(line, link, link, filePath, false, relativeTo, 'internal')
-        
-        } 
-        
-        // Catch Errors
-        else {
-
-            // Common Regular Expression Issues
-            const hasSpaces = link.includes(' ')
-            if (hasSpaces) return
-
-            const isQuoted =  [`"`, `'`, '`'].includes(link[0])
-            if (isQuoted) return
-
-            const isComment =  link.slice(0, 2) === '//'
-            if (isComment) return
-
-            // No Match for Remote Link
-            if (remoteFile)  this.unmatched[link] = true
-
-            // Invalid Local Link
-            else if (extension(link) === '')  {
-
-                // Try Linking to Remote
-                if (relativeTo){
-                    this.registerChange(line, link, this.mergeSafe(relativeTo, link), filePath, true, true, 'external')
-                    return
-                } 
-                
-                // Mark as Invalid
-                else {
-                    this.invalid[link] = this.prettyPath(filePath, config) // transform filePath to be readable and accessible by link
-                    return
-                }
-            } 
-            // else this.unsupported[link] = true
-        }
-    }
-
-    prettyPath = (path, relative='input', config=this.config) => {
-        if (relative == 'input') relative = 'mdIn' // actual input, not copy
-        return `${config[relative]}/${path.split(`${config.input}/`)[1]}` // transform filePath to be readable and accessible by link
-    }
-
-    map = (thisPath, absoluteMapPath, name) => {
-
-        const transferredSplit = absoluteMapPath.split(pathSep)
-        const thisSplit = thisPath.split(pathSep)
-
-        if (!name) name = thisSplit.pop() // derive name
-
-        let relative = []
-        const filtered = transferredSplit.filter((v, i) => {
-            if (thisSplit[i] !== v) {
-                relative.push('..')
-                return true
-            } else return false
-        })
-
-        const res = path.join(path.join(...relative, ...filtered), name)
-
-        return res
-    }
-
-    // Use Two Paths to Get a Relative Path Between Them
-    pathTo = (to, from, name) => {
-
-
-        const fromSplit = from.split(pathSep)
-        const toSplit = to.split(pathSep)
-
-        if (!name) name = toSplit.pop() // derive name
-
-        const index = fromSplit.findIndex((v, i) => (toSplit[i] !== v) ? true : false)
-
-        let mapped = name
-        if (index > 0) {
-            const nBack = fromSplit.length - index
-            mapped = path.join(path.join(...Array.from({ length: nBack }, () => '..'), ...toSplit.slice(index)), name) // go out
-        } else mapped = path.join(...toSplit.slice(fromSplit.length), name) // go up
-        
-        if (mapped[0] !== '.') return `./${mapped}`
-
-        else return mapped
-    }
-
     addChange = (filePath, line, link, type, { html, markdown } = {}) => {
         if (!this.changes[filePath]) this.changes[filePath] = {}
 
@@ -613,6 +195,7 @@ class Docs {
         if (!fileRef[type]) fileRef[type] = {}
 
         const typeRef = this.changes[filePath][type]
+
         if (typeRef[link]) typeRef[link].lines.push(line)
         else {
             typeRef[link] = {
@@ -629,98 +212,57 @@ class Docs {
         }
     }
 
-    preload = async (results, publications, config) => {
-
-        // Preload and Relink Publications
-        for (let i in publications) {
-
-
-            const internalResults = {}
-            let o = publications[i]
-            const userRegex = new RegExp(`(.*)${o.pattern ?? ''}(.*)`, 'g')
-
-            for (let filePath in results) {
-
+    relink = async () => {
+        // Relink Documents
+            for (let filePath in this.documents) {
+                const document = this.documents[filePath]
                 const extension = path.extname(filePath)
-
-                if (extension.slice(-markdown) === markdown) {
-
-                    if (o) {
-
-                        if (typeof o != 'object') o = { map: o }
-                        let isString = typeof o.map === 'string'
-
-                        let text, relativeTo
-                        if (results[filePath].constructor.name === 'Buffer') text = results[filePath].toString() // Buffer
-                        else if (typeof results[filePath] === 'object') {
-                            text = results[filePath].text
-                            relativeTo = results[filePath].relativeTo
-                        } else text = results[filePath]
-
-
-                        const matches = [...text.matchAll(lineLinkRegex)]
-
-                        if (matches) {
-
-                            // Organize matches
-                            let links = {}
-
-                            let info = {
-                                userRegex,
-                                relativeTo,
-                                isString,
-                                filePath,
-                                text,
-                                internalResults,
-                            }
-
-                            matches.forEach(n => {
-
-                                const line = n[0]
-                                const link = n[1]
-
-                                const copy = Object.assign({}, info)
-                                copy.line = line
-
-                                const res = this.handleLink(link, o, copy, config)
-
-                                if (res) links[line] = res
-
-                            })
-
-                            // Iterate through Valid Links
-                            for (let line in links) await this.handleLine(line, links, info, config)
-                        }
-                    }
-                }
-            }
-
-            const loaded = Object.keys(internalResults).length > 0
-            if (loaded) await this.preload(internalResults, [{ ...o }], config)
+                if (extension.slice(-markdown.length) === markdown)  await document.relink()
         }
 
         return (Object.keys(this.changes).length > 0) ? this.changes : false // pass changes if any were found
 
     }
 
-    registerChange = (line, link, newLink, filePath, remap = true, updateOriginal = false, type) => {
+    addDocument = async (filePath, input, options={}, relink=true) => {
 
-        const update = !!updateOriginal
-        const original = newLink
+            if (this.documents[filePath]) return this.documents[filePath] // Avoid duplication
+
+            // Add Markdown Documents to the Docs Generator
+            const extension = path.extname(filePath)
+            if (extension.slice(-markdown) === markdown) {
+                
+                if (!input) input = fs.readFileSync(filePath).toString()
+
+                // create document
+                const document = this.documents[filePath] = this.downloads[options.origin] = new Document(filePath, input, {context: this, ...options})
+
+                if (relink) await document.relink()
+                return document
+            }
+    }
+
+    registerChange = (linkInstance) => {
+
+
+        const line = linkInstance.line
+        const link = linkInstance.value
+        let update = linkInstance.update
+        const filePath = linkInstance.info.document.path
+
+        const updateOriginal = true // linkInstance.updateOriginal // Determine whether to update the original
+        const type = linkInstance.type
 
         // Transform Markdown to HTML Links
-        const remote = isRemote(newLink)
+        if (!update) update = link
+        const original = update
 
-        // Keep Original if Remap is False
-        if (!remote) {
-            if (!remap) {
-                newLink = link.slice(0, -2) + 'html'
-                remap = true
-            }
-        }
+        if (path.extname(update) !== '.md') return // Do not convert to html...
+
+        const remote = isRemote(update)
 
         // Update Links
-        let markdownProposed = newLink.replace(readme, 'index.md')
+        let markdownProposed = update.replace(readme, 'index.md')
         let htmlProposed = markdownProposed.replace('/index.md', '/index.html')
 
         // Update HTML Links
@@ -734,30 +276,39 @@ class Docs {
         if (htmlProposed == '') htmlProposed = './'
         if (markdownProposed == '') markdownProposed = './'
 
-        // Complete the Remapping
-        const html = (remap) ? `${htmlProposed}` : link
-        const markdown = (remap) ? `${markdownProposed}` : link
+        // Finalize the HTML and Markdown
+        const html = htmlProposed
+        const markdown = markdownProposed
 
         // Track Changes
         const refs = this.addChange(filePath, line, link, type, { html, markdown })
 
-        if (update && !refs.file._write) {
+        if (updateOriginal && !refs.file._write) {
             Object.defineProperty(refs.file, '_write', {
                 value: true,
                 enumerable: false
             })
         }
 
+        // NOT REGISTERING THAT INITIAL LINK IS REMOTE...
         const htmlRemote = isRemote(html)
         const fileRemote = isRemote(filePath)
-        this.links.push({
-            link: htmlRemote ? html : this.prettyPath(this.mergeSafe(filePath, html), 'output'),
+
+        const actualLink = htmlRemote ? html : utils.prettyPath(utils.mergeSafe(filePath, html), 'output', this.config)
+        const actualSource = fileRemote ? filePath : utils.prettyPath(filePath, updateOriginal ? 'copy' : 'input', this.config)
+
+        const info = {
+            line,
+            link: actualLink,
             html,
+            markdown,
             original,
-            source: fileRemote ? filePath : this.prettyPath(filePath, updateOriginal ? 'copy' : 'input'),
+            source: actualSource,
             remote: htmlRemote,
             type
-        })
+        }
+
+        this.links.push(info)
 
         return refs.link
     }
@@ -769,183 +320,66 @@ class Docs {
             fileSplit.pop()
             fileSplit.push('html')
         }
-        return[...split, fileSplit.join('.')].join('/')
+        return [...split, fileSplit.join('.')].join('/')
     }
 
-
-    saveText = (buffer, changes, filePath, config) => {
-
-        const { input, main } = this.getBases(config)
-        const { output, templates } = config
-
-        let ext = path.extname(filePath)
-        if (filePath.includes('.wasl.json')) ext = '.wasl' // recognize .wasl.json files
-
-
-        for (let ext in templates) {
-            if (typeof templates[ext] === 'string') {
-                templates[ext] = {
-                    text: fs.readFileSync(templates[ext]).toString(),
-                    map: {}
-                }
-
-                const matches = [...templates[ext].text.matchAll(htmlCommentRegex)]
-                matches.forEach(arr => {
-                    const comment = arr[0]
-                    const key = arr[1]
-                    templates[ext].map[key] = comment
-                })
-            }
-        }
-
-        // console.log('templates', templates)
-
-        const notCommon = filePath.replace(input, '')
-
-        const isBoolean = typeof this.debug === 'boolean'
-        const debugHTML = isBoolean ? this.debug : this.debug?.html
-
-        const changeLog = (path) => (debugHTML) ? console.log(`--------------- ${path.replace(`${main}/`, '')} ${changes._write ? '(saved)' : ''} ---------------`) : null
-        const changeLogSubheader = (message) => (debugHTML) ? console.log(`--- ${message} ---`) : null
-        const changeLogListItem = (message) => (debugHTML) ? console.log(`- ${message}`) : null
-
-        // Deal with Different File Types
-
-        let pathToUse = ''
-        let returnVal = false
-
-        const nBack = notCommon.split(pathSep).length - 2
-        const rel = Array.from({ length: nBack }, _ => '..').join('/')
-
-        const stylesheetLocation = './.docs/default.css'
-        const destination =  path.join(process.cwd(), config.output, stylesheetLocation)
-        this.check(destination)
-        fs.copyFileSync('templates/default.css', destination)
-        
-        const commentReplacements = {
-            content: '',
-            defaultstylesheet: create.stylesheet.generator(path.join(rel,stylesheetLocation))
-        }
-
-        for (let key in create) {
-            if (config[key] && create[key]) {
-                commentReplacements[key] = create[key].generator(create[key].format === 'link' ? path.join(rel, config[key]) : config[key])
-            }
-        }
-
-
-
-        switch (ext) {
-            case '.md':
-
-                let text = buffer.toString()
-
-                if (changes) {
-
-                    let mdText = text
-                    changeLog(filePath)
-                    for (let type in changes) {
-                        changeLogSubheader(`${type[0].toUpperCase() + type.slice(1)} Links`)
-
-                        for (let link in changes[type]) {
-                            const { lines, markdown } = changes[type][link]
-                            let html = changes[type][link].html
-                            changeLogListItem(`${link} —> ${html}`)
-                            lines.forEach(line => {
-                                text = text.replace(line, line.replace(link, html)) // update for HTML
-                                mdText = mdText.replace(line, line.replace(link, markdown)) // update for MD
-                            })
-                        }
-                    }
-
-                    if (changes._write) {
-                        this.written[filePath] = true
-                        fs.writeFileSync(filePath, mdText);
-                    }
-
-                    if (debugHTML) console.log('\n')
-                }
-
-                pathToUse = path.join(main, output, notCommon.replace('.md', '.html'))
-                ext = '.html'
-                returnVal = true
-
-                text = preprocess.code.default(text)
-
-                commentReplacements.content = converter.makeHtml(text); // html content
-                break;
-
-            case '.wasl':
-                return false
-
-            default:
-                pathToUse = path.join(main, output, notCommon)
-                commentReplacements.content = buffer.toString()
-                returnVal = undefined
-                break;
-        }
-
-        if (pathToUse) {
-
-            let content = commentReplacements.content
-            const template = templates[ext.slice(1)]
-            if (template) {
-                content = template.text // replace with template
-                for (let key in template.map) {
-                    const rep = commentReplacements[key]
-                    if (rep) content = content.replace(template.map[key], rep)
-                }
-            } else content = buffer // replace with buffer for non-template files
-
-
-            this.check(pathToUse)
-            fs.writeFileSync(pathToUse, content);
-        }
-
-        return returnVal
-    }
-
-
-    check = (filePath) => {
-        var dirname = path.dirname(filePath);
-        if (fs.existsSync(dirname)) return true;
-
-        this.check(dirname);
-        fs.mkdirSync(dirname);
-    }
-
-    save(path, content) {
-        return new Promise((resolve, reject) => {
-            fs.writeFile(path, content, (err) => {
-                if (err) return reject(err);
-                return resolve();
-            });
-        })
-    };
-
-    list = (dir) => {
+    getDocuments = (dir) => {
 
         return new Promise((resolve, reject) => {
-            var results = {};
             fs.readdir(dir, (err, list) => {
                 if (err) return reject(err);
                 var pending = list.length;
-                if (!pending) return resolve(results);
+                if (!pending) return resolve();
                 list.forEach((file) => {
                     file = path.resolve(dir, file);
                     fs.stat(file, async (err, stat) => {
                         if (stat && stat.isDirectory()) {
-                            const res = await this.list(file);
-                            results = Object.assign(results, res)
-                            if (!--pending) resolve(results);
+                            await this.getDocuments(file);
+                            if (!--pending) resolve();
                         } else {
-                            results[file] = fs.readFileSync(file)
-                            if (!--pending) resolve(results);
+                            const buffer = fs.readFileSync(file)
+                            await this.addDocument(file, buffer, undefined, false)
+                            if (!--pending) resolve();
                         }
                     });
                 });
             });
         })
+    }
+
+    download = async (link, savePath) => {
+        const raw = link.properties.raw
+
+        utils.filesystem.check(savePath)
+        const file = fs.createWriteStream(savePath);
+
+        this.downloads[raw] = new Promise((resolve, reject) => {
+
+            // console.log('Downloading', raw)
+            // console.log('Downloading For', this.info.document.path)
+            // console.log('Downloading To', savePath)
+
+            https.get(raw, response => {
+
+                if (response.statusCode != 200) {
+                    if (response.statusCode === 404) {
+                        link.info.context.broken[link.properties.original] = link.value // flag broken links
+                        link.status = 'broken'
+                    } else console.error(`Error downloading ${link.properties.original} from ${link.info.document.path}`, response.statusCode)
+                    reject()
+                } else {
+
+                    var stream = response.pipe(file);
+                    stream.on("finish", async () => {
+                        const document = await this.addDocument(savePath, undefined, {origin: raw})
+                        resolve(document)
+                    });
+                }
+            }).on('error', console.error);
+        }).catch((e) => link.status = 'failed')
+
+        await this.downloads[raw]
+        return this.documents[savePath]
     }
 
     report = (info) => {
@@ -984,7 +418,7 @@ class Docs {
             copied.forEach(str => console.log(`- ${str}`))
         }
 
-        if (debugWritten && Object.keys(this.written).length > 0){
+        if (debugWritten && Object.keys(this.written).length > 0) {
             console.log(`\n--------------- Files Written with Changes ---------------`)
             for (let raw in this.written) console.log(`- ${raw}`)
         }
@@ -1018,8 +452,9 @@ class Docs {
         const valid = this.validate(this.links)
 
         if (valid !== true) {
+            console.log(valid)
             console.log(`\n--------------- Links Not Handled Properly by @brainsatplay/docs ---------------`)
-            valid.forEach(o => console.log(`- ${o.link}`))
+            valid.forEach(o => console.log(`- ${o.html} (${o.original}) in ${o.source}`))
         }
     }
 }

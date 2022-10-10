@@ -16,11 +16,11 @@
     <section>
         <h1 id="conventions">Conventions</h1>
 <h2 id="plugins">Plugins</h2>
-<p>As defined by <a href="https://github.com/brainsatplay/es-plugins">es-plugins</a>, a <strong>plugin</strong> is an ESM file that contains one default export and named exports that are used to provide additional metadata about the usage of the former.</p>
+<p>As defined by <a href="../../repos/escompose">escompose</a>, a <strong>plugin</strong> is an ESM file that contains one default export and named exports that are used to provide additional metadata about the usage of the former.</p>
 <blockquote>
   <ol>
   <li><strong>Any default export should be a function</strong>—ideally stateless.</li>
-  <li><strong>Named exports should be modifiers</strong> for this function, consistent with the <a href="../repos/es-plugins/index.md">ES Plugins</a> and <a href="../repos/wasl">WASL</a> standards.</li>
+  <li><strong>Named exports should be modifiers</strong> for this function, consistent with the <a href="https://github.com/brainsatplay/escompose/blob/main/README.md">ES Components</a> and <a href="../../repos/wasl">WASL</a> specifications.</li>
   </ol>
 </blockquote>
 <div class="brainsatplay-docs-code"><span>Code</span>
@@ -68,13 +68,13 @@ export default () =&gt; graph.run('world')</code></pre>
 }
 </code></pre></div>
 <blockquote>
-  <p>Nodes in the <strong>graph</strong> are individually visualized by the Properties tab (TBD) of the <code>@brainsatplay/studio</code>, while edges are visualized by the Graph tab.</p>
+  <p>Nodes in the <strong>graph</strong> are individually visualized by the Properties tab (TBD) of <a href="../../repos/escompose">ES Composer</a>, while edges are visualized by the Graph tab.</p>
 </blockquote>
 <blockquote>
-  <p>Although specified in the WASL standard, these are <em>not</em> handled by the <a href="../repos/wasl/index.md">wasl</a> library itself. Instead, <strong>graphs</strong> are assembled by external libraries such as <a href="../repos/graphscript">graphscript</a>.</p>
+  <p>Although specified in the WASL standard, these are <em>not</em> handled by the <a href="../../repos/wasl">wasl</a> library itself. Instead, <strong>graphs</strong> are assembled by external libraries such as <a href="../../repos/graphscript">graphscript</a>.</p>
 </blockquote>
 <hr />
-<p>Now that you know more about the Brains@Play Framework, let's<a href="./component.html">develop your first Component</a>!</p>
+<p>Now that you know more about the Brains@Play Framework, let's <a href="./component.html">develop your first Component</a>!</p>
     </section>
     <footer></footer>
 </body>

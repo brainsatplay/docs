@@ -15,22 +15,26 @@
     </header>
     <section>
         <h1 id="brainsplay-recompose-the-web">Brains@Play: Recompose the Web</h1>
-<p><strong>The Brains@Play Framework (Brains@Play) is a copyleft rapid application development (RAD) system</strong> for high-performance web applications. Using a <a href="repos/wasl">custom specification language</a> and native ECMAScript Modules syntax, we automate inspectability and composability for the developer in order to enable the proliferation of reusable code blocks and the recomposition of the Open Web.</p>
+<p><strong>The Brains@Play Framework (Brains@Play) is a copyleft rapid application development (RAD) system</strong> for high-performance web applications. Using a <a href="./repos/wasl">custom specification language</a> and native ECMAScript Modules syntax, we automate inspectability and composability for the developer in order to enable the proliferation of reusable code blocks and the recomposition of the Open Web.</p>
 <h2 id="from-modules-to-components">From Modules to Components</h2>
 <p>With the release of ECMAScript 2015 (ES6), ECMAScript Modules (ES Modules) became the standard format to package JavaScript code for reuse and provide modularity to the Web.</p>
-<div class="brainsatplay-docs-code"><span>Code</span>
+<div class="brainsatplay-docs-code"><span>messages.js</span>
 <pre><code>export const world = () =&gt; console.log('hello world!')
 export const friend = () =&gt; console.log('hello friend!')
 </code></pre></div>
-<div class="brainsatplay-docs-code"><span>Code</span>
+<div class="brainsatplay-docs-code"><span>hello.js</span>
 <pre><code>import * as hello from './hello.js'
 hello.world()
 hello.friend()
 </code></pre></div>
 <p>However, since ES Modules didn't standardize the exported code itself, there remains a lack of support for immediate composability.</p>
+<blockquote>
+  <p>If you're most interested purely in scalable UI management, the Brains@Play Framework might not be for you. In this case, you might want to check out <a href="https://reactjs.org/">React</a>, <a href="https://vuejs.org/">Vue</a>, <a href="https://svelte.dev/">Svelte</a>, <a href="https://angular.io/">Angular</a> or the vast array of other UI frameworks. <br/><br/>On the other hand, <strong>this framework is particularly suited for organizing and sharing code at scale</strong>. If you're interested, read on!</p>
+</blockquote>
 <h3 id="thinking-in-datastreams">Thinking in Datastreams</h3>
-<p>The Brains@Play Framework inherits from the <strong>datastream</strong> programming paradigm, which models programs as directed graphs of data flowing between operations. </p>
-<p>As such, you use native ESM modules to produce reusable <strong>Components</strong> (either simple objects or complete <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a>) that are characterized by a default operation.</p>
+<p>We believe that the most general solutions are the best solutions—period. As such, the Brains@Play Framework inherits from the <strong>datastream</strong> programming paradigm, which models programs as directed graphs of data flowing between operations. </p>
+<p>Within this paradigm, you can use native ESM modules to produce reusable <strong>Components</strong> (either simple objects or complete <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a>) that are characterized by a <strong>default</strong> operation. </p>
+<p>By design, default exports are distinguished by ES Modules—not only our framework.</p>
 <div class="brainsatplay-docs-code"><span>trigger.js</span>
 <pre><code>export const loop = 1000/10
 export default () =&gt; true
@@ -38,7 +42,7 @@ export default () =&gt; true
 <div class="brainsatplay-docs-code"><span>hello.js</span>
 <pre><code>export default (message="world") =&gt; console.log(`hello ${message}!`)
 </code></pre></div>
-<p>Using the <a href="repos/wasl">Web Application Specification Language (WASL)</a>, you're then able to instantiate Components and define listeners that control the information flow between them.</p>
+<p>Using the <a href="./repos/wasl">Web Application Specification Language (WASL)</a>, you're then able to instantiate Components and define listeners that control the information flow between them.</p>
 <div class="brainsatplay-docs-code"><span>index.wasl.json</span>
 <pre><code>{
     "name": "My App",
@@ -57,14 +61,16 @@ export default () =&gt; true
     }
 }
 </code></pre></div>
-<p>In the near future, you will be able to use our visual programming system (<a href="repos/studio">@brainsatplay/studio</a>) for intuitive inspection, modification, and extension of WASL applications using our official <a href="repos/components">components</a> collection.</p>
+<p>In our experience, we've found the Brains@Play Framework most useful for high-throughput, real-time applications (e.g. processing brain data streamed from an electroencephalography (EEG) device at 512hz, which is translated into UI changes that inform the user about their internal state). But we're excited to see the use-cases you all dream up for it!</p>
+<p>In the near future, you will be able to use our visual programming system (<a href="./repos/escompose">ES Composer</a> for intuitive inspection, modification, and extension of WASL applications using our official <a href="./repos/components">components</a> collection.</p>
 <h2 id="playing-with-code">Playing with Code</h2>
-<p>Brains@Play embodies our desire to support the joy of developers as they create high-performance applications. It encompasses many different goals including <strong>free software use</strong>, a focus on <strong>inspectability and composability</strong>, as well as <strong>accessibility</strong> for everyone with a brain—since the majority of our day-to-day work focuses on the development of web-based physiological computing software and low-cost biosensing hardware.</p>
+<p>Brains@Play embodies our desire to support the joy of developers as they create high-performance applications. It encompasses many different goals including <strong>free software use</strong>, <strong>inspectability</strong> and, <strong>composability</strong></p>
 <p>More generally, Brains@Play refers to the culture of rapid prototyping that permeates the project through the composition of simple plugins without the need to focus on unneccesary complexity.</p>
+<p>Our team, in particular, has a soft spot for <strong>accessibility</strong> concerns that support everyone with a brain, as the majority of our <a href="./projects.html">day-to-day work</a> focuses on the development of web-based physiological computing software and low-cost biosensing hardware.</p>
 <h2 id="audience">Audience</h2>
 <p>This documentation is written for <strong>programmers who care about the future of composability</strong>. We assume that you can read JavaScript code—as all of the examples here are written for the browser (specifically the latest Chromium browsers) or Node.js. Other than that basic background, we try to present all the concepts you will need to play with the Brains@Play Framework.</p>
 <h2 id="meet-your-maintainers">Meet your Maintainers!</h2>
-<p>The Brains@Play Framework and <a href="./repos/index.md">all of its its dependencies</a> have been released under the <a href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPLv3</a> license. It is maintained by <a href="https://brainsatplay.com">Brains@Play LLC</a> and its founding partners:</p>
+<p>The Brains@Play Framework and <a href="./repos">all of its its dependencies</a> have been released under the <a href="https://www.gnu.org/licenses/agpl-3.0.en.html">AGPLv3</a> license. It is maintained by <a href="https://brainsatplay.com">Brains@Play LLC</a> and its founding partners:</p>
 <ul>
 <li><a href="https://github.com/garrettmflynn">Garrett Flynn</a> is a transdisciplinary researcher and web engineer living in Los Angeles, California.</li>
 <li><a href="https://github.com/joshbrew">Josh Brewster</a> is a mad scientist living in Oregon.</li>
@@ -72,7 +78,6 @@ export default () =&gt; true
 <p>Keep reading to <a href="./guides/getting-started/installation.html">install the Brains@Play Framework</a> and develop your first application!</p>
 <!-- Specification Language -->
 <!-- Core Library-->
-<!-- Integrated Editor-->
 <!-- Low Code Programming System-->
 <!-- Data Acquisition-->
 <!-- Build Tool-->

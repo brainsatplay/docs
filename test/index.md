@@ -1,5 +1,8 @@
 # Testing WASL Interactive Demo
 
+## Meet your Maintainers!
+The Brains@Play Framework and [all of its its dependencies](./repos/index.md) have been released under the [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) license. It is maintained by [Brains@Play LLC](https://brainsatplay.com) and its founding partners:
+
 ```javascript
 export const world = () => console.log('hello world!')
 export const friend = () => console.log('hello friend!')

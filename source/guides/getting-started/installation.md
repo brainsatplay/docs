@@ -1,5 +1,5 @@
 # Installation
-To begin a new project in the Brains@Play Framework, you'll need to include the [WASL](https://github.com/brainsatplay/wasl/blob/master/README.md) library in you JavaScript code. This can be done in a few different ways, depending on the needs of your project.
+To begin a new project in the Brains@Play Framework, you'll need to include the [WASL](https://github.com/brainsatplay/wasl/blob/main/README.md) library in you JavaScript code. This can be done in a few different ways, depending on the needs of your project.
 
 If you're using a standalone HTML page, it may be easiest to include WASL as a global variable using a **script tag**:
 ```html
