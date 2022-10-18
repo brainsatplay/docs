@@ -40,7 +40,7 @@ const config = {
                 components: "repos/components",
                 [`datastreams-api`]: "repos/datastreams-api",
                 docs: "repos/docs",
-                [`escompose`]: "repos/escompose",
+                escode: "repos/escode",
                 freerange: "repos/freerange",
                 graphscript: "repos/graphscript",
                 [`nRF52-Biosensing-Boards`]: "repos/nRF52",

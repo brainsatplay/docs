@@ -1,7 +1,7 @@
 ## Using the Brains@Play Framework with Phaser 3
 This tutorial will use the [Phaser](https://phaser.io/) library (v3) to introduce the core concepts of the Brains@Play Framework through a complete example.
 
-> Our [components](https://github.com/garrettmflynn/components) repository contains the [demo](https://github.com/brainsatplay/components/blob/main/demos/phaser) and [Component](https://github.com/brainsatplay/components/blob/main/components/phaser) code for this example. 
+> Our [components](https://github.com/brainsatplay/escode/blob/main/components) repository contains the [demo](https://github.com/brainsatplay/escode/blob/main/components/demos/phaser) and [Component](https://github.com/brainsatplay/escode/blob/main/components/phaser) code for this example. 
 
 ## A Tour of the Plugins
 We have created a [mashup component](../getting-started/conventions.md#native-vs-mashup) to simplify the process of working with Phaser.

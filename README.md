@@ -25,10 +25,9 @@ We use https://showdownjs.com/ to generate HTML from .md files.
 ### Documentation for Core Repositories
 - [accessify]
 - [brainsatplay]
-- [components]
 - [datastreams-api]
 - [docs]
-- [escompose]
+- [escode]
 - [freerange]
 - [graphscript]
 - [hegduino]
@@ -43,13 +42,11 @@ We use https://showdownjs.com/ to generate HTML from .md files.
 [visualscript]: https://github.com/brainsatplay/visualscript/blob/main/README.md
 [datastreams-api]: https://github.com/brainsatplay/datastreams-api/blob/main/README.md
 [tinybuild]: https://github.com/brainsatplay/tinybuild/blob/master/README.md
-[components]: https://github.com/brainsatplay/components/blob/main/README.md
 [accessify]: https://github.com/brainsatplay/accessify/blob/main/README.md
 [docs]: https://github.com/brainsatplay/docs/blob/main/README.md
 [hegduino]: https://github.com/moothyknight/HEG_ESP32_Delobotomizer/blob/main/README.md
 [nRF52]: https://github.com/brainsatplay/nRF52-Biosensing-Boards/blob/main/README.md
-[escompose]: https://github.com/brainsatplay/escompose/blob/main/README.md
-[escomposer]: https://github.com/brainsatplay/escomposer/blob/main/libraries/escomposer/README.md
+[escode]: https://github.com/brainsatplay/escode
 [freerange]: https://github.com/brainsatplay/freerange/blob/main/README.md
 
 ## Acknowledgments

@@ -29,7 +29,7 @@ export const attributes = {
 
 If you refresh the HTML page, you'll now see that a button has been created on screen! However, it's not doing much right now. Let's see if we can pass the `onclick` event to another component. 
 
-To do this, we'll use the default `log` plugin provided in the [components](https://github.com/brainsatplay/components) repository:
+To do this, we'll use the default `log` plugin provided in the [components](https://github.com/brainsatplay/escode/blob/main/components) repository:
 ```json
 {
     "components": {
