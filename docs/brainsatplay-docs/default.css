@@ -144,7 +144,25 @@
    display: block;
    padding: 15px;
  }
- 
+
+ .brainsatplay-docs-code {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 35px;
+  border: 2px solid black;
+}
+
+.brainsatplay-docs-code::before {
+  content:  attr(data-filename);
+  position: absolute;
+  transform: translateY(-30px);
+  background: white;
+  font-weight: bold;
+  padding: 0px 5px;
+  border-radius: 5px;
+}
+/*  
  .brainsatplay-docs-code {
    overflow: auto;
    position: relative;
@@ -166,4 +184,4 @@
    left: 0;
    width: 100%;
    box-sizing: border-box;
- }
+ } */

@@ -17,7 +17,7 @@ export default (text) => {
             } 
             
             // Wrap Code with Editor View
-            text = text.replace(match[0], `<div class="brainsatplay-docs-code"><span>${name ?? 'Code'}</span>\n<pre><code>${code}</code></pre></div>`)
+            text = text.replace(match[0], `<div class="brainsatplay-docs-code" data-filename="${name ?? 'Code'}">\n<pre><code>${code}</code></pre></div>`)
 
         }
 
